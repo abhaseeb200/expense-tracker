@@ -1,12 +1,10 @@
-import { useState } from 'react'
 import './App.css'
-import Register from './screens/register'
-import Login from './screens/login'
+import Confiq from './confiq'
 
 function App() {
   return (
     <>
-      <Register/>
+      <Confiq/>
     </>
   )
 }

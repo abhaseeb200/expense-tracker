@@ -10,9 +10,10 @@ const CustInput = ({placeholder,type,value,onChange,isError,messageError}) => {
       type={type}
       value={value}
       onChange={onChange}
-      className= {isError?"border-danger":""}
+      className= {isError?"validationError":""}
+      autoComplete="on"
     />
-    {messageError !== "" ? <small className="d-block text-danger">{messageError}</small>:""}
+    {messageError !== "" ? <small className="d-block text-error">{messageError}</small>:""}
     </>
   );
 };

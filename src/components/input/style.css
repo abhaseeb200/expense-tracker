@@ -29,6 +29,17 @@
   opacity: 1;
 }
 
+.text-error {
+  color: #ff4b4b;
+  font-size: 80%;
+}
+
+.validationError:focus, .validationError:focus-within, .validationError {
+  border-color: #ff4b4b !important;
+}
+
+
+
 @media (prefers-reduced-motion: reduce) {
   .form-control {
     transition: none;
