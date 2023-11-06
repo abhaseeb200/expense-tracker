@@ -9,13 +9,19 @@ import {
 import "../style.css";
 import SideNavbar from "../../../components/sideNavbar";
 import CustNavbar from "../../../components/navbar";
+import { useState } from "react";
 
 const Dashboard = () => {
+  const [sideBarToggle, setSideBarToggle] = useState(false);
+
   return (
-    <Container>
-      <SideNavbar />
+    <div className="container-lg">
+      <SideNavbar
+        sideBarToggle={sideBarToggle}
+        setSideBarToggle={setSideBarToggle}
+      />
       <div className="layout-page">
-        <CustNavbar />
+        <CustNavbar setSideBarToggle={setSideBarToggle} />
         <Card className="mt-4">
           <CardBody className="pb-0">
             <CardTitle>Transaction Comparison Between Months</CardTitle>
@@ -33,7 +39,7 @@ const Dashboard = () => {
           </CardBody>
         </Card>
       </div>
-    </Container>
+    </div>
   );
 };
 

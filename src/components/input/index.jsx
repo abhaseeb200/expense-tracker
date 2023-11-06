@@ -1,11 +1,14 @@
 import { Input } from "reactstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css'
+import { useState } from "react";
 
-const CustInput = ({placeholder,type,value,onChange,isError,messageError}) => {
+const CustomInput = ({placeholder,type,value,onChange,isError,messageError,disabled}) => {
+  
   return (
     <>
       <Input
+      disabled = {disabled}
       placeholder={placeholder}
       type={type}
       value={value}
@@ -17,4 +20,4 @@ const CustInput = ({placeholder,type,value,onChange,isError,messageError}) => {
     </>
   );
 };
-export default CustInput;
+export default CustomInput;

@@ -2,7 +2,7 @@ import { Card, CardBody, Row, Button, Form, Label } from "reactstrap";
 import "./style.css";
 import logo from "../../assets/logo.svg";
 import { useState } from "react";
-import CustInput from "../../components/input";
+import CustomInput from "../../components/input";
 import { Link } from "react-router-dom";
 
 const Login = () => {
@@ -16,6 +16,8 @@ const Login = () => {
     isError: false,
     messageError: "",
   });
+  
+
 
   const emailHanlder = (e) => {
     if (e.target.value.trim() === "") {
@@ -107,6 +109,7 @@ const Login = () => {
       });
     }
 
+
     //check validation
     if (!email.isError && !password.isError) {
       console.log("passed");
@@ -130,7 +133,7 @@ const Login = () => {
             <Form className="mb-3" onSubmit={signUpHandler}>
               <div className="mb-3">
                 <Label>Email</Label>
-                <CustInput
+                <CustomInput
                   type="email"
                   placeholder="Enter your email"
                   value={email.value}
@@ -141,7 +144,7 @@ const Login = () => {
               </div>
               <div className="mb-3">
                 <Label>Password</Label>
-                <CustInput
+                <CustomInput
                   type="password"
                   placeholder="············"
                   value={password.value}

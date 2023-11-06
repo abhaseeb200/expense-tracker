@@ -2,7 +2,7 @@ import { Card, CardBody, Row, Button, Form, Label } from "reactstrap";
 import "./style.css";
 import logo from "../../assets/logo.svg";
 import { useState } from "react";
-import CustInput from "../../components/input";
+import CustomInput from "../../components/input";
 import { Link } from "react-router-dom";
 
 const Register = () => {
@@ -235,7 +235,7 @@ const Register = () => {
             <Form className="mb-3" onSubmit={signUpHandler}>
               <div className="mb-3">
                 <Label>Username</Label>
-                <CustInput
+                <CustomInput
                   type="text"
                   placeholder="Enter your username"
                   value={username.value}
@@ -246,7 +246,7 @@ const Register = () => {
               </div>
               <div className="mb-3">
                 <Label>Email</Label>
-                <CustInput
+                <CustomInput
                   type="email"
                   placeholder="Enter your email"
                   value={email.value}
@@ -257,7 +257,7 @@ const Register = () => {
               </div>
               <div className="mb-3">
                 <Label>Password</Label>
-                <CustInput
+                <CustomInput
                   type="password"
                   placeholder="············"
                   value={password.value}
@@ -268,7 +268,7 @@ const Register = () => {
               </div>
               <div className="mb-3">
                 <Label>Confirm Password</Label>
-                <CustInput
+                <CustomInput
                   type="password"
                   placeholder="············"
                   value={confirmPassword.value}

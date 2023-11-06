@@ -1,9 +1,9 @@
-box-icon {
-  width: 19px !important;
-}
-
 .menu-link {
   border-radius: 0.40rem;
+}
+
+.offcanvas {
+  width: 261px !important;
 }
 
 .menu-header-text {
@@ -301,8 +301,6 @@ a.menu-link.nav-link.active {
   margin-left: 0 !important;
 }
 
-@media (min-width: 1200px) {
-  .layout-content-navbar .layout-menu {
-    z-index: 10;
-  }
+input[type="file"] {
+  display: none !important;
 }
