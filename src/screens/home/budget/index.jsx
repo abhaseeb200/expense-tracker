@@ -3,9 +3,12 @@ import SideNavbar from "../../../components/sideNavbar";
 import CustNavbar from "../../../components/navbar";
 import { useState } from "react";
 import CustomInput from "../../../components/input";
+import TransactionCategoryModal from "../modal";
 
 const Budget = () => {
   const [sideBarToggle, setSideBarToggle] = useState(false);
+  const [modal, setModal] = useState(false);
+
 
   const [name, setName] = useState({
     value: "",
@@ -24,6 +27,8 @@ const Budget = () => {
     isError: false,
     messageError: "",
   });
+
+  const toggle = () => setModal(!modal);
 
   const nameHandler = (e) => {
     let expVal = e.target.value.trim().toLowerCase();
@@ -124,6 +129,7 @@ const Budget = () => {
       <SideNavbar
         sideBarToggle={sideBarToggle}
         setSideBarToggle={setSideBarToggle}
+        toggle={toggle}
       />
       <div className="layout-page">
         <CustNavbar setSideBarToggle={setSideBarToggle} />
@@ -185,6 +191,7 @@ const Budget = () => {
           </CardBody>
         </Card>
       </div>
+      <TransactionCategoryModal modal={modal} toggle={toggle}/>
     </div>
   );
 };

@@ -1,9 +1,10 @@
-import { Card, CardBody, Row, Button, Form, Label } from "reactstrap";
+import { Card, CardBody, Row, Button, Form, Label, Spinner } from "reactstrap";
 import "./style.css";
 import logo from "../../assets/logo.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomInput from "../../components/input";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { authSignUp } from "../../config/service/firebase/auth.js";
 
 const Register = () => {
   const [username, setUsername] = useState({
@@ -26,7 +27,15 @@ const Register = () => {
     isError: false,
     messageError: "",
   });
-  const [signUp, setSignUp] = useState({});
+  const [loader, setLoader] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // if (user) {
+    //   navigate("/" ,{ replace: true })
+    // }
+  }, []);
 
   const usernameHanlder = (e) => {
     if (e.target.value.trim() === "") {
@@ -207,16 +216,25 @@ const Register = () => {
       });
     }
 
-    //check validation
+    if (
+      username.value === "" ||
+      email.value === "" ||
+      password.value === "" ||
+      confirmPassword.value === ""
+    ) {
+      return;
+    }
+
+    //validation cheeck
     if (
       !username.isError &&
       !email.isError &&
       !password.isError &&
       !confirmPassword.isError
     ) {
-      console.log("passed");
-    } else {
-      console.log("faild");
+      setLoader(true);
+      authSignUp(email.value, password.value,username.value,setLoader);
+      console.log("pased");
     }
   };
 
@@ -277,13 +295,15 @@ const Register = () => {
                   onChange={confirmPasswordHanlder}
                 />
               </div>
-              <Button color="primary" className="w-100" type="submit">
-                Sign up
+              <Button color="primary" className={loader?"btn-disabled w-100":"w-100"} type="submit">
+                {loader ? <Spinner size="sm"></Spinner> : "Sign up"}
               </Button>
             </Form>
             <p className="text-center">
               <span className="me-1">Already have an account?</span>
-              <Link to="/login" replace>Sign in instead</Link>
+              <Link to="/login" replace>
+                Sign in instead
+              </Link>
             </p>
           </CardBody>
         </Card>

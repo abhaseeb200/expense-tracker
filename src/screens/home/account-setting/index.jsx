@@ -12,9 +12,11 @@ import SideNavbar from "../../../components/sideNavbar";
 import CustNavbar from "../../../components/navbar";
 import { useState } from "react";
 import CustomInput from "../../../components/input";
+import TransactionCategoryModal from "../modal";
 
 const Account = () => {
   const [sideBarToggle, setSideBarToggle] = useState(false);
+  const [modal, setModal] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("admin@gmail.com");
@@ -25,7 +27,9 @@ const Account = () => {
     isError: false,
     messageError: "",
   });
-
+  
+  const toggle = () => setModal(!modal);
+  
   const firstNameHandler = (e) => {
     setFirstName(e.target.value);
   };
@@ -57,6 +61,7 @@ const Account = () => {
       <SideNavbar
         sideBarToggle={sideBarToggle}
         setSideBarToggle={setSideBarToggle}
+        toggle={toggle}
       />
       <div className="layout-page">
         <CustNavbar setSideBarToggle={setSideBarToggle} />
@@ -71,9 +76,9 @@ const Account = () => {
                 width="100"
               />
               <div className="button-wrapper">
-                <label class="btn btn-primary me-2 mb-4" tabindex="0">
+                <label className="btn btn-primary me-2 mb-4">
                   <CustomInput type="file"/>
-                  <span class="d-block text-white">Upload new photo</span>
+                  <span className="d-block text-white">Upload new photo</span>
                 </label>
                 <p className="text-muted mb-0">Allowed JPG, GIF or PNG.</p>
               </div>
@@ -149,6 +154,7 @@ const Account = () => {
           </CardBody>
         </Card>
       </div>
+      <TransactionCategoryModal modal={modal} toggle={toggle}/>
     </div>
   );
 };

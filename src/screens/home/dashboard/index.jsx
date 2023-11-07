@@ -10,15 +10,20 @@ import "../style.css";
 import SideNavbar from "../../../components/sideNavbar";
 import CustNavbar from "../../../components/navbar";
 import { useState } from "react";
+import TransactionCategoryModal from "../modal";
 
 const Dashboard = () => {
   const [sideBarToggle, setSideBarToggle] = useState(false);
+  const [modal, setModal] = useState(false);
+
+  const toggle = () => setModal(!modal);
 
   return (
     <div className="container-lg">
       <SideNavbar
         sideBarToggle={sideBarToggle}
         setSideBarToggle={setSideBarToggle}
+        toggle={toggle}
       />
       <div className="layout-page">
         <CustNavbar setSideBarToggle={setSideBarToggle} />
@@ -39,6 +44,7 @@ const Dashboard = () => {
           </CardBody>
         </Card>
       </div>
+      <TransactionCategoryModal modal={modal} toggle={toggle}/>
     </div>
   );
 };

@@ -5,7 +5,7 @@ import { Link, NavLink } from "react-router-dom";
 import { Button, Offcanvas } from "reactstrap";
 import { useState } from "react";
 
-const SideNavbar = ({ sideBarToggle, setSideBarToggle }) => {
+const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
   window.addEventListener("resize", () => {
@@ -24,14 +24,14 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle }) => {
           >
             <aside>
               <div className="app-brand demo">
-                <a href="" className="app-brand-link">
+                <Link href="#" className="app-brand-link">
                   <span className="app-brand-logo demo">
                     <img src={logo} alt="logo" width="40px" />
                   </span>
                   <span className="app-brand-text demo menu-text fw-bolder">
                     Xpensr
                   </span>
-                </a>
+                </Link>
                 <a
                   href=""
                   id="dashboard-close"
@@ -76,7 +76,14 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle }) => {
                   </NavLink>
                 </li>
                 <li className="menu-item">
-                  <a href="" className="menu-link">
+                  <Link
+                    to="#"
+                    className="menu-link"
+                    onClick={() => {
+                      toggle();
+                      setSideBarToggle(false);
+                    }}
+                  >
                     <box-icon
                       size="sm"
                       name="category"
@@ -84,7 +91,7 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle }) => {
                       style={{ width: "19px" }}
                     ></box-icon>
                     <div className="ms-2">Custom Categories</div>
-                  </a>
+                  </Link>
                 </li>
                 <li className="menu-header small text-uppercase">
                   <span className="menu-header-text">Budget</span>
@@ -151,14 +158,14 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle }) => {
         >
           <aside>
             <div className="app-brand demo">
-              <a href="" className="app-brand-link">
+              <Link href="#" className="app-brand-link">
                 <span className="app-brand-logo demo">
                   <img src={logo} alt="logo" width="40px" />
                 </span>
                 <span className="app-brand-text demo menu-text fw-bolder">
                   Xpensr
                 </span>
-              </a>
+              </Link>
               <a
                 href=""
                 id="dashboard-close"
@@ -203,7 +210,14 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle }) => {
                 </NavLink>
               </li>
               <li className="menu-item">
-                <a href="" className="menu-link">
+                <Link
+                  to="#"
+                  className="menu-link"
+                  onClick={() => {
+                    toggle();
+                    setSideBarToggle(false);
+                  }}
+                >
                   <box-icon
                     size="sm"
                     name="category"
@@ -211,7 +225,7 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle }) => {
                     style={{ width: "19px" }}
                   ></box-icon>
                   <div className="ms-2">Custom Categories</div>
-                </a>
+                </Link>
               </li>
               <li className="menu-header small text-uppercase">
                 <span className="menu-header-text">Budget</span>

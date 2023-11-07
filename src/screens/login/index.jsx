@@ -1,11 +1,13 @@
-import { Card, CardBody, Row, Button, Form, Label } from "reactstrap";
+import { Card, CardBody, Row, Button, Form, Label, Spinner } from "reactstrap";
 import "./style.css";
 import logo from "../../assets/logo.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomInput from "../../components/input";
-import { Link } from "react-router-dom";
+import { Link, Navigate, redirect, useNavigate } from "react-router-dom";
+import { authSignIn } from "../../config/service/firebase/auth";
+import { auth } from "../../config/firebaseConfig";
 
-const Login = () => {
+const Login = ({user}) => {
   const [email, setEmail] = useState({
     value: "",
     isError: false,
@@ -16,8 +18,17 @@ const Login = () => {
     isError: false,
     messageError: "",
   });
+  const [loader, setLoader] = useState(false);
+  const navigate = useNavigate();
   
-
+  useEffect(() => {
+      if (!user) {
+       console.log("user is not found");
+      } else {
+       console.log("user is found");
+       navigate("/",{replace:true})
+      }
+  }, [user]);
 
   const emailHanlder = (e) => {
     if (e.target.value.trim() === "") {
@@ -109,12 +120,15 @@ const Login = () => {
       });
     }
 
+    if (email.value === "" || password.value === "") {
+      return
+    }
 
     //check validation
     if (!email.isError && !password.isError) {
+      setLoader(true)
+      authSignIn(email.value,password.value,setLoader)
       console.log("passed");
-    } else {
-      console.log("faild");
     }
   };
 
@@ -153,13 +167,15 @@ const Login = () => {
                   onChange={passwordHanlder}
                 />
               </div>
-              <Button color="primary" className="w-100" type="submit">
-                Sign in
+              <Button color="primary" className={loader?"btn-disabled w-100":"w-100"} type="submit">
+                {loader ? <Spinner size="sm"></Spinner> : "Sign in"}
               </Button>
             </Form>
             <p className="text-center">
-              <span className="me-1">Already have an account?</span>
-              <Link to="/register" replace>Sign in instead</Link>
+              <span className="me-1">New on our platform?</span>
+              <Link to="/register" replace>
+                Create an account
+              </Link>
             </p>
           </CardBody>
         </Card>

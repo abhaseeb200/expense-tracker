@@ -11,9 +11,11 @@ import SideNavbar from "../../../components/sideNavbar";
 import CustNavbar from "../../../components/navbar";
 import { useState } from "react";
 import CustomInput from "../../../components/input";
+import TransactionCategoryModal from "../modal";
 
 const Report = () => {
   const [sideBarToggle, setSideBarToggle] = useState(false);
+  const [modal, setModal] = useState(false);
 
   const [date, setDate] = useState({
     value: "",
@@ -21,6 +23,8 @@ const Report = () => {
     messageError: "",
   });
 
+  const toggle = () => setModal(!modal);
+  
   const dateHandler = (e) => {
     if (e.target.value === "") {
       setDate({
@@ -42,6 +46,7 @@ const Report = () => {
       <SideNavbar
         sideBarToggle={sideBarToggle}
         setSideBarToggle={setSideBarToggle}
+        toggle={toggle}
       />
       <div className="layout-page">
         <CustNavbar setSideBarToggle={setSideBarToggle} />
@@ -90,6 +95,7 @@ const Report = () => {
           </CardBody>
         </Card>
       </div>
+      <TransactionCategoryModal modal={modal} toggle={toggle}/>
     </div>
   );
 };

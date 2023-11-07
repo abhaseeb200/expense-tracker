@@ -7,15 +7,18 @@ import {
   Container,
   Label,
   Navbar,
+  Table,
 } from "reactstrap";
 import SideNavbar from "../../../components/sideNavbar";
 import CustNavbar from "../../../components/navbar";
 import { useState } from "react";
 import CustomInput from "../../../components/input";
 import Select from "../../../components/selectInput/select";
+import TransactionCategoryModal from "../modal";
 
 const Transaction = () => {
   const [sideBarToggle, setSideBarToggle] = useState(false);
+  const [modal, setModal] = useState(false);
 
   const [name, setName] = useState({
     value: "",
@@ -35,11 +38,15 @@ const Transaction = () => {
     messageError: "",
   });
 
+  const [transactionSelect, setTransactionSelect] = useState("expense");
+
   const [category, setCategory] = useState({
     value: "",
     isError: false,
     messageError: "",
   });
+
+  const toggle = () => setModal(!modal);
 
   const nameHandler = (e) => {
     let expVal = e.target.value.trim().toLowerCase();
@@ -103,8 +110,8 @@ const Transaction = () => {
   };
 
   const categoryHandler = (e) => {
+    setCategory(e.target.value);
     if (e.target.selectedIndex === 0) {
-      console.log(e.target.value);
       setCategory({
         value: e.target.value,
         isError: true,
@@ -117,6 +124,15 @@ const Transaction = () => {
         messageError: "",
       });
     }
+  };
+
+  const selectTransactionHandler = (e) => {
+    setTransactionSelect(e.target.value);
+    setCategory({
+      value: "",
+      isError: false,
+      messageError: "",
+    });
   };
 
   const addTransacion = () => {
@@ -142,7 +158,7 @@ const Transaction = () => {
       });
     }
     if (category.value === "") {
-      console.log(category.selectedIndex, category.value );
+      console.log(category.selectedIndex, category.value);
       setCategory({
         value: category.value,
         isError: true,
@@ -150,8 +166,13 @@ const Transaction = () => {
       });
     }
 
-    if (name.value === "" || date.value === "" || amount.value === "" || category.selectedIndex === 0) {
-      return
+    if (
+      name.value === "" ||
+      date.value === "" ||
+      amount.value === "" ||
+      category.selectedIndex === 0
+    ) {
+      return;
     }
 
     //check validation
@@ -162,11 +183,38 @@ const Transaction = () => {
     }
   };
 
+  let tempTransactionCategory = [
+    {
+      type: "expense",
+      name: "bills",
+    },
+    {
+      type: "expense",
+      name: "retails",
+    },
+    {
+      type: "income",
+      name: "sallary",
+    },
+    {
+      type: "income",
+      name: "freelancer",
+    },
+  ];
+
+  let expenseCategoryData = tempTransactionCategory.filter(
+    (i) => i.type === "expense"
+  );
+  let incomeCategoryData = tempTransactionCategory.filter(
+    (i) => i.type === "income"
+  );
+
   return (
     <div className="container-lg">
       <SideNavbar
         sideBarToggle={sideBarToggle}
         setSideBarToggle={setSideBarToggle}
+        toggle={toggle}
       />
       <div className="layout-page">
         <CustNavbar setSideBarToggle={setSideBarToggle} />
@@ -189,7 +237,10 @@ const Transaction = () => {
             </div>
             <div className="col-md-4 mb-3">
               <Label>Transaction Type</Label>
-              <Select>
+              <Select
+                onChange={selectTransactionHandler}
+                value={transactionSelect}
+              >
                 <option value="expense">Expense</option>
                 <option value="income">Income</option>
               </Select>
@@ -202,11 +253,24 @@ const Transaction = () => {
                 isError={category.isError}
                 messageError={category.messageError}
               >
-                <option selected value="">
+                <option hidden selected value="">
                   Select Category
                 </option>
-                <option value="rent">Rent</option>
-                <option value="home">Home</option>
+                {transactionSelect === "income"
+                  ? incomeCategoryData.map((item, ind) => {
+                      return (
+                        <option key={ind} value={item.name}>
+                          {item.name}
+                        </option>
+                      );
+                    })
+                  : expenseCategoryData.map((item, ind) => {
+                      return (
+                        <option key={ind} value={item.name}>
+                          {item.name}
+                        </option>
+                      );
+                    })}
               </Select>
             </div>
             <div className="col-md-6 mb-3">
@@ -246,10 +310,51 @@ const Transaction = () => {
             <CardTitle>Transaction Data</CardTitle>
           </CardBody>
           <CardBody className="pt-0">
-            <CardText className="no-data">No Data found</CardText>
+            <Table bordered>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Type</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Mark</td>
+                  <td>Otto</td>
+                  <td>@mdo</td>
+                  <td>@mdo</td>
+                  <td>@mdo</td>
+                </tr>
+                <tr>
+                  <th scope="row">2</th>
+                  <td>Jacob</td>
+                  <td>Thornton</td>
+                  <td>@fat</td>
+                  <td>@fat</td>
+                  <td>@fat</td>
+                </tr>
+                <tr>
+                  <th scope="row">3</th>
+                  <td>Larry</td>
+                  <td>the Bird</td>
+                  <td>@twitter</td>
+                  <td>@twitter</td>
+                  <td>@twitter</td>
+                </tr>
+              </tbody>
+            </Table>
           </CardBody>
+          {/* <CardBody className="pt-0">
+            <CardText className="no-data">No Data found</CardText>
+          </CardBody> */}
         </Card>
       </div>
+      <TransactionCategoryModal modal={modal} toggle={toggle} />
     </div>
   );
 };

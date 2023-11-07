@@ -15,6 +15,7 @@ import {
 import "./style.css";
 import { useState } from "react";
 import "boxicons";
+import { authLogout } from "../../config/service/firebase/auth";
 
 const CustNavbar = ({ setSideBarToggle, direction, ...args }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -61,7 +62,7 @@ const CustNavbar = ({ setSideBarToggle, direction, ...args }) => {
                   <img src="https://firebasestorage.googleapis.com/v0/b/expense-tracker-3d459.appspot.com/o/profile%2Fasana.png?alt=media&token=212bfdaa-91a9-4283-acf6-b0ca2e79f02f" />
                   <span className="ms-2">admin123</span>
                 </DropdownItem>
-                <DropdownItem className="logout-btn">
+                <DropdownItem className="logout-btn" onClick={authLogout}>
                   <box-icon name="power-off" color="#697a8d" ></box-icon><span className="ms-2">Log Out</span>
                 </DropdownItem>
               </DropdownMenu>

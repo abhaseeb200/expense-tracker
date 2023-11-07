@@ -1,10 +1,10 @@
 import './App.css'
-import Confiq from './confiq'
+import Config from './config/router'
 
 function App() {
   return (
     <>
-      <Confiq/>
+      <Config/>
     </>
   )
 }
