@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, CardText, CardTitle, Container, Label } from "reactstrap";
+import { Button, Card, CardBody, CardText, CardTitle, Container, Label, Table } from "reactstrap";
 import SideNavbar from "../../../components/sideNavbar";
 import CustNavbar from "../../../components/navbar";
 import { useState } from "react";
@@ -185,6 +185,24 @@ const Budget = () => {
         <Card className="mt-4">
           <CardBody className="pb-0">
             <CardTitle>Budget Goals</CardTitle>
+          </CardBody>
+          <CardBody className="pt-0">
+          <Table bordered>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Date</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>1</th>
+                  <td>Mark</td>
+                  <td>Otto</td>
+                </tr>
+              </tbody>
+          </Table>
           </CardBody>
           <CardBody className="pt-0">
             <CardText className="no-data">No Data found</CardText>

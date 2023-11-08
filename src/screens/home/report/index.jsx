@@ -6,6 +6,7 @@ import {
   CardTitle,
   Container,
   Label,
+  Table,
 } from "reactstrap";
 import SideNavbar from "../../../components/sideNavbar";
 import CustNavbar from "../../../components/navbar";
@@ -24,7 +25,7 @@ const Report = () => {
   });
 
   const toggle = () => setModal(!modal);
-  
+
   const dateHandler = (e) => {
     if (e.target.value === "") {
       setDate({
@@ -91,11 +92,48 @@ const Report = () => {
             <CardText className="mt-5">
               Transaction Reports Based On Categories
             </CardText>
-            <CardText className="no-data">No Data found</CardText>
+            <div>
+              <Table bordered>
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th>1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>Otto</td>
+                    <td>Otto</td>
+                  </tr>
+                  <tr>
+                    <td className="fw-bold" colSpan="5">
+                      <div className="d-flex justify-content-between">
+                        <span>Total Expenses</span>
+                        <span>0</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="fw-bold" colSpan="5">
+                      <div className="d-flex justify-content-between">
+                        <span>Total Income</span>
+                        <span>0</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </Table>
+            </div>
           </CardBody>
         </Card>
       </div>
-      <TransactionCategoryModal modal={modal} toggle={toggle}/>
+      <TransactionCategoryModal modal={modal} toggle={toggle} />
     </div>
   );
 };

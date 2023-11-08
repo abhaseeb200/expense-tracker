@@ -6,9 +6,11 @@ import {
   ModalBody,
   ModalFooter,
   Label,
+  Spinner,
 } from "reactstrap";
 import CustomInput from "../../../components/input";
 import Select from "../../../components/selectInput/select";
+import { setTransaction, setTransactionCategory } from "../../../config/service/firebase/transaction";
 
 function TransactionCategoryModal({ args, modal, toggle }) {
   const [name, setName] = useState({
@@ -22,6 +24,8 @@ function TransactionCategoryModal({ args, modal, toggle }) {
     isError: false,
     messageError: "",
   });
+
+  const [loader, setLoader] = useState(false);
 
   const nameHandler = (e) => {
     let expVal = e.target.value.trim().toLowerCase();
@@ -81,6 +85,21 @@ function TransactionCategoryModal({ args, modal, toggle }) {
     if (name.value === "" || category.selectedIndex === 0) {
       return;
     }
+
+    //check validation
+    if (!name.isError && !category.isError) {
+      setLoader(true);
+      setTransactionCategory(name.value, category.value)
+        .then((res) => {
+          console.log(res);
+          setLoader(false);
+          restAllFields()
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoader(false);
+        });
+    }
   };
 
   const restAllFields = () => {
@@ -127,7 +146,7 @@ function TransactionCategoryModal({ args, modal, toggle }) {
               isError={category.isError}
               messageError={category.messageError}
             >
-              <option value="default" hidden="" selected="">
+              <option value="default" hidden>
                 Select Transaction
               </option>
               <option value="expense">Expense</option>
@@ -145,8 +164,12 @@ function TransactionCategoryModal({ args, modal, toggle }) {
           >
             Cancel
           </Button>
-          <Button color="primary" onClick={() => addCategory()}>
-            Add Category
+          <Button
+            color="primary"
+            className={loader ? "btn-disabled cust-button" : "cust-button"}
+            onClick={addCategory}
+          >
+            {loader ? <Spinner size="sm"></Spinner> : "Add Category"}
           </Button>
         </ModalFooter>
       </Modal>

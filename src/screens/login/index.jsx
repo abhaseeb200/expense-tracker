@@ -22,13 +22,10 @@ const Login = ({user}) => {
   const navigate = useNavigate();
   
   useEffect(() => {
-      if (!user) {
-       console.log("user is not found");
-      } else {
-       console.log("user is found");
-       navigate("/",{replace:true})
+      if (user) {
+        navigate("/",{replace:true})
       }
-  }, [user]);
+  }, []);
 
   const emailHanlder = (e) => {
     if (e.target.value.trim() === "") {
@@ -127,8 +124,16 @@ const Login = ({user}) => {
     //check validation
     if (!email.isError && !password.isError) {
       setLoader(true)
-      authSignIn(email.value,password.value,setLoader)
-      console.log("passed");
+      authSignIn(email.value,password.value)
+      .then((res)=> {
+        setLoader(false)
+        let user = auth.currentUser
+        localStorage.setItem("currentUser",user.uid)
+        navigate("/" ,{ replace: true })
+      }).catch((err)=>{
+        console.log(err);
+        setLoader(false)
+      })
     }
   };
 

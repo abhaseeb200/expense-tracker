@@ -16,14 +16,30 @@ import Account from "../../screens/home/account-setting";
 import { useEffect, useState } from "react";
 import ProtectRoute from "../protectedRoute";
 import { auth } from "../firebaseConfig";
+import { onAuthStateChanged } from 'firebase/auth';
 
 const Config = () => {
-  const [user, setUser] = useState("ss");
+  let currentLocalUser = localStorage.getItem("currentUser")
+  const [localUser , setLocalUser] = useState(currentLocalUser);
+
+  useEffect(()=>{
+    // auth.onAuthStateChanged((currentUser)=> {
+    //     console.log(currentUser);
+    // })
+    // console.log(localUser);
+    // if (localUser) {
+    //   setLocalUser(currentLocalUser)
+    // } else {
+    //   setLocalUser(null)
+    // }
+  },[])
+  
+
 
   return (
     <Router>
       <Routes>
-        <Route element={<ProtectRoute user={user} setUser={setUser} />}>
+        <Route element={<ProtectRoute localUser={localUser} setLocalUser={setLocalUser} />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/transaction" element={<Transaction />} />
           <Route path="/budget" element={<Budget />} />
@@ -32,11 +48,11 @@ const Config = () => {
         </Route>
         <Route
           path="/login"
-          element={<Login user={user} setUser={setUser} />}
+          element={<Login localUser={localUser} setLocalUser={setLocalUser} />}
         />
         <Route
           path="/register"
-          element={<Register user={user} setUser={setUser} />}
+          element={<Register localUser={localUser} setLocalUser={setLocalUser} />}
         />
       </Routes>
     </Router>

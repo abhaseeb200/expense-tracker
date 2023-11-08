@@ -5,20 +5,36 @@ import {
   CardText,
   CardTitle,
   Container,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Label,
   Navbar,
+  Spinner,
   Table,
 } from "reactstrap";
 import SideNavbar from "../../../components/sideNavbar";
 import CustNavbar from "../../../components/navbar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomInput from "../../../components/input";
 import Select from "../../../components/selectInput/select";
 import TransactionCategoryModal from "../modal";
+import "boxicons";
+import {
+  getTransaction,
+  getTransactionCategory,
+  setTransaction,
+} from "../../../config/service/firebase/transaction";
 
-const Transaction = () => {
+const Transaction = ({ direction, ...args }) => {
   const [sideBarToggle, setSideBarToggle] = useState(false);
   const [modal, setModal] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [transactionData, setTransactionData] = useState([]);
+  const [transactionCategoryData, settransactionCategoryData] = useState([]);
+  const [loader,setLoader] = useState(false)
+  const [tableLoader,setTableLoader] = useState(true)
 
   const [name, setName] = useState({
     value: "",
@@ -45,6 +61,26 @@ const Transaction = () => {
     isError: false,
     messageError: "",
   });
+
+  useEffect(() => {
+    getTransaction().then((res) => {
+      res.forEach((element) => {
+        transactionData.push(element.data())
+      });
+      setTransactionData([...transactionData]);
+      setTableLoader(false)
+    });
+
+    getTransactionCategory().then((res)=>{
+      res.forEach((element)=>{
+        console.log(element.data());
+        transactionCategoryData.push(element.data())
+      })
+      settransactionCategoryData([...transactionCategoryData])
+    })
+  }, []);
+
+  const toggleDropdown = () => setDropdownOpen((prevState) => !prevState);
 
   const toggle = () => setModal(!modal);
 
@@ -158,7 +194,6 @@ const Transaction = () => {
       });
     }
     if (category.value === "") {
-      console.log(category.selectedIndex, category.value);
       setCategory({
         value: category.value,
         isError: true,
@@ -177,35 +212,51 @@ const Transaction = () => {
 
     //check validation
     if (!name.isError && !date.isError && !amount.isError) {
+      setLoader(true)
       console.log("passed");
-    } else {
-      console.log("faild");
+      setTransaction(
+        name.value,
+        category.value,
+        date.value,
+        amount.value,
+        transactionSelect
+      )
+        .then((res) => {
+          console.log(res);
+          setLoader(false)
+          getTransaction()
+        })
+        .catch((err) => {
+          setLoader(false)
+          console.log(err);
+        });
     }
   };
 
-  let tempTransactionCategory = [
-    {
-      type: "expense",
-      name: "bills",
-    },
-    {
-      type: "expense",
-      name: "retails",
-    },
-    {
-      type: "income",
-      name: "sallary",
-    },
-    {
-      type: "income",
-      name: "freelancer",
-    },
-  ];
+  // let tempTransactionCategory = [
+  //   {
+  //     type: "expense",
+  //     name: "bills",
+  //   },
+  //   {
+  //     type: "expense",
+  //     name: "retails",
+  //   },
+  //   {
+  //     type: "income",
+  //     name: "sallary",
+  //   },
+  //   {
+  //     type: "income",
+  //     name: "freelancer",
+  //   },
+  // ];
 
-  let expenseCategoryData = tempTransactionCategory.filter(
+  let expenseCategoryData = transactionCategoryData.filter(
     (i) => i.type === "expense"
   );
-  let incomeCategoryData = tempTransactionCategory.filter(
+  console.log(transactionCategoryData);
+  let incomeCategoryData = transactionCategoryData.filter(
     (i) => i.type === "income"
   );
 
@@ -253,7 +304,7 @@ const Transaction = () => {
                 isError={category.isError}
                 messageError={category.messageError}
               >
-                <option hidden selected value="">
+                <option value="" hidden>
                   Select Category
                 </option>
                 {transactionSelect === "income"
@@ -296,8 +347,8 @@ const Transaction = () => {
               />
             </div>
             <div className="col-md-12 w-100">
-              <Button color="primary" className="w-100" onClick={addTransacion}>
-                Add Transaction
+              <Button color="primary" className={loader ? "btn-disabled w-100" : "w-100"} onClick={addTransacion}>
+                {loader?<Spinner size="sm"></Spinner>:"Add Transaction"}
               </Button>
             </div>
           </CardBody>
@@ -310,7 +361,7 @@ const Transaction = () => {
             <CardTitle>Transaction Data</CardTitle>
           </CardBody>
           <CardBody className="pt-0">
-            <Table bordered>
+           {tableLoader? <div className="no-data"> <Spinner></Spinner> </div> :<Table bordered>
               <thead>
                 <tr>
                   <th>Name</th>
@@ -322,32 +373,64 @@ const Transaction = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                  <td>@mdo</td>
-                  <td>@mdo</td>
-                </tr>
-                <tr>
-                  <th scope="row">2</th>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>@fat</td>
-                  <td>@fat</td>
-                  <td>@fat</td>
-                </tr>
-                <tr>
-                  <th scope="row">3</th>
-                  <td>Larry</td>
-                  <td>the Bird</td>
-                  <td>@twitter</td>
-                  <td>@twitter</td>
-                  <td>@twitter</td>
-                </tr>
+                {transactionData.map((item, ind) => {
+                  return (
+                    <tr key={ind}>
+                      <td>{item.name}</td>
+                      <td>{item.category}</td>
+                      <td>{item.date}</td>
+                      <td>{item.amount}</td>
+                      <td>{item.type}</td>
+                      <td className="text-end">
+                        <Dropdown
+                          isOpen={dropdownOpen}
+                          toggle={toggleDropdown}
+                          direction={direction}
+                        >
+                          <DropdownToggle className="p-0 bg-white border-0">
+                            <box-icon
+                              name="dots-vertical-rounded"
+                              color="#697a8d"
+                              style={{ width: "18px" }}
+                            ></box-icon>
+                          </DropdownToggle>
+                          <DropdownMenu {...args}>
+                            <DropdownItem
+                              style={{
+                                padding: "9px 20px",
+                                display: "inline-flex",
+                                color: "#697a8d",
+                              }}
+                            >
+                              <box-icon
+                                name="trash"
+                                color="#697a8d"
+                                style={{ width: "18px", marginRight: "6px" }}
+                              ></box-icon>
+                              Delete
+                            </DropdownItem>
+                            <DropdownItem
+                              style={{
+                                padding: "9px 20px",
+                                display: "inline-flex",
+                                color: "#697a8d",
+                              }}
+                            >
+                              <box-icon
+                                name="edit-alt"
+                                color="#697a8d"
+                                style={{ width: "18px", marginRight: "6px" }}
+                              ></box-icon>
+                              Edit
+                            </DropdownItem>
+                          </DropdownMenu>
+                        </Dropdown>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
-            </Table>
+            </Table>}
           </CardBody>
           {/* <CardBody className="pt-0">
             <CardText className="no-data">No Data found</CardText>

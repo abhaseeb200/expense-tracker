@@ -10,26 +10,48 @@ import {
 } from "reactstrap";
 import SideNavbar from "../../../components/sideNavbar";
 import CustNavbar from "../../../components/navbar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomInput from "../../../components/input";
 import TransactionCategoryModal from "../modal";
+import getUserByID from "../../../config/service/firebase/getUserByID";
+import updateUser from "../../../config/service/firebase/updateUser";
 
 const Account = () => {
   const [sideBarToggle, setSideBarToggle] = useState(false);
   const [modal, setModal] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("admin@gmail.com");
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [loader, setLoader] = useState(false);
   const [username, setUsername] = useState({
     value: "",
     isError: false,
     messageError: "",
   });
-  
+
+  useEffect(() => {
+    setLoader(true);
+    getUserByID().then((res) => {
+      res.forEach((element) => {
+        setLoader(false);
+        setEmail(element.data().email);
+        setUsername({
+          value: element.data().username,
+          isError: false,
+          messageError: "",
+        });
+        setFirstName(element.data().fname);
+        setLastName(element.data().lname);
+        setPhone(element.data().phone);
+        setAddress(element.data().address);
+      });
+    });
+  }, []);
+
   const toggle = () => setModal(!modal);
-  
+
   const firstNameHandler = (e) => {
     setFirstName(e.target.value);
   };
@@ -54,7 +76,9 @@ const Account = () => {
     setAddress(e.target.value);
   };
 
-  const saveChangesHanlder = () => {};
+  const saveChangesHanlder = () => {
+    updateUser()
+  };
 
   return (
     <div className="container-lg">
@@ -77,7 +101,7 @@ const Account = () => {
               />
               <div className="button-wrapper">
                 <label className="btn btn-primary me-2 mb-4">
-                  <CustomInput type="file"/>
+                  <CustomInput type="file" />
                   <span className="d-block text-white">Upload new photo</span>
                 </label>
                 <p className="text-muted mb-0">Allowed JPG, GIF or PNG.</p>
@@ -154,7 +178,7 @@ const Account = () => {
           </CardBody>
         </Card>
       </div>
-      <TransactionCategoryModal modal={modal} toggle={toggle}/>
+      <TransactionCategoryModal modal={modal} toggle={toggle} />
     </div>
   );
 };

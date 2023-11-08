@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import CustomInput from "../../components/input";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { authSignUp } from "../../config/service/firebase/auth.js";
+import { db } from "../../config/firebaseConfig.js";
 
 const Register = () => {
   const [username, setUsername] = useState({
@@ -32,9 +33,10 @@ const Register = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // if (user) {
-    //   navigate("/" ,{ replace: true })
-    // }
+    let user = localStorage.getItem("currentUser")
+      if (user) {
+        navigate("/",{replace:true})
+      }
   }, []);
 
   const usernameHanlder = (e) => {
@@ -233,8 +235,31 @@ const Register = () => {
       !confirmPassword.isError
     ) {
       setLoader(true);
-      authSignUp(email.value, password.value,username.value,setLoader);
-      console.log("pased");
+      authSignUp(email.value, password.value)
+        .then((userCredential) => {
+          let user = userCredential.user;
+          localStorage.setItem("currentUser",user.uid)
+          db.collection("users")
+            .add({
+              username: username.value,
+              email: email.value,
+              userId: user.uid,
+              fname: "",
+              lname: "",
+              phone: "",
+              profileURL: "",
+              address: "",
+            })
+            .then((res) => {
+              console.log(res);
+              setLoader(false)
+              navigate("/" ,{ replace: true })
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoader(false);
+        });
     }
   };
 
@@ -295,7 +320,11 @@ const Register = () => {
                   onChange={confirmPasswordHanlder}
                 />
               </div>
-              <Button color="primary" className={loader?"btn-disabled w-100":"w-100"} type="submit">
+              <Button
+                color="primary"
+                className={loader ? "btn-disabled w-100" : "w-100"}
+                type="submit"
+              >
                 {loader ? <Spinner size="sm"></Spinner> : "Sign up"}
               </Button>
             </Form>
