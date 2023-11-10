@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { auth } from "../firebaseConfig";
 
-const ProtectRoute = ({ localUser }) => {
-  console.log(localUser,"local user");
-  if (!localUser) {
+const ProtectRoute = ({ user }) => {
+  console.log(user,"local user PRIVATE");
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
   return <Outlet />;

@@ -1,14 +1,27 @@
-import { Button, Card, CardBody, CardText, CardTitle, Container, Label, Table } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardText,
+  CardTitle,
+  Container,
+  Label,
+  Spinner,
+  Table,
+} from "reactstrap";
 import SideNavbar from "../../../components/sideNavbar";
 import CustNavbar from "../../../components/navbar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomInput from "../../../components/input";
 import TransactionCategoryModal from "../modal";
+import { getBudget, setBudget } from "../../../config/service/firebase/budget";
 
 const Budget = () => {
   const [sideBarToggle, setSideBarToggle] = useState(false);
   const [modal, setModal] = useState(false);
-
+  const [loader, setLoader] = useState(false);
+  const [tableLoader, setTableLoader] = useState(true);
+  const [budgetData, setBudgetData] = useState([]);
 
   const [name, setName] = useState({
     value: "",
@@ -27,8 +40,6 @@ const Budget = () => {
     isError: false,
     messageError: "",
   });
-
-  const toggle = () => setModal(!modal);
 
   const nameHandler = (e) => {
     let expVal = e.target.value.trim().toLowerCase();
@@ -91,6 +102,12 @@ const Budget = () => {
     }
   };
 
+  useEffect(() => {
+    getBudgetHandler();
+  }, []);
+
+  const toggle = () => setModal(!modal);
+
   const addBudget = () => {
     if (name.value === "") {
       setName({
@@ -115,13 +132,46 @@ const Budget = () => {
     }
 
     if (name.value === "" || date.value === "" || amount.value === "") {
-      return
+      return;
     }
 
     //check validation
     if (!name.isError && !date.isError && !amount.isError) {
-      console.log("passed");
+      setLoader(true);
+      setBudget(name.value, date.value, amount.value)
+        .then((res) => {
+          console.log(res, "done");
+          setLoader(false);
+          getBudgetHandler()
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoader(false);
+        });
     }
+  };
+
+  const getBudgetHandler = () => {
+    getBudget()
+      .then((res) => {
+        let tempBudgetData = [];
+        res.forEach((element) => {
+          tempBudgetData.push(element.data());
+        });
+        setTableLoader(false);
+        setBudgetData(tempBudgetData);
+      })
+      .catch((err) => {
+        setTableLoader(false);
+        console.log(err);
+      });
+  };
+
+  const todayDateAttributeHanlder = () => {
+    let d = new Date();
+    return (
+      d.getFullYear() + "-" + parseInt(d.getMonth() + 1) + "-" + d.getDate()
+    );
   };
 
   return (
@@ -155,6 +205,7 @@ const Budget = () => {
               <CustomInput
                 placeholder=""
                 type="date"
+                max={todayDateAttributeHanlder()}
                 value={date.value}
                 isError={date.isError}
                 messageError={date.messageError}
@@ -173,43 +224,53 @@ const Budget = () => {
               />
             </div>
             <div className="col-md-12 w-100">
-              <Button color="primary" className="w-100" onClick={addBudget}>
-                Add Budget
+              <Button
+                color="primary"
+                className={loader ? "btn-disabled w-100" : "w-100"}
+                onClick={addBudget}
+              >
+                {loader ? <Spinner size="sm"></Spinner> : "Add Budget"}
               </Button>
             </div>
           </CardBody>
-          {/* <CardBody className="pt-0">
-            <CardText className="no-data">No Data found</CardText>
-          </CardBody> */}
         </Card>
         <Card className="mt-4">
           <CardBody className="pb-0">
             <CardTitle>Budget Goals</CardTitle>
           </CardBody>
           <CardBody className="pt-0">
-          <Table bordered>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Date</th>
-                  <th>Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th>1</th>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                </tr>
-              </tbody>
-          </Table>
-          </CardBody>
-          <CardBody className="pt-0">
-            <CardText className="no-data">No Data found</CardText>
+            {tableLoader ? (
+              <div className="no-data">
+                <Spinner></Spinner>
+              </div>
+            ) : budgetData.length ? (
+              <Table bordered>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {budgetData.map((item,ind) => {
+                    return (
+                      <tr key={ind}>
+                        <td>{item.name}</td>
+                        <td>{item.date}</td>
+                        <td>{item.amount}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </Table>
+            ) : (
+              <CardText className="no-data">No Data found</CardText>
+            )}
           </CardBody>
         </Card>
       </div>
-      <TransactionCategoryModal modal={modal} toggle={toggle}/>
+      <TransactionCategoryModal modal={modal} toggle={toggle} />
     </div>
   );
 };

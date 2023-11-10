@@ -142,3 +142,7 @@ h1,
   width: 138px;
   height: 38px;
 }
+
+.w-px-40 {
+  width: 40px !important;
+}

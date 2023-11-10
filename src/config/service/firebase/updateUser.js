@@ -1,12 +1,26 @@
 import { auth, db } from "../../firebaseConfig"
 import getUserByID from "./getUserByID"
 
-const updateUser = (username) => {
-    // getUserByID().then((res) => {
-    //     db.collection("users").doc(res.docs[0].id).update({
-    //         username: username,
-    //     })
-    // })
-
+const updateUser = (firstName,lastName,username,phone,address, docID) => {
+    return db.collection("users").doc(docID).update({
+        fname: firstName,
+        lname: lastName,
+        username: username,
+        address:address,
+        phone:phone,
+    })
 }
-export default updateUser
+
+const updateUserWithImage = (firstName,lastName,username,phone,address, imageURL,docID) => {
+    return db.collection("users").doc(docID).update({
+        fname: firstName,
+        lname: lastName,
+        username: username,
+        address:address,
+        phone:phone,
+        profileURL: imageURL,
+    })
+}
+
+
+export {updateUser, updateUserWithImage}

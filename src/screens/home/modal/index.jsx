@@ -12,7 +12,7 @@ import CustomInput from "../../../components/input";
 import Select from "../../../components/selectInput/select";
 import { setTransaction, setTransactionCategory } from "../../../config/service/firebase/transaction";
 
-function TransactionCategoryModal({ args, modal, toggle }) {
+function TransactionCategoryModal({ args, modal, toggle,getTransactionCategoryHandler }) {
   const [name, setName] = useState({
     value: "",
     isError: false,
@@ -93,6 +93,7 @@ function TransactionCategoryModal({ args, modal, toggle }) {
         .then((res) => {
           console.log(res);
           setLoader(false);
+          getTransactionCategoryHandler()
           restAllFields()
         })
         .catch((err) => {

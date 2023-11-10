@@ -21,12 +21,22 @@ const getTransaction = () => {
         .get()
 }
 
-const deleteTransaction = () => {
-
+const deleteTransaction = (docId) => {
+    return db.collection("transaction")
+    .doc(docId)
+    .delete()
 }
 
-const updateTransaction = () => {
-
+const updateTransaction = (name,type,category,date,amount,docId) => {
+    return db.collection("transaction")
+    .doc(docId)
+    .update({
+        name:name,
+        type:type,
+        category:category,
+        date:date,
+        amount:amount,
+    })
 }
 
 const setTransactionCategory = (name, category) => {

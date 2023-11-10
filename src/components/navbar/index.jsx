@@ -18,12 +18,15 @@ import "boxicons";
 import { authLogout } from "../../config/service/firebase/auth";
 import { useNavigate } from "react-router-dom";
 import getUserByID from "../../config/service/firebase/getUserByID";
+import { auth } from "../../config/firebaseConfig";
+import avatarImg from '../../assets/1.png'
 
-const CustNavbar = ({ setSideBarToggle, direction, ...args }) => {
+const CustNavbar = ({ getUserByIDHandler,setSideBarToggle, direction, ...args }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [username,setUsername] = useState("")
   const [loader,setLoader] = useState(false)
+  const [profileImage,setProfileImage] = useState(false)
   const navigate = useNavigate();
 
   const toggle = () => setDropdownOpen((prevState) => !prevState);
@@ -33,6 +36,7 @@ const CustNavbar = ({ setSideBarToggle, direction, ...args }) => {
     getUserByID().then((res)=> {
       res.forEach(element => {
         setUsername(element.data().username)
+        setProfileImage(element.data().profileURL)
         setLoader(false)
       });
     });
@@ -82,11 +86,11 @@ const CustNavbar = ({ setSideBarToggle, direction, ...args }) => {
               direction={direction}
             >
               <DropdownToggle className="rounded-circle p-0 border-0">
-                <img src="https://firebasestorage.googleapis.com/v0/b/expense-tracker-3d459.appspot.com/o/profile%2Fasana.png?alt=media&token=212bfdaa-91a9-4283-acf6-b0ca2e79f02f" />
+                <img src={profileImage || avatarImg} className="w-px-40 rounded-circle"/>
               </DropdownToggle>
               <DropdownMenu {...args}>
                 <DropdownItem className="user-navbar">
-                  <img src="https://firebasestorage.googleapis.com/v0/b/expense-tracker-3d459.appspot.com/o/profile%2Fasana.png?alt=media&token=212bfdaa-91a9-4283-acf6-b0ca2e79f02f" />
+                  <img src={profileImage || avatarImg} className="w-px-40 rounded-circle" />
                   <span className="ms-2">{username}</span>
                 </DropdownItem>
                 <DropdownItem className="logout-btn" onClick={logoutHanlder}>

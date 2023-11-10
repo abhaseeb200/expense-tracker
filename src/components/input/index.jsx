@@ -3,11 +3,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css'
 import { useState } from "react";
 
-const CustomInput = ({placeholder,type,value,onChange,isError,messageError,disabled}) => {
+const CustomInput = ({placeholder,type,value,onChange,isError,messageError,max,min,disabled}) => {
   
   return (
     <>
       <Input
+      max={max}
+      min={min}
       disabled = {disabled}
       placeholder={placeholder}
       type={type}

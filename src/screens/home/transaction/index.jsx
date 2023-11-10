@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   Card,
   CardBody,
@@ -22,9 +23,11 @@ import Select from "../../../components/selectInput/select";
 import TransactionCategoryModal from "../modal";
 import "boxicons";
 import {
+  deleteTransaction,
   getTransaction,
   getTransactionCategory,
   setTransaction,
+  updateTransaction,
 } from "../../../config/service/firebase/transaction";
 
 const Transaction = ({ direction, ...args }) => {
@@ -32,9 +35,15 @@ const Transaction = ({ direction, ...args }) => {
   const [modal, setModal] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [transactionData, setTransactionData] = useState([]);
-  const [transactionCategoryData, settransactionCategoryData] = useState([]);
-  const [loader,setLoader] = useState(false)
-  const [tableLoader,setTableLoader] = useState(true)
+  const [expenseCategoryData, setExpenseCategoryData] = useState([]);
+  const [incomeCategoryData, setIncomeCategoryData] = useState([]);
+  const [loader, setLoader] = useState(false);
+  const [tableLoader, setTableLoader] = useState(true);
+  const [currentSelect, setCurrentSelect] = useState(false);
+  const [actionLoader, setActionLoader] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [saveLoader, setSaveLoader] = useState(false);
+  const [currentDocID, setCurrentDocID] = useState("");
 
   const [name, setName] = useState({
     value: "",
@@ -63,24 +72,14 @@ const Transaction = ({ direction, ...args }) => {
   });
 
   useEffect(() => {
-    getTransaction().then((res) => {
-      res.forEach((element) => {
-        transactionData.push(element.data())
-      });
-      setTransactionData([...transactionData]);
-      setTableLoader(false)
-    });
-
-    getTransactionCategory().then((res)=>{
-      res.forEach((element)=>{
-        console.log(element.data());
-        transactionCategoryData.push(element.data())
-      })
-      settransactionCategoryData([...transactionCategoryData])
-    })
+    getTransactionHandler();
+    getTransactionCategoryHandler();
   }, []);
 
-  const toggleDropdown = () => setDropdownOpen((prevState) => !prevState);
+  const toggleDropdown = (ind) => {
+    setDropdownOpen((prevState) => !prevState);
+    setCurrentSelect(ind);
+  };
 
   const toggle = () => setModal(!modal);
 
@@ -211,54 +210,184 @@ const Transaction = ({ direction, ...args }) => {
     }
 
     //check validation
-    if (!name.isError && !date.isError && !amount.isError) {
-      setLoader(true)
+    if (
+      !name.isError &&
+      !date.isError &&
+      !amount.isError &&
+      !category.isError
+    ) {
+      setLoader(true);
       console.log("passed");
       setTransaction(
         name.value,
         category.value,
+
         date.value,
         amount.value,
         transactionSelect
       )
         .then((res) => {
           console.log(res);
-          setLoader(false)
-          getTransaction()
+          setLoader(false);
+          getTransactionHandler();
         })
         .catch((err) => {
-          setLoader(false)
+          setLoader(false);
           console.log(err);
         });
     }
   };
 
-  // let tempTransactionCategory = [
-  //   {
-  //     type: "expense",
-  //     name: "bills",
-  //   },
-  //   {
-  //     type: "expense",
-  //     name: "retails",
-  //   },
-  //   {
-  //     type: "income",
-  //     name: "sallary",
-  //   },
-  //   {
-  //     type: "income",
-  //     name: "freelancer",
-  //   },
-  // ];
+  const getTransactionHandler = () => {
+    getTransaction().then((res) => {
+      let tempTransactionData = [];
+      res.forEach((element) => {
+        tempTransactionData.push({
+          docID: element.id,
+          docData: element.data(),
+        });
+      });
+      setTransactionData(tempTransactionData);
+      console.log(tempTransactionData);
+      setTableLoader(false);
+    });
+  };
 
-  let expenseCategoryData = transactionCategoryData.filter(
-    (i) => i.type === "expense"
-  );
-  console.log(transactionCategoryData);
-  let incomeCategoryData = transactionCategoryData.filter(
-    (i) => i.type === "income"
-  );
+  const getTransactionCategoryHandler = () => {
+    let tempExpenseCategoryData = [];
+    let tempIncomeCategoryData = [];
+    getTransactionCategory().then((res) => {
+      res.forEach((element) => {
+        if (element.data().category === "expense") {
+          tempExpenseCategoryData.push(element.data());
+        } else {
+          tempIncomeCategoryData.push(element.data());
+        }
+        console.log(element.data());
+      });
+      setExpenseCategoryData(tempExpenseCategoryData);
+      setIncomeCategoryData(tempIncomeCategoryData);
+    });
+  };
+
+  const deleteItem = (ind, item) => {
+    setActionLoader(true);
+    deleteTransaction(item.docID)
+      .then(() => {
+        console.log("done");
+        setActionLoader(false);
+        getTransactionHandler();
+        resetFeilds();
+        setIsUpdate(false);
+        setDropdownOpen((prevState) => !prevState);
+      })
+      .catch((err) => {
+        console.log(err);
+        setDropdownOpen((prevState) => !prevState);
+      });
+    setDropdownOpen(false);
+  };
+
+  const updateItem = (ind, item) => {
+    console.log(item);
+    setName({
+      value: item.docData.name,
+      isError: false,
+      messageError: "",
+    });
+    setCategory({
+      value: item.docData.category,
+      isError: false,
+      messageError: "",
+    });
+    setTransactionSelect(item.docData.type);
+    setAmount({
+      value: item.docData.amount,
+      isError: false,
+      messageError: "",
+    });
+    setDate({
+      value: item.docData.date,
+      isError: false,
+      messageError: "",
+    });
+    setIsUpdate(true);
+    setCurrentDocID(item.docID);
+  };
+
+  const saveHandler = () => {
+    if (category.value === "") {
+      setCategory({
+        value: category.value,
+        isError: true,
+        messageError: "Please select type",
+      });
+      return
+    }
+    if (
+      !name.isError &&
+      !date.isError &&
+      !amount.isError &&
+      !category.isError
+    ) {
+      setSaveLoader(true);
+      updateTransaction(
+        name.value,
+        transactionSelect,
+        category.value,
+        date.value,
+        amount.value,
+        currentDocID
+      )
+        .then((res) => {
+          console.log(res, "done");
+          setSaveLoader(false);
+          setIsUpdate(false);
+          getTransactionHandler();
+        })
+        .catch((err) => {
+          console.log(err);
+          setSaveLoader(false);
+          setIsUpdate(false);
+        });
+    }
+  };
+
+  const cancelHanlder = () => {
+    setIsUpdate(false);
+    resetFeilds();
+  };
+
+  const resetFeilds = () => {
+    setName({
+      value: "",
+      isError: false,
+      messageError: "",
+    });
+    setCategory({
+      value: "",
+      isError: false,
+      messageError: "",
+    });
+    setTransactionSelect("expense");
+    setAmount({
+      value: "",
+      isError: false,
+      messageError: "",
+    });
+    setDate({
+      value: "",
+      isError: false,
+      messageError: "",
+    });
+  };
+
+  const todayDateAttributeHanlder = () => {
+    let d = new Date();
+    return (
+      d.getFullYear() + "-" + parseInt(d.getMonth() + 1) + "-" + d.getDate()
+    );
+  };
 
   return (
     <div className="container-lg">
@@ -327,7 +456,7 @@ const Transaction = ({ direction, ...args }) => {
             <div className="col-md-6 mb-3">
               <Label>Select Date</Label>
               <CustomInput
-                placeholder=""
+                max={todayDateAttributeHanlder()}
                 type="date"
                 value={date.value}
                 isError={date.isError}
@@ -346,98 +475,150 @@ const Transaction = ({ direction, ...args }) => {
                 onChange={amountHandler}
               />
             </div>
-            <div className="col-md-12 w-100">
-              <Button color="primary" className={loader ? "btn-disabled w-100" : "w-100"} onClick={addTransacion}>
-                {loader?<Spinner size="sm"></Spinner>:"Add Transaction"}
-              </Button>
-            </div>
+            {isUpdate ? (
+              <>
+                <div className="col-md-6">
+                  <Button
+                    color="primary"
+                    className={saveLoader ? "btn-disabled w-100" : "w-100"}
+                    onClick={() => saveHandler()}
+                  >
+                    {saveLoader ? <Spinner size="sm"></Spinner> : "Save"}
+                  </Button>
+                </div>
+                <div className="col-md-6">
+                  <Button
+                    color="secondary"
+                    outline
+                    onClick={cancelHanlder}
+                    className="w-100"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="col-md-12 w-100">
+                <Button
+                  color="primary"
+                  className={loader ? "btn-disabled w-100" : "w-100"}
+                  onClick={addTransacion}
+                >
+                  {loader ? <Spinner size="sm"></Spinner> : "Add Transaction"}
+                </Button>
+              </div>
+            )}
           </CardBody>
-          {/* <CardBody className="pt-0">
-            <CardText className="no-data">No Data found</CardText>
-          </CardBody> */}
         </Card>
         <Card className="mt-4">
           <CardBody className="pb-0">
             <CardTitle>Transaction Data</CardTitle>
           </CardBody>
           <CardBody className="pt-0">
-           {tableLoader? <div className="no-data"> <Spinner></Spinner> </div> :<Table bordered>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Category</th>
-                  <th>Date</th>
-                  <th>Amount</th>
-                  <th>Type</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {transactionData.map((item, ind) => {
-                  return (
-                    <tr key={ind}>
-                      <td>{item.name}</td>
-                      <td>{item.category}</td>
-                      <td>{item.date}</td>
-                      <td>{item.amount}</td>
-                      <td>{item.type}</td>
-                      <td className="text-end">
-                        <Dropdown
-                          isOpen={dropdownOpen}
-                          toggle={toggleDropdown}
-                          direction={direction}
-                        >
-                          <DropdownToggle className="p-0 bg-white border-0">
-                            <box-icon
-                              name="dots-vertical-rounded"
-                              color="#697a8d"
-                              style={{ width: "18px" }}
-                            ></box-icon>
-                          </DropdownToggle>
-                          <DropdownMenu {...args}>
-                            <DropdownItem
-                              style={{
-                                padding: "9px 20px",
-                                display: "inline-flex",
-                                color: "#697a8d",
-                              }}
-                            >
+            {tableLoader ? (
+              <div className="no-data">
+                {" "}
+                <Spinner></Spinner>{" "}
+              </div>
+            ) : transactionData.length ? (
+              <Table bordered>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transactionData.map((item, ind) => {
+                    return (
+                      <tr key={ind}>
+                        <td>{item.docData.name}</td>
+                        <td>{item.docData.category}</td>
+                        <td>{item.docData.date}</td>
+                        <td>{item.docData.amount}</td>
+                        <td>
+                          {item.docData.type === "expense" ? (
+                            <Badge color="danger">{item.docData.type}</Badge>
+                          ) : (
+                            <Badge color="primary">{item.docData.type}</Badge>
+                          )}
+                        </td>
+                        <td className="text-end">
+                          <Dropdown
+                            isOpen={currentSelect === ind && dropdownOpen}
+                            toggle={() => toggleDropdown(ind)}
+                            direction={direction}
+                          >
+                            <DropdownToggle className="p-0 bg-white border-0">
                               <box-icon
-                                name="trash"
+                                name="dots-vertical-rounded"
                                 color="#697a8d"
-                                style={{ width: "18px", marginRight: "6px" }}
+                                style={{ width: "18px" }}
                               ></box-icon>
-                              Delete
-                            </DropdownItem>
-                            <DropdownItem
-                              style={{
-                                padding: "9px 20px",
-                                display: "inline-flex",
-                                color: "#697a8d",
-                              }}
-                            >
-                              <box-icon
-                                name="edit-alt"
-                                color="#697a8d"
-                                style={{ width: "18px", marginRight: "6px" }}
-                              ></box-icon>
-                              Edit
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </Dropdown>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </Table>}
+                            </DropdownToggle>
+                            <DropdownMenu {...args}>
+                              <DropdownItem
+                                onClick={() => deleteItem(ind, item)}
+                                style={{
+                                  padding: "9px 20px",
+                                  display: "inline-flex",
+                                  color: "#697a8d",
+                                }}
+                              >
+                                {actionLoader ? (
+                                  <Spinner size="sm"></Spinner>
+                                ) : (
+                                  <>
+                                    <box-icon
+                                      name="trash"
+                                      color="#697a8d"
+                                      style={{
+                                        width: "18px",
+                                        marginRight: "6px",
+                                      }}
+                                    ></box-icon>
+                                    Delete
+                                  </>
+                                )}
+                              </DropdownItem>
+                              <DropdownItem
+                                onClick={() => updateItem(ind, item)}
+                                style={{
+                                  padding: "9px 20px",
+                                  display: "inline-flex",
+                                  color: "#697a8d",
+                                }}
+                              >
+                                <box-icon
+                                  name="edit-alt"
+                                  color="#697a8d"
+                                  style={{ width: "18px", marginRight: "6px" }}
+                                ></box-icon>
+                                Edit
+                              </DropdownItem>
+                            </DropdownMenu>
+                          </Dropdown>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </Table>
+            ) : (
+              <CardText className="no-data">No Data found</CardText>
+            )}
           </CardBody>
-          {/* <CardBody className="pt-0">
-            <CardText className="no-data">No Data found</CardText>
-          </CardBody> */}
         </Card>
       </div>
-      <TransactionCategoryModal modal={modal} toggle={toggle} />
+      <TransactionCategoryModal
+        modal={modal}
+        toggle={toggle}
+        getTransactionCategoryHandler={getTransactionCategoryHandler}
+      />
     </div>
   );
 };

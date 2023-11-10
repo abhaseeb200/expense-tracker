@@ -7,6 +7,7 @@ import {
   Container,
   Label,
   Navbar,
+  Spinner,
 } from "reactstrap";
 import SideNavbar from "../../../components/sideNavbar";
 import CustNavbar from "../../../components/navbar";
@@ -14,7 +15,12 @@ import { useEffect, useState } from "react";
 import CustomInput from "../../../components/input";
 import TransactionCategoryModal from "../modal";
 import getUserByID from "../../../config/service/firebase/getUserByID";
-import updateUser from "../../../config/service/firebase/updateUser";
+import {
+  updateUser,
+  updateUserWithImage,
+} from "../../../config/service/firebase/updateUser";
+import { storage } from "../../../config/firebaseConfig";
+import avatarImg from '../../../assets/1.png'
 
 const Account = () => {
   const [sideBarToggle, setSideBarToggle] = useState(false);
@@ -23,7 +29,10 @@ const Account = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [upload, setUpload] = useState("");
+  const [imageURL, setImageURL] = useState("");
   const [address, setAddress] = useState("");
+  const [docID, setDocID] = useState("");
   const [loader, setLoader] = useState(false);
   const [username, setUsername] = useState({
     value: "",
@@ -32,10 +41,14 @@ const Account = () => {
   });
 
   useEffect(() => {
-    setLoader(true);
+    getUserByIDHandler();
+  }, []);
+
+  const getUserByIDHandler = () => {
     getUserByID().then((res) => {
       res.forEach((element) => {
-        setLoader(false);
+        console.log(element.data());
+        setDocID(element.id);
         setEmail(element.data().email);
         setUsername({
           value: element.data().username,
@@ -46,9 +59,10 @@ const Account = () => {
         setLastName(element.data().lname);
         setPhone(element.data().phone);
         setAddress(element.data().address);
+        setImageURL(element.data().profileURL);
       });
     });
-  }, []);
+  };
 
   const toggle = () => setModal(!modal);
 
@@ -65,7 +79,37 @@ const Account = () => {
   };
 
   const usernameHandler = (e) => {
-    // setUsername(e.target.value);
+    if (e.target.value.trim() === "") {
+      setUsername({
+        value: e.target.value,
+        isError: true,
+        messageError: "Please enter your username",
+      });
+    } else if (e.target.value.match(/[A-Z]/)) {
+      setUsername({
+        value: e.target.value,
+        isError: true,
+        messageError: "Username must be lowercase letters",
+      });
+    } else if (e.target.value.trim().length <= 3) {
+      setUsername({
+        value: e.target.value,
+        isError: true,
+        messageError: "Username should be greater than 3",
+      });
+    } else if (!e.target.value.trim().match(/^\S*$/)) {
+      setUsername({
+        value: e.target.value,
+        isError: true,
+        messageError: "Username should not contain spaces",
+      });
+    } else {
+      setUsername({
+        value: e.target.value,
+        isError: false,
+        messageError: "",
+      });
+    }
   };
 
   const phoneHandler = (e) => {
@@ -76,8 +120,63 @@ const Account = () => {
     setAddress(e.target.value);
   };
 
-  const saveChangesHanlder = () => {
-    updateUser()
+  const uploadHanlder = (e) => {
+    setUpload(e.target.files[0]);
+    if (e.target.files[0]) {
+      let tempImgURL = URL.createObjectURL(e.target.files[0]);
+      setImageURL(tempImgURL);
+    }
+  };
+  const saveChangesHanlder = async () => {
+    if (username.value === "") {
+      setUsername({
+        value: username.value,
+        isError: true,
+        messageError: "Please enter your username",
+      });
+      return;
+    }
+    if (!username.isError) {
+      let imageFile = upload;
+      if (imageFile) {
+        let url = "";
+        setLoader(true);
+        let storageRef = storage.ref("profile/" + imageFile.name);
+        try {
+          await storageRef.put(imageFile);
+          url = await storageRef.getDownloadURL();
+          await updateUserWithImage(
+            firstName.trim(),
+            lastName.trim(),
+            username.value.trim(),
+            phone.trim(),
+            address.trim(),
+            url,
+            docID
+          );
+          setLoader(false);
+          console.log("Done");
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        setLoader(true);
+        try {
+          await updateUser(
+            firstName.trim(),
+            lastName.trim(),
+            username.value.trim(),
+            phone.trim(),
+            address.trim(),
+            docID
+          );
+          setLoader(false);
+          console.log("done");
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    }
   };
 
   return (
@@ -88,20 +187,20 @@ const Account = () => {
         toggle={toggle}
       />
       <div className="layout-page">
-        <CustNavbar setSideBarToggle={setSideBarToggle} />
+        <CustNavbar setSideBarToggle={setSideBarToggle} getUserByIDHandler={getUserByIDHandler}/>
         <Card className="mt-4">
           <CardBody className="pb-0">
             <CardTitle>Profile Details</CardTitle>
             <div className="d-flex align-items-start align-items-sm-center gap-4">
               <img
-                src="https://firebasestorage.googleapis.com/v0/b/expense-tracker-3d459.appspot.com/o/profile%2Fasana.png?alt=media&token=212bfdaa-91a9-4283-acf6-b0ca2e79f02f"
+                src={imageURL || avatarImg}
                 className="d-block rounded"
                 height="100"
                 width="100"
               />
               <div className="button-wrapper">
                 <label className="btn btn-primary me-2 mb-4">
-                  <CustomInput type="file" />
+                  <CustomInput type="file" onChange={uploadHanlder} />
                   <span className="d-block text-white">Upload new photo</span>
                 </label>
                 <p className="text-muted mb-0">Allowed JPG, GIF or PNG.</p>
@@ -169,10 +268,10 @@ const Account = () => {
             <div className="col-md-12 w-100">
               <Button
                 color="primary"
-                className="w-100"
+                className={loader ? "btn-disabled w-100" : "w-100"}
                 onClick={saveChangesHanlder}
               >
-                Save changes
+                {loader ? <Spinner size="sm"></Spinner> : "Save changes"}
               </Button>
             </div>
           </CardBody>

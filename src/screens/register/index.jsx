@@ -7,7 +7,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { authSignUp } from "../../config/service/firebase/auth.js";
 import { db } from "../../config/firebaseConfig.js";
 
-const Register = () => {
+const Register = ({ user,setUser }) => {
   const [username, setUsername] = useState({
     value: "",
     isError: false,
@@ -33,10 +33,10 @@ const Register = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    let user = localStorage.getItem("currentUser")
-      if (user) {
-        navigate("/",{replace:true})
-      }
+    console.log(user, "local user REGISTER");
+    if (user) {
+      navigate("/", { replace: true });
+    }
   }, []);
 
   const usernameHanlder = (e) => {
@@ -238,7 +238,8 @@ const Register = () => {
       authSignUp(email.value, password.value)
         .then((userCredential) => {
           let user = userCredential.user;
-          localStorage.setItem("currentUser",user.uid)
+          localStorage.setItem("currentUser", user.uid);
+          setUser(user.uid)
           db.collection("users")
             .add({
               username: username.value,
@@ -251,9 +252,9 @@ const Register = () => {
               address: "",
             })
             .then((res) => {
-              console.log(res);
-              setLoader(false)
-              navigate("/" ,{ replace: true })
+              console.log(res,"done");
+              setLoader(false);
+              navigate("/", { replace: true });
             });
         })
         .catch((err) => {
