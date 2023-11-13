@@ -12,6 +12,7 @@ import {
 import { useEffect, useState } from "react";
 import CustomInput from "../../../components/input";
 import { getBudget, setBudget } from "../../../config/service/firebase/budget";
+import { toast } from "react-toastify";
 
 const Budget = () => {
   const [loader, setLoader] = useState(false);
@@ -133,12 +134,13 @@ const Budget = () => {
       setLoader(true);
       setBudget(name.value, date.value, amount.value)
         .then((res) => {
-          console.log(res, "done");
           setLoader(false);
-          getBudgetHandler()
+          getBudgetHandler();
+          toast.success("Profile update successfully!", {
+            autoClose: 1500,
+          });
         })
         .catch((err) => {
-          console.log(err);
           setLoader(false);
         });
     }
@@ -156,7 +158,9 @@ const Budget = () => {
       })
       .catch((err) => {
         setTableLoader(false);
-        console.log(err);
+        toast.error(err, {
+          autoClose: 1500,
+        });
       });
   };
 
@@ -169,74 +173,68 @@ const Budget = () => {
 
   return (
     <>
-      {/* <SideNavbar
-        sideBarToggle={sideBarToggle}
-        setSideBarToggle={setSideBarToggle}
-        toggle={toggle}
-      /> */}
-      <div className="">
-        {/* <CustNavbar setSideBarToggle={setSideBarToggle} /> */}
-        <h5 className="fw-bold py-3 my-3">Budget</h5>
-        <Card className="">
-          <CardBody className="pb-3">
-            <CardTitle>Add Budget Goals</CardTitle>
-          </CardBody>
-          <CardBody className="pt-3 row">
-            <div className="col-md-12 mb-3">
-              <Label>Budget name</Label>
-              <CustomInput
-                placeholder="Bills"
-                type="text"
-                value={name.value}
-                isError={name.isError}
-                messageError={name.messageError}
-                onChange={nameHandler}
-              />
+      <h5 className="fw-bold py-3 my-3">Budget</h5>
+      <Card className="">
+        <CardBody className="pb-3">
+          <CardTitle>Add Budget Goals</CardTitle>
+        </CardBody>
+        <CardBody className="pt-3 row">
+          <div className="col-md-12 mb-3">
+            <Label>Budget name</Label>
+            <CustomInput
+              placeholder="Bills"
+              type="text"
+              value={name.value}
+              isError={name.isError}
+              messageError={name.messageError}
+              onChange={nameHandler}
+            />
+          </div>
+          <div className="col-md-6 mb-3">
+            <Label>Select Date</Label>
+            <CustomInput
+              placeholder=""
+              type="date"
+              max={todayDateAttributeHanlder()}
+              value={date.value}
+              isError={date.isError}
+              messageError={date.messageError}
+              onChange={dateHandler}
+            />
+          </div>
+          <div className="col-md-6 mb-3">
+            <Label>Amount</Label>
+            <CustomInput
+              placeholder="1234"
+              type="number"
+              value={amount.value}
+              isError={amount.isError}
+              messageError={amount.messageError}
+              onChange={amountHandler}
+            />
+          </div>
+          <div className="col-md-12 w-100">
+            <Button
+              color="primary"
+              className={loader ? "btn-disabled w-100" : "w-100"}
+              onClick={addBudget}
+            >
+              {loader ? <Spinner size="sm"></Spinner> : "Add Budget"}
+            </Button>
+          </div>
+        </CardBody>
+      </Card>
+      <Card className="mt-4">
+        <CardBody className="pb-0">
+          <CardTitle>Budget Goals</CardTitle>
+        </CardBody>
+        <CardBody className="pt-0">
+          {tableLoader ? (
+            <div className="no-data">
+              <Spinner></Spinner>
             </div>
-            <div className="col-md-6 mb-3">
-              <Label>Select Date</Label>
-              <CustomInput
-                placeholder=""
-                type="date"
-                max={todayDateAttributeHanlder()}
-                value={date.value}
-                isError={date.isError}
-                messageError={date.messageError}
-                onChange={dateHandler}
-              />
-            </div>
-            <div className="col-md-6 mb-3">
-              <Label>Amount</Label>
-              <CustomInput
-                placeholder="1234"
-                type="number"
-                value={amount.value}
-                isError={amount.isError}
-                messageError={amount.messageError}
-                onChange={amountHandler}
-              />
-            </div>
-            <div className="col-md-12 w-100">
-              <Button
-                color="primary"
-                className={loader ? "btn-disabled w-100" : "w-100"}
-                onClick={addBudget}
-              >
-                {loader ? <Spinner size="sm"></Spinner> : "Add Budget"}
-              </Button>
-            </div>
-          </CardBody>
-        </Card>
-        <Card className="mt-4">
-          <CardBody className="pb-0">
-            <CardTitle>Budget Goals</CardTitle>
-          </CardBody>
-          <CardBody className="pt-0">
-            {tableLoader ? (
-              <div className="no-data">
-                <Spinner></Spinner>
-              </div>
-            ) : budgetData.length ? (
+          ) : budgetData.length ? (
+            <div className="table-responsive">
               <Table bordered>
                 <thead>
                   <tr>
@@ -246,7 +244,7 @@ const Budget = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {budgetData.map((item,ind) => {
+                  {budgetData.map((item, ind) => {
                     return (
                       <tr key={ind}>
                         <td>{item.name}</td>
@@ -257,12 +255,12 @@ const Budget = () => {
                   })}
                 </tbody>
               </Table>
-            ) : (
-              <CardText className="no-data">No Data found</CardText>
-            )}
-          </CardBody>
-        </Card>
-      </div>
+            </div>
+          ) : (
+            <CardText className="no-data">No Data found</CardText>
+          )}
+        </CardBody>
+      </Card>
     </>
   );
 };

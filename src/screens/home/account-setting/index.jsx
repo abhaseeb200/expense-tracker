@@ -18,6 +18,8 @@ import {
 } from "../../../config/service/firebase/updateUser";
 import { storage } from "../../../config/firebaseConfig";
 import avatarImg from '../../../assets/1.png'
+import { useOutletContext } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Account = () => {
   const [firstName, setFirstName] = useState("");
@@ -39,10 +41,11 @@ const Account = () => {
     getUserByIDHandler();
   }, []);
 
+  const [getUserByIDHanlder] = useOutletContext();
+
   const getUserByIDHandler = () => {
     getUserByID().then((res) => {
       res.forEach((element) => {
-        console.log(element.data());
         setDocID(element.id);
         setEmail(element.data().email);
         setUsername({
@@ -59,7 +62,7 @@ const Account = () => {
     });
   };
 
-  const toggle = () => setModal(!modal);
+  // const toggle = () => setModal(!modal);
 
   const firstNameHandler = (e) => {
     setFirstName(e.target.value);
@@ -150,9 +153,14 @@ const Account = () => {
             docID
           );
           setLoader(false);
-          console.log("Done");
+          toast.success("Profile update successfully!",{
+            autoClose: 1500,
+          });
+          getUserByIDHanlder()
         } catch (err) {
-          console.log(err);
+          toast.error(err,{
+            autoClose: 1500,
+          });
         }
       } else {
         setLoader(true);
@@ -166,9 +174,14 @@ const Account = () => {
             docID
           );
           setLoader(false);
-          console.log("done");
+          toast.success("Profile update successfully!",{
+            autoClose: 1500,
+          });
+          getUserByIDHanlder()
         } catch (err) {
-          console.log(err);
+          toast.error(err,{
+            autoClose: 1500,
+          });
         }
       }
     }
@@ -179,7 +192,7 @@ const Account = () => {
       <div>
         <Card className="mt-4">
           <CardBody className="pb-0">
-            <CardTitle>Profile Details</CardTitle>
+            <CardTitle>Profile Details {name}</CardTitle>
             <div className="d-flex align-items-start align-items-sm-center gap-4">
               <img
                 src={imageURL || avatarImg}

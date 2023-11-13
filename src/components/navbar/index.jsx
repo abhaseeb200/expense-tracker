@@ -13,34 +13,25 @@ import {
   UncontrolledDropdown,
 } from "reactstrap";
 import "./style.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "boxicons";
 import { authLogout } from "../../config/service/firebase/auth";
-import { useNavigate } from "react-router-dom";
-import getUserByID from "../../config/service/firebase/getUserByID";
-import { auth } from "../../config/firebaseConfig";
-import avatarImg from '../../assets/1.png'
+import { useNavigate, useOutletContext } from "react-router-dom";
+import avatarImg from "../../assets/1.png";
+import { toast } from "react-toastify";
 
-const CustNavbar = ({ getUserByIDHandler,setSideBarToggle, direction, ...args }) => {
+const CustomNavbar = ({
+  currentUsername,
+  currentProfileImage,
+  setSideBarToggle,
+  direction,
+  ...args
+}) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-  const [username,setUsername] = useState("")
-  const [loader,setLoader] = useState(false)
-  const [profileImage,setProfileImage] = useState(false)
   const navigate = useNavigate();
 
   const toggle = () => setDropdownOpen((prevState) => !prevState);
-
-  useEffect(()=> {
-    setLoader(true)
-    getUserByID().then((res)=> {
-      res.forEach(element => {
-        setUsername(element.data().username)
-        setProfileImage(element.data().profileURL)
-        setLoader(false)
-      });
-    });
-  },[])
 
   window.addEventListener("resize", () => {
     setScreenWidth(window.innerWidth);
@@ -53,10 +44,11 @@ const CustNavbar = ({ getUserByIDHandler,setSideBarToggle, direction, ...args })
         navigate("/login", { replace: true });
       })
       .catch((err) => {
-        console.log(err);
+        toast.error(err,{
+          autoClose: 1500,
+        });
       });
   };
-
 
   return (
     <Card className="w-100 mt-3">
@@ -77,7 +69,7 @@ const CustNavbar = ({ getUserByIDHandler,setSideBarToggle, direction, ...args })
             ) : (
               ""
             )}
-            <span>{loader?"loading...":`Welcome ${username}`}</span>
+            <span>Welcome {currentUsername}</span>
           </div>
           <span>
             <Dropdown
@@ -86,12 +78,18 @@ const CustNavbar = ({ getUserByIDHandler,setSideBarToggle, direction, ...args })
               direction={direction}
             >
               <DropdownToggle className="rounded-circle p-0 border-0">
-                <img src={profileImage || avatarImg} className="w-px-40 rounded-circle"/>
+                <img
+                  src={currentProfileImage || avatarImg}
+                  className="w-px-40 rounded-circle"
+                />
               </DropdownToggle>
               <DropdownMenu {...args}>
                 <DropdownItem className="user-navbar">
-                  <img src={profileImage || avatarImg} className="w-px-40 rounded-circle" />
-                  <span className="ms-2">{username}</span>
+                  <img
+                    src={currentProfileImage || avatarImg}
+                    className="w-px-40 rounded-circle"
+                  />
+                  <span className="ms-2">{currentUsername}</span>
                 </DropdownItem>
                 <DropdownItem className="logout-btn" onClick={logoutHanlder}>
                   <box-icon name="power-off" color="#697a8d"></box-icon>
@@ -106,4 +104,4 @@ const CustNavbar = ({ getUserByIDHandler,setSideBarToggle, direction, ...args })
   );
 };
 
-export default CustNavbar;
+export default CustomNavbar;

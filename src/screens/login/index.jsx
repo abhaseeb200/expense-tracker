@@ -6,6 +6,7 @@ import CustomInput from "../../components/input";
 import { Link, Navigate, redirect, useNavigate } from "react-router-dom";
 import { authSignIn } from "../../config/service/firebase/auth";
 import { auth } from "../../config/firebaseConfig";
+import { toast } from "react-toastify";
 
 const Login = ({ user,setUser }) => {
   const [email, setEmail] = useState({
@@ -22,7 +23,6 @@ const Login = ({ user,setUser }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(user,"local user LOGIN");
     if (user) {
       navigate("/", { replace: true });
     }
@@ -132,16 +132,22 @@ const Login = ({ user,setUser }) => {
           localStorage.setItem("currentUser", user.uid);
           setUser(user.uid)
           navigate("/", { replace: true });
+          toast.success("Login successfully!",{
+            autoClose: 1500,
+          });
         })
         .catch((err) => {
-          console.log(err);
+          toast.error(err.message,{
+            autoClose: 1500,
+          });
           setLoader(false);
         });
     }
   };
 
   return (
-    <div className="authentication-wrapper authentication-basic">
+   <div className="container-lg">
+     <div className="authentication-wrapper authentication-basic py-3">
       <div className="authentication-inner">
         <Card>
           <CardBody>
@@ -193,6 +199,7 @@ const Login = ({ user,setUser }) => {
         </Card>
       </div>
     </div>
+   </div>
   );
 };
 

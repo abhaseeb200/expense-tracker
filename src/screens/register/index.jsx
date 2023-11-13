@@ -6,8 +6,9 @@ import CustomInput from "../../components/input";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { authSignUp } from "../../config/service/firebase/auth.js";
 import { db } from "../../config/firebaseConfig.js";
+import { toast } from "react-toastify";
 
-const Register = ({ user,setUser }) => {
+const Register = ({ user, setUser }) => {
   const [username, setUsername] = useState({
     value: "",
     isError: false,
@@ -33,7 +34,6 @@ const Register = ({ user,setUser }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(user, "local user REGISTER");
     if (user) {
       navigate("/", { replace: true });
     }
@@ -239,7 +239,7 @@ const Register = ({ user,setUser }) => {
         .then((userCredential) => {
           let user = userCredential.user;
           localStorage.setItem("currentUser", user.uid);
-          setUser(user.uid)
+          setUser(user.uid);
           db.collection("users")
             .add({
               username: username.value,
@@ -252,91 +252,100 @@ const Register = ({ user,setUser }) => {
               address: "",
             })
             .then((res) => {
-              console.log(res,"done");
+              toast.success("Register account successfully!", {
+                autoClose: 1500,
+              });
               setLoader(false);
               navigate("/", { replace: true });
             });
         })
         .catch((err) => {
-          console.log(err);
           setLoader(false);
+          toast.error(err, {
+            autoClose: 1500,
+          });
+          toast.error(err.message, {
+            autoClose: 1500,
+          });
         });
     }
   };
 
   return (
-    <div className="authentication-wrapper authentication-basic">
-      <div className="authentication-inner">
-        <Card>
-          <CardBody>
-            <Row className="logo-row">
-              <span className="app-brand-text">
-                <img src={logo} width="45px" /> xpensr
-              </span>
-            </Row>
-            <h4 className="mb-2">Adventure starts here 🚀</h4>
-            <p className="mb-4">Join us and embark on an exciting journey!</p>
-            <Form className="mb-3" onSubmit={signUpHandler}>
-              <div className="mb-3">
-                <Label>Username</Label>
-                <CustomInput
-                  type="text"
-                  placeholder="Enter your username"
-                  value={username.value}
-                  isError={username.isError}
-                  messageError={username.messageError}
-                  onChange={usernameHanlder}
-                />
-              </div>
-              <div className="mb-3">
-                <Label>Email</Label>
-                <CustomInput
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email.value}
-                  isError={email.isError}
-                  messageError={email.messageError}
-                  onChange={emailHanlder}
-                />
-              </div>
-              <div className="mb-3">
-                <Label>Password</Label>
-                <CustomInput
-                  type="password"
-                  placeholder="············"
-                  value={password.value}
-                  isError={password.isError}
-                  messageError={password.messageError}
-                  onChange={passwordHanlder}
-                />
-              </div>
-              <div className="mb-3">
-                <Label>Confirm Password</Label>
-                <CustomInput
-                  type="password"
-                  placeholder="············"
-                  value={confirmPassword.value}
-                  isError={confirmPassword.isError}
-                  messageError={confirmPassword.messageError}
-                  onChange={confirmPasswordHanlder}
-                />
-              </div>
-              <Button
-                color="primary"
-                className={loader ? "btn-disabled w-100" : "w-100"}
-                type="submit"
-              >
-                {loader ? <Spinner size="sm"></Spinner> : "Sign up"}
-              </Button>
-            </Form>
-            <p className="text-center">
-              <span className="me-1">Already have an account?</span>
-              <Link to="/login" replace>
-                Sign in instead
-              </Link>
-            </p>
-          </CardBody>
-        </Card>
+    <div className="container-lg">
+      <div className="authentication-wrapper authentication-basic py-3">
+        <div className="authentication-inner">
+          <Card>
+            <CardBody>
+              <Row className="logo-row">
+                <span className="app-brand-text">
+                  <img src={logo} width="45px" /> xpensr
+                </span>
+              </Row>
+              <h4 className="mb-2">Adventure starts here 🚀</h4>
+              <p className="mb-4">Join us and embark on an exciting journey!</p>
+              <Form className="mb-3" onSubmit={signUpHandler}>
+                <div className="mb-3">
+                  <Label>Username</Label>
+                  <CustomInput
+                    type="text"
+                    placeholder="Enter your username"
+                    value={username.value}
+                    isError={username.isError}
+                    messageError={username.messageError}
+                    onChange={usernameHanlder}
+                  />
+                </div>
+                <div className="mb-3">
+                  <Label>Email</Label>
+                  <CustomInput
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email.value}
+                    isError={email.isError}
+                    messageError={email.messageError}
+                    onChange={emailHanlder}
+                  />
+                </div>
+                <div className="mb-3">
+                  <Label>Password</Label>
+                  <CustomInput
+                    type="password"
+                    placeholder="············"
+                    value={password.value}
+                    isError={password.isError}
+                    messageError={password.messageError}
+                    onChange={passwordHanlder}
+                  />
+                </div>
+                <div className="mb-3">
+                  <Label>Confirm Password</Label>
+                  <CustomInput
+                    type="password"
+                    placeholder="············"
+                    value={confirmPassword.value}
+                    isError={confirmPassword.isError}
+                    messageError={confirmPassword.messageError}
+                    onChange={confirmPasswordHanlder}
+                  />
+                </div>
+                <Button
+                  color="primary"
+                  className={loader ? "btn-disabled w-100" : "w-100"}
+                  type="submit"
+                >
+                  {loader ? <Spinner size="sm"></Spinner> : "Sign up"}
+                </Button>
+              </Form>
+              <p className="text-center">
+                <span className="me-1">Already have an account?</span>
+                <Link to="/login" replace>
+                  Sign in instead
+                </Link>
+              </p>
+            </CardBody>
+          </Card>
+        </div>
       </div>
     </div>
   );

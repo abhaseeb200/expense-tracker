@@ -145,4 +145,12 @@ h1,
 
 .w-px-40 {
   width: 40px !important;
+    height: 40px !important;
+    object-fit: cover;
+}
+
+span.badge {
+  text-transform: uppercase;
+  line-height: 0.75;
+  padding: 0.52em 0.593em;
 }

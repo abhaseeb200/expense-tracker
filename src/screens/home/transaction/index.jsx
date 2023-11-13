@@ -26,12 +26,13 @@ import {
   setTransaction,
   updateTransaction,
 } from "../../../config/service/firebase/transaction";
+import { useOutletContext } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Transaction = ({ direction, ...args }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [transactionData, setTransactionData] = useState([]);
-  const [expenseCategoryData, setExpenseCategoryData] = useState([]);
-  const [incomeCategoryData, setIncomeCategoryData] = useState([]);
   const [loader, setLoader] = useState(false);
   const [tableLoader, setTableLoader] = useState(true);
   const [currentSelect, setCurrentSelect] = useState(false);
@@ -40,6 +41,10 @@ const Transaction = ({ direction, ...args }) => {
   const [saveLoader, setSaveLoader] = useState(false);
   const [currentDocID, setCurrentDocID] = useState("");
 
+  const [getUserByIDHanlder, expenseCategoryData, incomeCategoryData] =
+    useOutletContext();
+
+  useEffect(() => {}, []);
   const [name, setName] = useState({
     value: "",
     isError: false,
@@ -68,15 +73,28 @@ const Transaction = ({ direction, ...args }) => {
 
   useEffect(() => {
     getTransactionHandler();
-    getTransactionCategoryHandler();
   }, []);
+
+  // const notifyAdd = () => {
+  //   toast.success('Transaction added successfully!', {
+  //     position: toast.POSITION.TOP_RIGHT,
+  //     autoClose: 3000, // Auto close the toast after 3000 milliseconds (3 seconds)
+  //   });
+  // };
+
+  const notifyDelete = () => {};
+
+  // const notifyUpdate = () => {
+  //   toast.success('Transaction update successfully!', {
+  //     position: toast.POSITION.TOP_RIGHT,
+  //     autoClose: 3000, // Auto close the toast after 3000 milliseconds (3 seconds)
+  //   });
+  // };
 
   const toggleDropdown = (ind) => {
     setDropdownOpen((prevState) => !prevState);
     setCurrentSelect(ind);
   };
-
-  const toggle = () => setModal(!modal);
 
   const nameHandler = (e) => {
     let expVal = e.target.value.trim().toLowerCase();
@@ -212,7 +230,6 @@ const Transaction = ({ direction, ...args }) => {
       !category.isError
     ) {
       setLoader(true);
-      console.log("passed");
       setTransaction(
         name.value,
         category.value,
@@ -222,13 +239,18 @@ const Transaction = ({ direction, ...args }) => {
         transactionSelect
       )
         .then((res) => {
-          console.log(res);
           setLoader(false);
           getTransactionHandler();
+          resetFeilds();
+          toast.success("Transaction add successfully!", {
+            autoClose: 1500,
+          });
         })
         .catch((err) => {
           setLoader(false);
-          console.log(err);
+          toast.error(err, {
+            autoClose: 1500,
+          });
         });
     }
   };
@@ -243,25 +265,7 @@ const Transaction = ({ direction, ...args }) => {
         });
       });
       setTransactionData(tempTransactionData);
-      console.log(tempTransactionData);
       setTableLoader(false);
-    });
-  };
-
-  const getTransactionCategoryHandler = () => {
-    let tempExpenseCategoryData = [];
-    let tempIncomeCategoryData = [];
-    getTransactionCategory().then((res) => {
-      res.forEach((element) => {
-        if (element.data().category === "expense") {
-          tempExpenseCategoryData.push(element.data());
-        } else {
-          tempIncomeCategoryData.push(element.data());
-        }
-        console.log(element.data());
-      });
-      setExpenseCategoryData(tempExpenseCategoryData);
-      setIncomeCategoryData(tempIncomeCategoryData);
     });
   };
 
@@ -269,22 +273,25 @@ const Transaction = ({ direction, ...args }) => {
     setActionLoader(true);
     deleteTransaction(item.docID)
       .then(() => {
-        console.log("done");
         setActionLoader(false);
         getTransactionHandler();
         resetFeilds();
+        toast.error("Transaction delete successfully!", {
+          autoClose: 1500,
+        });
         setIsUpdate(false);
         setDropdownOpen((prevState) => !prevState);
       })
       .catch((err) => {
-        console.log(err);
+        toast.error(err, {
+          autoClose: 1500,
+        });
         setDropdownOpen((prevState) => !prevState);
       });
     setDropdownOpen(false);
   };
 
   const updateItem = (ind, item) => {
-    console.log(item);
     setName({
       value: item.docData.name,
       isError: false,
@@ -317,7 +324,7 @@ const Transaction = ({ direction, ...args }) => {
         isError: true,
         messageError: "Please select type",
       });
-      return
+      return;
     }
     if (
       !name.isError &&
@@ -335,13 +342,18 @@ const Transaction = ({ direction, ...args }) => {
         currentDocID
       )
         .then((res) => {
-          console.log(res, "done");
           setSaveLoader(false);
           setIsUpdate(false);
           getTransactionHandler();
+          resetFeilds();
+          toast.success("Transaction update successfully!", {
+            autoClose: 1500,
+          });
         })
         .catch((err) => {
-          console.log(err);
+          toast.error(err, {
+            autoClose: 1500,
+          });
           setSaveLoader(false);
           setIsUpdate(false);
         });
@@ -386,136 +398,130 @@ const Transaction = ({ direction, ...args }) => {
 
   return (
     <>
-      {/* <SideNavbar
-        sideBarToggle={sideBarToggle}
-        setSideBarToggle={setSideBarToggle}
-        toggle={toggle}
-      /> */}
-      <div className="">
-        {/* <CustNavbar setSideBarToggle={setSideBarToggle} /> */}
-        <h5 className="fw-bold py-3 my-3">Transaction Entry</h5>
-        <Card>
-          <CardBody className="pb-3">
-            <CardTitle>Add Transaction</CardTitle>
-          </CardBody>
-          <CardBody className="pt-3 row">
-            <div className="col-md-4 mb-3">
-              <Label>name</Label>
-              <CustomInput
-                placeholder="Bills"
-                type="text"
-                value={name.value}
-                isError={name.isError}
-                messageError={name.messageError}
-                onChange={nameHandler}
-              />
-            </div>
-            <div className="col-md-4 mb-3">
-              <Label>Transaction Type</Label>
-              <Select
-                onChange={selectTransactionHandler}
-                value={transactionSelect}
-              >
-                <option value="expense">Expense</option>
-                <option value="income">Income</option>
-              </Select>
-            </div>
-            <div className="col-md-4 mb-3">
-              <Label>Select Category</Label>
-              <Select
-                onChange={categoryHandler}
-                value={category.value}
-                isError={category.isError}
-                messageError={category.messageError}
-              >
-                <option value="" hidden>
-                  Select Category
-                </option>
-                {transactionSelect === "income"
-                  ? incomeCategoryData.map((item, ind) => {
-                      return (
-                        <option key={ind} value={item.name}>
-                          {item.name}
-                        </option>
-                      );
-                    })
-                  : expenseCategoryData.map((item, ind) => {
-                      return (
-                        <option key={ind} value={item.name}>
-                          {item.name}
-                        </option>
-                      );
-                    })}
-              </Select>
-            </div>
-            <div className="col-md-6 mb-3">
-              <Label>Select Date</Label>
-              <CustomInput
-                max={todayDateAttributeHanlder()}
-                type="date"
-                value={date.value}
-                isError={date.isError}
-                messageError={date.messageError}
-                onChange={dateHandler}
-              />
-            </div>
-            <div className="col-md-6 mb-3">
-              <Label>Amount</Label>
-              <CustomInput
-                placeholder="1234"
-                type="number"
-                value={amount.value}
-                isError={amount.isError}
-                messageError={amount.messageError}
-                onChange={amountHandler}
-              />
-            </div>
-            {isUpdate ? (
-              <>
-                <div className="col-md-6">
-                  <Button
-                    color="primary"
-                    className={saveLoader ? "btn-disabled w-100" : "w-100"}
-                    onClick={() => saveHandler()}
-                  >
-                    {saveLoader ? <Spinner size="sm"></Spinner> : "Save"}
-                  </Button>
-                </div>
-                <div className="col-md-6">
-                  <Button
-                    color="secondary"
-                    outline
-                    onClick={cancelHanlder}
-                    className="w-100"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <div className="col-md-12 w-100">
+      <h5 className="fw-bold py-3 my-3">Transaction Entry</h5>
+      <Card>
+        <CardBody className="pb-3">
+          <CardTitle>Add Transaction</CardTitle>
+        </CardBody>
+        <CardBody className="pt-3 row">
+          <div className="col-md-4 mb-3">
+            <Label>name</Label>
+            <CustomInput
+              placeholder="Bills"
+              type="text"
+              value={name.value}
+              isError={name.isError}
+              messageError={name.messageError}
+              onChange={nameHandler}
+            />
+          </div>
+          <div className="col-md-4 mb-3">
+            <Label>Transaction Type</Label>
+            <Select
+              onChange={selectTransactionHandler}
+              value={transactionSelect}
+            >
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
+            </Select>
+          </div>
+          <div className="col-md-4 mb-3">
+            <Label>Select Category</Label>
+            <Select
+              onChange={categoryHandler}
+              value={category.value}
+              isError={category.isError}
+              messageError={category.messageError}
+            >
+              <option value="" hidden>
+                Select Category
+              </option>
+              {transactionSelect === "income"
+                ? incomeCategoryData.map((item, ind) => {
+                    return (
+                      <option key={ind} value={item.name}>
+                        {item.name}
+                      </option>
+                    );
+                  })
+                : expenseCategoryData.map((item, ind) => {
+                    return (
+                      <option key={ind} value={item.name}>
+                        {item.name}
+                      </option>
+                    );
+                  })}
+            </Select>
+          </div>
+          <div className="col-md-6 mb-3">
+            <Label>Select Date</Label>
+            <CustomInput
+              max={todayDateAttributeHanlder()}
+              type="date"
+              value={date.value}
+              isError={date.isError}
+              messageError={date.messageError}
+              onChange={dateHandler}
+            />
+          </div>
+          <div className="col-md-6 mb-3">
+            <Label>Amount</Label>
+            <CustomInput
+              placeholder="1234"
+              type="number"
+              value={amount.value}
+              isError={amount.isError}
+              messageError={amount.messageError}
+              onChange={amountHandler}
+            />
+          </div>
+          {isUpdate ? (
+            <>
+              <div className="col-md-6 mb-2">
                 <Button
                   color="primary"
-                  className={loader ? "btn-disabled w-100" : "w-100"}
-                  onClick={addTransacion}
+                  className={saveLoader ? "btn-disabled w-100" : "w-100"}
+                  onClick={() => saveHandler()}
                 >
-                  {loader ? <Spinner size="sm"></Spinner> : "Add Transaction"}
+                  {saveLoader ? <Spinner size="sm"></Spinner> : "Save"}
                 </Button>
               </div>
-            )}
-          </CardBody>
-        </Card>
-        <Card className="mt-4">
-          <CardBody className="pb-0">
-            <CardTitle>Transaction Data</CardTitle>
-          </CardBody>
-          <CardBody className="pt-0">
-            {tableLoader ? (
-              <div className="no-data">
-                {" "}
-                <Spinner></Spinner>{" "}
+              <div className="col-md-6">
+                <Button
+                  color="secondary"
+                  outline
+                  onClick={cancelHanlder}
+                  className="w-100"
+                >
+                  Cancel
+                </Button>
               </div>
-            ) : transactionData.length ? (
+            </>
+          ) : (
+            <div className="col-md-12 w-100">
+              <Button
+                color="primary"
+                className={loader ? "btn-disabled w-100" : "w-100"}
+                onClick={addTransacion}
+              >
+                {loader ? <Spinner size="sm"></Spinner> : "Add Transaction"}
+              </Button>
+            </div>
+          )}
+        </CardBody>
+      </Card>
+      <Card className="mt-4">
+        <CardBody className="pb-0">
+          <CardTitle>Transaction Data</CardTitle>
+        </CardBody>
+        <CardBody className="pt-0">
+          {tableLoader ? (
+            <div className="no-data">
+              {" "}
+              <Spinner></Spinner>{" "}
+            </div>
+          ) : transactionData.length ? (
+            <div className="table-responsive">
               <Table bordered>
                 <thead>
                   <tr>
@@ -603,17 +609,12 @@ const Transaction = ({ direction, ...args }) => {
                   })}
                 </tbody>
               </Table>
-            ) : (
-              <CardText className="no-data">No Data found</CardText>
-            )}
-          </CardBody>
-        </Card>
-      </div>
-      {/* <TransactionCategoryModal
-        modal={modal}
-        toggle={toggle}
-        getTransactionCategoryHandler={getTransactionCategoryHandler}
-      /> */}
+            </div>
+          ) : (
+            <CardText className="no-data">No Data found</CardText>
+          )}
+        </CardBody>
+      </Card>
     </>
   );
 };

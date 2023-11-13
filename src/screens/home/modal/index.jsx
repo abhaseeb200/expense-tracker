@@ -10,9 +10,22 @@ import {
 } from "reactstrap";
 import CustomInput from "../../../components/input";
 import Select from "../../../components/selectInput/select";
-import { setTransaction, setTransactionCategory } from "../../../config/service/firebase/transaction";
+import {
+  setTransaction,
+  setTransactionCategory,
+} from "../../../config/service/firebase/transaction";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { elements } from "chart.js";
 
-function TransactionCategoryModal({ args, modal, toggle,getTransactionCategoryHandler }) {
+function TransactionCategoryModal({
+  args,
+  modal,
+  toggle,
+  getTransactionCategoryHandler,
+  incomeCategoryData,
+  expenseCategoryData,
+}) {
   const [name, setName] = useState({
     value: "",
     isError: false,
@@ -67,13 +80,33 @@ function TransactionCategoryModal({ args, modal, toggle,getTransactionCategoryHa
   };
 
   const addCategory = () => {
+    let allCategoryData = [...incomeCategoryData, ...expenseCategoryData];
+    let isAready = false;
     if (name.value === "") {
       setName({
         value: name.value,
         isError: true,
         messageError: "Please provide name",
       });
+    } else {
+      for (let i = 0; i < allCategoryData.length; i++) {
+        if (
+          allCategoryData[i].name.replace(/ /g, "").toLowerCase() ===
+          name.value.toLowerCase().replace(/ /g, "")
+        ) {
+          setName({
+            value: name.value,
+            isError: true,
+            messageError: "Name is already exists",
+          });
+          isAready = true;
+          break;
+        } else {
+          isAready = false;
+        }
+      }
     }
+
     if (category.value === "") {
       setCategory({
         value: category.value,
@@ -82,22 +115,31 @@ function TransactionCategoryModal({ args, modal, toggle,getTransactionCategoryHa
       });
     }
 
-    if (name.value === "" || category.selectedIndex === 0) {
+    if (
+      name.value === "" ||
+      category.selectedIndex === 0 ||
+      category.value === "" ||
+      isAready
+    ) {
       return;
     }
 
     //check validation
     if (!name.isError && !category.isError) {
       setLoader(true);
-      setTransactionCategory(name.value, category.value)
+      setTransactionCategory(name.value.trim(), category.value)
         .then((res) => {
-          console.log(res);
           setLoader(false);
-          getTransactionCategoryHandler()
-          restAllFields()
+          getTransactionCategoryHandler();
+          toast.success("Category add successfully!",{
+            autoClose: 1500,
+          });
+          restAllFields();
         })
         .catch((err) => {
-          console.log(err);
+          toast.error(err,{
+            autoClose: 1500,
+          });
           setLoader(false);
         });
     }

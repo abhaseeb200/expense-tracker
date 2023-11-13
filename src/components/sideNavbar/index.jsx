@@ -43,7 +43,7 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
               <div className="menu-inner-shadow"></div>
               <ul className="menu-inner py-1 nav">
                 <li className="menu-item">
-                  <NavLink to="/" className="menu-link nav-link">
+                  <NavLink to="/" className="menu-link nav-link" onClick={()=>setSideBarToggle(false)}>
                     {({ isActive }) => (
                       <>
                         <box-icon
@@ -61,7 +61,7 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
                   <span className="menu-header-text">Transaction</span>
                 </li>
                 <li className="menu-item">
-                  <NavLink to="/transaction" className="menu-link nav-link">
+                  <NavLink to="/transaction" className="menu-link nav-link" onClick={()=>setSideBarToggle(false)}>
                     {({ isActive }) => (
                       <>
                         <box-icon
@@ -97,7 +97,7 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
                   <span className="menu-header-text">Budget</span>
                 </li>
                 <li className="menu-item">
-                  <NavLink to="/budget" className="menu-link nav-link">
+                  <NavLink to="/budget" className="menu-link nav-link" onClick={()=>setSideBarToggle(false)}>
                     {({ isActive }) => (
                       <>
                         <box-icon
@@ -115,7 +115,7 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
                   <span className="menu-header-text">Visualization</span>
                 </li>
                 <li className="menu-item">
-                  <NavLink to="/report" className="menu-link nav-link">
+                  <NavLink to="/report" className="menu-link nav-link" onClick={()=>setSideBarToggle(false)}>
                     {({ isActive }) => (
                       <>
                         <box-icon
@@ -133,7 +133,7 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
                   <span className="menu-header-text">Profile</span>
                 </li>
                 <li className="menu-item">
-                  <NavLink to="/account" className="menu-link nav-link">
+                  <NavLink to="/account" className="menu-link nav-link" onClick={()=>setSideBarToggle(false)}>
                     {({ isActive }) => (
                       <>
                         <box-icon
@@ -177,7 +177,10 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
             <div className="menu-inner-shadow"></div>
             <ul className="menu-inner py-1 nav">
               <li className="menu-item">
-                <NavLink to="/" className="menu-link nav-link">
+                <NavLink
+                  to="/"
+                  className="menu-link nav-link"
+                >
                   {({ isActive }) => (
                     <>
                       <box-icon

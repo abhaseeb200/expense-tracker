@@ -16,27 +16,26 @@ import Account from "../../screens/home/account-setting";
 import { useEffect, useState } from "react";
 import ProtectRoute from "../protectedRoute";
 import { auth } from "../firebaseConfig";
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged } from "firebase/auth";
+import { ToastContainer } from "react-toastify";
 
 const Config = () => {
-  let getLocalUser = localStorage.getItem("currentUser")
-  const [user , setUser] = useState(getLocalUser);
-  useEffect(()=>{
-    auth.onAuthStateChanged((currentUser)=> {
-      console.log(currentUser," current user on Auth change");
+  let getLocalUser = localStorage.getItem("currentUser");
+  const [user, setUser] = useState(getLocalUser);
+  useEffect(() => {
+    auth.onAuthStateChanged((currentUser) => {
       if (currentUser) {
-        localStorage.setItem("currentUser",currentUser.uid)
-        setUser(currentUser.uid)
+        localStorage.setItem("currentUser", currentUser.uid);
+        setUser(currentUser.uid);
       } else {
-        setUser(null)
+        setUser(null);
       }
-    })
-  },[])
-  
-
+    });
+  }, []);
 
   return (
     <Router>
+      <ToastContainer />
       <Routes>
         <Route element={<ProtectRoute user={user} />}>
           <Route path="/" element={<Dashboard />} />
@@ -51,7 +50,7 @@ const Config = () => {
         />
         <Route
           path="/register"
-          element={<Register user={user} setUser={setUser}/>}
+          element={<Register user={user} setUser={setUser} />}
         />
       </Routes>
     </Router>

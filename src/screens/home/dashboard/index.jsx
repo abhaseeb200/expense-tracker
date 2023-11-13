@@ -14,6 +14,7 @@ import Chart from "chart.js/auto";
 import { CategoryScale, elements } from "chart.js";
 import { getTransaction } from "../../../config/service/firebase/transaction";
 import { getBudget } from "../../../config/service/firebase/budget";
+import { toast } from "react-toastify";
 
 Chart.register(CategoryScale);
 
@@ -52,7 +53,9 @@ const Dashboard = () => {
         setTableLoader(false);
       })
       .catch((err) => {
-        console.log(err);
+        toast.error(err, {
+          autoClose: 1500,
+        });
         setTableLoader(false);
       });
 
@@ -70,15 +73,34 @@ const Dashboard = () => {
         setTableLoader(false);
       })
       .catch((err) => {
-        console.log(err);
+        toast.error(err, {
+          autoClose: 1500,
+        });
         setTableLoader(false);
       });
   }, []);
 
   const verticalChartHandler = (tempExpenseAmount, tempIncomeAmount) => {
+    //comparing two objects of income and expenses, to add 0 if does't have month amount
+    for (let key in tempExpenseAmount) {
+      if (
+        tempExpenseAmount.hasOwnProperty(key) !==
+        tempIncomeAmount.hasOwnProperty(key)
+      ) {
+        tempIncomeAmount[key] = 0;
+      }
+    }
+    for (let key in tempIncomeAmount) {
+      if (
+        tempIncomeAmount.hasOwnProperty(key) !==
+        tempExpenseAmount.hasOwnProperty(key)
+      ) {
+        tempExpenseAmount[key] = 0;
+      }
+    }
+
     //convert objects to array
     let tempExpenseData = Object.values(tempExpenseAmount);
-    console.log(tempExpenseData, tempExpenseAmount);
     setExpenseAmountData(tempExpenseData);
 
     let tempIncomeData = Object.values(tempIncomeAmount);
@@ -111,7 +133,24 @@ const Dashboard = () => {
   };
 
   const horizontalChartHandler = (tempBudgetAmount, tempExpenseAmount) => {
-    console.log(tempBudgetAmount, "====");
+    //comparing two objects of income and expenses, to add 0 if does't have month amount
+    for (let key in tempExpenseAmount) {
+      if (
+        tempExpenseAmount.hasOwnProperty(key) !==
+        tempBudgetAmount.hasOwnProperty(key)
+      ) {
+        tempBudgetAmount[key] = 0;
+      }
+    }
+    for (let key in tempBudgetAmount) {
+      if (
+        tempBudgetAmount.hasOwnProperty(key) !==
+        tempExpenseAmount.hasOwnProperty(key)
+      ) {
+        tempExpenseAmount[key] = 0;
+      }
+    }
+
     let tempBudgetData = Object.values(tempBudgetAmount);
     setBudgetAmountData(tempBudgetData);
     //convert object keys to array
@@ -140,7 +179,6 @@ const Dashboard = () => {
     let labelMonthsName = labelData.map((i) => tempMonth[i]);
     setLabelDataHorizontal(labelMonthsName);
   };
-
 
   //vertical line Chart
   const dataVertical = {
@@ -175,7 +213,7 @@ const Dashboard = () => {
     labels: labelDataHorizontal,
     datasets: [
       {
-        label: "Income",
+        label: "Budget",
         borderWidth: 1,
         data: budgetAmountData,
       },
