@@ -9,16 +9,11 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
-import SideNavbar from "../../../components/sideNavbar";
-import CustNavbar from "../../../components/navbar";
 import { useEffect, useState } from "react";
 import CustomInput from "../../../components/input";
-import TransactionCategoryModal from "../modal";
 import { getBudget, setBudget } from "../../../config/service/firebase/budget";
 
 const Budget = () => {
-  const [sideBarToggle, setSideBarToggle] = useState(false);
-  const [modal, setModal] = useState(false);
   const [loader, setLoader] = useState(false);
   const [tableLoader, setTableLoader] = useState(true);
   const [budgetData, setBudgetData] = useState([]);
@@ -106,8 +101,6 @@ const Budget = () => {
     getBudgetHandler();
   }, []);
 
-  const toggle = () => setModal(!modal);
-
   const addBudget = () => {
     if (name.value === "") {
       setName({
@@ -175,14 +168,14 @@ const Budget = () => {
   };
 
   return (
-    <div className="container-lg">
-      <SideNavbar
+    <>
+      {/* <SideNavbar
         sideBarToggle={sideBarToggle}
         setSideBarToggle={setSideBarToggle}
         toggle={toggle}
-      />
-      <div className="layout-page">
-        <CustNavbar setSideBarToggle={setSideBarToggle} />
+      /> */}
+      <div className="">
+        {/* <CustNavbar setSideBarToggle={setSideBarToggle} /> */}
         <h5 className="fw-bold py-3 my-3">Budget</h5>
         <Card className="">
           <CardBody className="pb-3">
@@ -270,8 +263,7 @@ const Budget = () => {
           </CardBody>
         </Card>
       </div>
-      <TransactionCategoryModal modal={modal} toggle={toggle} />
-    </div>
+    </>
   );
 };
 

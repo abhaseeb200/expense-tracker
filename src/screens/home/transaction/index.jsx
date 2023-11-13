@@ -15,12 +15,9 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
-import SideNavbar from "../../../components/sideNavbar";
-import CustNavbar from "../../../components/navbar";
 import { useEffect, useState } from "react";
 import CustomInput from "../../../components/input";
 import Select from "../../../components/selectInput/select";
-import TransactionCategoryModal from "../modal";
 import "boxicons";
 import {
   deleteTransaction,
@@ -31,8 +28,6 @@ import {
 } from "../../../config/service/firebase/transaction";
 
 const Transaction = ({ direction, ...args }) => {
-  const [sideBarToggle, setSideBarToggle] = useState(false);
-  const [modal, setModal] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [transactionData, setTransactionData] = useState([]);
   const [expenseCategoryData, setExpenseCategoryData] = useState([]);
@@ -390,14 +385,14 @@ const Transaction = ({ direction, ...args }) => {
   };
 
   return (
-    <div className="container-lg">
-      <SideNavbar
+    <>
+      {/* <SideNavbar
         sideBarToggle={sideBarToggle}
         setSideBarToggle={setSideBarToggle}
         toggle={toggle}
-      />
-      <div className="layout-page">
-        <CustNavbar setSideBarToggle={setSideBarToggle} />
+      /> */}
+      <div className="">
+        {/* <CustNavbar setSideBarToggle={setSideBarToggle} /> */}
         <h5 className="fw-bold py-3 my-3">Transaction Entry</h5>
         <Card>
           <CardBody className="pb-3">
@@ -614,12 +609,12 @@ const Transaction = ({ direction, ...args }) => {
           </CardBody>
         </Card>
       </div>
-      <TransactionCategoryModal
+      {/* <TransactionCategoryModal
         modal={modal}
         toggle={toggle}
         getTransactionCategoryHandler={getTransactionCategoryHandler}
-      />
-    </div>
+      /> */}
+    </>
   );
 };
 

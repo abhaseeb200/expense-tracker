@@ -9,11 +9,8 @@ import {
   Navbar,
   Spinner,
 } from "reactstrap";
-import SideNavbar from "../../../components/sideNavbar";
-import CustNavbar from "../../../components/navbar";
 import { useEffect, useState } from "react";
 import CustomInput from "../../../components/input";
-import TransactionCategoryModal from "../modal";
 import getUserByID from "../../../config/service/firebase/getUserByID";
 import {
   updateUser,
@@ -23,8 +20,6 @@ import { storage } from "../../../config/firebaseConfig";
 import avatarImg from '../../../assets/1.png'
 
 const Account = () => {
-  const [sideBarToggle, setSideBarToggle] = useState(false);
-  const [modal, setModal] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -180,14 +175,8 @@ const Account = () => {
   };
 
   return (
-    <div className="container-lg">
-      <SideNavbar
-        sideBarToggle={sideBarToggle}
-        setSideBarToggle={setSideBarToggle}
-        toggle={toggle}
-      />
-      <div className="layout-page">
-        <CustNavbar setSideBarToggle={setSideBarToggle} getUserByIDHandler={getUserByIDHandler}/>
+    <>
+      <div>
         <Card className="mt-4">
           <CardBody className="pb-0">
             <CardTitle>Profile Details</CardTitle>
@@ -277,8 +266,7 @@ const Account = () => {
           </CardBody>
         </Card>
       </div>
-      <TransactionCategoryModal modal={modal} toggle={toggle} />
-    </div>
+    </>
   );
 };
 

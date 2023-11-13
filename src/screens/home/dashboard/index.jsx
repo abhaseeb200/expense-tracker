@@ -8,10 +8,7 @@ import {
   Spinner,
 } from "reactstrap";
 import "../style.css";
-import SideNavbar from "../../../components/sideNavbar";
-import CustNavbar from "../../../components/navbar";
 import { useEffect, useState } from "react";
-import TransactionCategoryModal from "../modal";
 import { Bar } from "react-chartjs-2";
 import Chart from "chart.js/auto";
 import { CategoryScale, elements } from "chart.js";
@@ -21,8 +18,6 @@ import { getBudget } from "../../../config/service/firebase/budget";
 Chart.register(CategoryScale);
 
 const Dashboard = () => {
-  const [sideBarToggle, setSideBarToggle] = useState(false);
-  const [modal, setModal] = useState(false);
   const [expenseAmountData, setExpenseAmountData] = useState([]);
   const [incomeAmountData, setIncomeAmountData] = useState([]);
   const [budgetAmountData, setBudgetAmountData] = useState([]);
@@ -54,11 +49,11 @@ const Dashboard = () => {
           }
         });
         verticalChartHandler(tempExpenseAmount, tempIncomeAmount);
-        setTableLoader(false)
+        setTableLoader(false);
       })
       .catch((err) => {
         console.log(err);
-        setTableLoader(false)
+        setTableLoader(false);
       });
 
     getBudget()
@@ -72,11 +67,11 @@ const Dashboard = () => {
           }
         });
         horizontalChartHandler(tempBudgetAmount, tempExpenseAmount);
-        setTableLoader(false)
+        setTableLoader(false);
       })
       .catch((err) => {
         console.log(err);
-        setTableLoader(false)
+        setTableLoader(false);
       });
   }, []);
 
@@ -146,7 +141,6 @@ const Dashboard = () => {
     setLabelDataHorizontal(labelMonthsName);
   };
 
-  const toggle = () => setModal(!modal);
 
   //vertical line Chart
   const dataVertical = {
@@ -211,49 +205,40 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="container-lg">
-      <SideNavbar
-        sideBarToggle={sideBarToggle}
-        setSideBarToggle={setSideBarToggle}
-        toggle={toggle}
-      />
-      <div className="layout-page">
-        <CustNavbar setSideBarToggle={setSideBarToggle} />
-        <Card className="mt-4">
-          <CardBody className="pb-0">
-            <CardTitle>Transaction Comparison Between Months</CardTitle>
-          </CardBody>
-          <CardBody className="pt-0">
-            {tablerLoader ? (
-              <div className="no-data">
-                <Spinner></Spinner>
-              </div>
-            ) : expenseAmountData.length || incomeAmountData.length ? (
-              <Bar data={dataVertical} options={optionsVertical} />
-            ) : (
-              <CardText className="no-data">No Data found</CardText>
-            )}
-          </CardBody>
-        </Card>
-        <Card className="mt-4">
-          <CardBody className="pb-0">
-            <CardTitle>Budget & Expense Comparison Between Months</CardTitle>
-          </CardBody>
-          <CardBody className="pt-0">
-            {tablerLoader ? (
-              <div className="no-data">
-                <Spinner></Spinner>
-              </div>
-            ) : expenseAmountData.length || budgetAmountData.length ? (
-              <Bar data={dataHorizontal} options={optionsHorizontal} />
-            ) : (
-              <CardText className="no-data">No Data found</CardText>
-            )}
-          </CardBody>
-        </Card>
-      </div>
-      <TransactionCategoryModal modal={modal} toggle={toggle} />
-    </div>
+    <>
+      <Card className="mt-4">
+        <CardBody className="pb-0">
+          <CardTitle>Transaction Comparison Between Months</CardTitle>
+        </CardBody>
+        <CardBody className="pt-0">
+          {tablerLoader ? (
+            <div className="no-data">
+              <Spinner></Spinner>
+            </div>
+          ) : expenseAmountData.length || incomeAmountData.length ? (
+            <Bar data={dataVertical} options={optionsVertical} />
+          ) : (
+            <CardText className="no-data">No Data found</CardText>
+          )}
+        </CardBody>
+      </Card>
+      <Card className="mt-4">
+        <CardBody className="pb-0">
+          <CardTitle>Budget & Expense Comparison Between Months</CardTitle>
+        </CardBody>
+        <CardBody className="pt-0">
+          {tablerLoader ? (
+            <div className="no-data">
+              <Spinner></Spinner>
+            </div>
+          ) : expenseAmountData.length || budgetAmountData.length ? (
+            <Bar data={dataHorizontal} options={optionsHorizontal} />
+          ) : (
+            <CardText className="no-data">No Data found</CardText>
+          )}
+        </CardBody>
+      </Card>
+    </>
   );
 };
 

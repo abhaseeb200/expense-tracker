@@ -9,17 +9,12 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
-import SideNavbar from "../../../components/sideNavbar";
-import CustNavbar from "../../../components/navbar";
 import { useEffect, useState } from "react";
 import CustomInput from "../../../components/input";
-import TransactionCategoryModal from "../modal";
 import { getTransaction } from "../../../config/service/firebase/transaction";
 import "./style.css";
 
 const Report = () => {
-  const [sideBarToggle, setSideBarToggle] = useState(false);
-  const [modal, setModal] = useState(false);
   const [transactionData, setTransactionData] = useState({});
   const [transactionDataBackUp, setTransactionDataBackUp] = useState({});
   const [expenseaAmount, setExpenseaAmount] = useState(0);
@@ -73,7 +68,6 @@ const Report = () => {
     }
   };
 
-  const toggle = () => setModal(!modal);
 
   const getTransactionDataHandler = () => {
     let tempReportData = {};
@@ -175,14 +169,8 @@ const Report = () => {
   };
 
   return (
-    <div className="container-lg">
-      <SideNavbar
-        sideBarToggle={sideBarToggle}
-        setSideBarToggle={setSideBarToggle}
-        toggle={toggle}
-      />
-      <div className="layout-page">
-        <CustNavbar setSideBarToggle={setSideBarToggle} />
+    <>
+      <div className="">
         <h5 className="fw-bold py-3 my-3">Report Generate</h5>
         <Card className="">
           <CardBody className="pb-2">
@@ -316,8 +304,7 @@ const Report = () => {
           </CardBody>
         </Card>
       </div>
-      <TransactionCategoryModal modal={modal} toggle={toggle} />
-    </div>
+    </>
   );
 };
 
