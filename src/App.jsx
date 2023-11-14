@@ -1,12 +1,8 @@
-import './App.css'
-import Config from './config/router'
+import "./App.css";
+import Main from "./config/router";
 
 function App() {
-  return (
-    <>
-      <Config/>
-    </>
-  )
+  return <Main />;
 }
 
-export default App
+export default App;

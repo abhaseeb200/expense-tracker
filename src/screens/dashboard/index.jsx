@@ -12,9 +12,10 @@ import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import Chart from "chart.js/auto";
 import { CategoryScale, elements } from "chart.js";
-import { getTransaction } from "../../../config/service/firebase/transaction";
-import { getBudget } from "../../../config/service/firebase/budget";
+import { getTransaction } from "../../config/service/firebase/transaction";
+import { getBudget } from "../../config/service/firebase/budget";
 import { toast } from "react-toastify";
+import { useOutletContext } from "react-router-dom";
 
 Chart.register(CategoryScale);
 
@@ -26,59 +27,9 @@ const Dashboard = () => {
   const [labelDataHorizontal, setLabelDataHorizontal] = useState([]);
   const [tablerLoader, setTableLoader] = useState(true);
 
-  useEffect(() => {
-    let tempExpenseAmount = {};
-    let tempIncomeAmount = {};
-    let tempBudgetAmount = {};
-    getTransaction()
-      .then((res) => {
-        res.forEach((element) => {
-          let month = new Date(element.data().date).getMonth();
-          // filter out amount with their months in object
-          if (element.data().type === "expense") {
-            if (!tempExpenseAmount[month]) {
-              tempExpenseAmount[month] = parseInt(element.data().amount);
-            } else {
-              tempExpenseAmount[month] += parseInt(element.data().amount);
-            }
-          } else {
-            if (!tempIncomeAmount[month]) {
-              tempIncomeAmount[month] = parseInt(element.data().amount);
-            } else {
-              tempIncomeAmount[month] += parseInt(element.data().amount);
-            }
-          }
-        });
-        verticalChartHandler(tempExpenseAmount, tempIncomeAmount);
-        setTableLoader(false);
-      })
-      .catch((err) => {
-        toast.error(err, {
-          autoClose: 1500,
-        });
-        setTableLoader(false);
-      });
-
-    getBudget()
-      .then((res) => {
-        res.forEach((element) => {
-          let month = new Date(element.data().date).getMonth();
-          if (!tempBudgetAmount[month]) {
-            tempBudgetAmount[month] = parseInt(element.data().amount);
-          } else {
-            tempBudgetAmount[month] += parseInt(element.data().amount);
-          }
-        });
-        horizontalChartHandler(tempBudgetAmount, tempExpenseAmount);
-        setTableLoader(false);
-      })
-      .catch((err) => {
-        toast.error(err, {
-          autoClose: 1500,
-        });
-        setTableLoader(false);
-      });
-  }, []);
+  const [
+    currentUserID
+  ] = useOutletContext();
 
   const verticalChartHandler = (tempExpenseAmount, tempIncomeAmount) => {
     //comparing two objects of income and expenses, to add 0 if does't have month amount
@@ -242,6 +193,64 @@ const Dashboard = () => {
     },
   };
 
+  const fetchData = () => {
+    let tempExpenseAmount = {};
+    let tempIncomeAmount = {};
+    let tempBudgetAmount = {};
+    getTransaction(currentUserID)
+      .then((res) => {
+        res.forEach((element) => {
+          let month = new Date(element.data().date).getMonth();
+          // filter out amount with their months in object
+          if (element.data().type === "expense") {
+            if (!tempExpenseAmount[month]) {
+              tempExpenseAmount[month] = parseInt(element.data().amount);
+            } else {
+              tempExpenseAmount[month] += parseInt(element.data().amount);
+            }
+          } else {
+            if (!tempIncomeAmount[month]) {
+              tempIncomeAmount[month] = parseInt(element.data().amount);
+            } else {
+              tempIncomeAmount[month] += parseInt(element.data().amount);
+            }
+          }
+        });
+        verticalChartHandler(tempExpenseAmount, tempIncomeAmount);
+        setTableLoader(false);
+      })
+      .catch((err) => {
+        toast.error(err, {
+          autoClose: 1500,
+        });
+        setTableLoader(false);
+      });
+
+    getBudget(currentUserID)
+      .then((res) => {
+        res.forEach((element) => {
+          let month = new Date(element.data().date).getMonth();
+          if (!tempBudgetAmount[month]) {
+            tempBudgetAmount[month] = parseInt(element.data().amount);
+          } else {
+            tempBudgetAmount[month] += parseInt(element.data().amount);
+          }
+        });
+        horizontalChartHandler(tempBudgetAmount, tempExpenseAmount);
+        setTableLoader(false);
+      })
+      .catch((err) => {
+        toast.error(err, {
+          autoClose: 1500,
+        });
+        setTableLoader(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [currentUserID]);
+
   return (
     <>
       <Card className="mt-4">
@@ -251,7 +260,7 @@ const Dashboard = () => {
         <CardBody className="pt-0">
           {tablerLoader ? (
             <div className="no-data">
-              <Spinner></Spinner>
+              <Spinner />
             </div>
           ) : expenseAmountData.length || incomeAmountData.length ? (
             <Bar data={dataVertical} options={optionsVertical} />
@@ -267,7 +276,7 @@ const Dashboard = () => {
         <CardBody className="pt-0">
           {tablerLoader ? (
             <div className="no-data">
-              <Spinner></Spinner>
+              <Spinner />
             </div>
           ) : expenseAmountData.length || budgetAmountData.length ? (
             <Bar data={dataHorizontal} options={optionsHorizontal} />

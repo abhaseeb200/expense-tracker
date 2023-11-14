@@ -22,39 +22,33 @@ const Login = ({ user,setUser }) => {
   const [loader, setLoader] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (user) {
-      navigate("/", { replace: true });
-    }
-  }, []);
-
   const emailHanlder = (e) => {
-    if (e.target.value.trim() === "") {
+    let emailVal = e.target.value.trim()
+    if (emailVal === "") {
       setEmail({
-        value: e.target.value,
+        value: emailVal,
         isError: true,
         messageError: "Please enter your email address.",
       });
     } else if (
-      !e.target.value
-        .trim()
+      !emailVal
         .charAt(0)
         .match(/[a-zA-Z/]/)
     ) {
       setEmail({
-        value: e.target.value,
+        value: emailVal,
         isError: true,
         messageError: "Email must start with a letter",
       });
-    } else if (e.target.value.charAt(e.target.value.length - 4) === "@") {
+    } else if (emailVal.charAt(emailVal.length - 4) === "@") {
       setEmail({
-        value: e.target.value,
+        value: emailVal,
         isError: true,
         messageError: "@ isn't used in last 4 charactor",
       });
     } else {
       setEmail({
-        value: e.target.value,
+        value: emailVal,
         isError: false,
         messageError: "",
       });
@@ -62,39 +56,40 @@ const Login = ({ user,setUser }) => {
   };
 
   const passwordHanlder = (e) => {
-    if (e.target.value.trim() === "") {
+    let passwordVal = e.target.value
+    if (passwordVal === "") {
       setPassword({
         value: e.target.value,
         isError: true,
         messageError: "Please enter your password",
       });
-    } else if (e.target.value.trim().length < 6) {
+    } else if (passwordVal.length < 6) {
       setPassword({
-        value: e.target.value,
+        value: passwordVal,
         isError: true,
         messageError: "Password should be greater than 6",
       });
-    } else if (!e.target.value.match(/[a-zA-Z/]/)) {
+    } else if (!passwordVal.match(/[a-zA-Z/]/)) {
       setPassword({
-        value: e.target.value,
+        value: passwordVal,
         isError: true,
         messageError: "Password required Alphabats",
       });
-    } else if (!e.target.value.match(/[0-9]/)) {
+    } else if (!passwordVal.match(/[0-9]/)) {
       setPassword({
-        value: e.target.value,
+        value: passwordVal,
         isError: true,
         messageError: "Password required Numbers",
       });
-    } else if (!e.target.value.match(/[!@#$%^&*]/)) {
+    } else if (!passwordVal.match(/[!@#$%^&*]/)) {
       setPassword({
-        value: e.target.value,
+        value: passwordVal,
         isError: true,
         messageError: "Password required Special Character",
       });
     } else {
       setPassword({
-        value: e.target.value,
+        value: passwordVal,
         isError: false,
         messageError: "",
       });
@@ -126,7 +121,7 @@ const Login = ({ user,setUser }) => {
     if (!email.isError && !password.isError) {
       setLoader(true);
       authSignIn(email.value, password.value)
-        .then((res) => {
+        .then(() => {
           setLoader(false);
           let user = auth.currentUser;
           localStorage.setItem("currentUser", user.uid);
@@ -144,6 +139,12 @@ const Login = ({ user,setUser }) => {
         });
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      navigate("/", { replace: true });
+    }
+  }, []);
 
   return (
    <div className="container-lg">
@@ -179,6 +180,7 @@ const Login = ({ user,setUser }) => {
                   isError={password.isError}
                   messageError={password.messageError}
                   onChange={passwordHanlder}
+                  autoComplete = "off"
                 />
               </div>
               <Button
@@ -186,7 +188,7 @@ const Login = ({ user,setUser }) => {
                 className={loader ? "btn-disabled w-100" : "w-100"}
                 type="submit"
               >
-                {loader ? <Spinner size="sm"></Spinner> : "Sign in"}
+                {loader ? <Spinner size="sm"/> : "Sign in"}
               </Button>
             </Form>
             <p className="text-center">

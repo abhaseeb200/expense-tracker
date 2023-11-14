@@ -1,10 +1,10 @@
 import { db } from "../../firebaseConfig";
 
-let currentUserId = localStorage.getItem("currentUser");
+// let currentUserId = localStorage.getItem("currentUser");
 
-const setBudget = (name, date, amount) => {
+const setBudget = (name, date, amount,currentUserID) => {
   return db.collection("budget").add({
-    userId: currentUserId,
+    userId: currentUserID,
     timeStamp: Date.now(),
     name: name,
     date: date,
@@ -12,10 +12,10 @@ const setBudget = (name, date, amount) => {
   });
 };
 
-const getBudget = () => {
+const getBudget = (currentUserID) => {
   return db
     .collection("budget")
-    .where("userId", "==", currentUserId)
+    .where("userId", "==", currentUserID)
     .orderBy("timeStamp", "desc")
     .get();
 };

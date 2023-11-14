@@ -4,6 +4,7 @@ import "boxicons";
 import { Link, NavLink } from "react-router-dom";
 import { Button, Offcanvas } from "reactstrap";
 import { useState } from "react";
+import RouteLink from "../routeLink";
 
 const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
@@ -11,6 +12,10 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
   window.addEventListener("resize", () => {
     setScreenWidth(window.innerWidth);
   });
+
+  const OffCanvasCancelHanlder = () => {
+    setSideBarToggle(false);
+  };
   return (
     <>
       {screenWidth <= "1200" ? (
@@ -43,17 +48,17 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
               <div className="menu-inner-shadow"></div>
               <ul className="menu-inner py-1 nav">
                 <li className="menu-item">
-                  <NavLink to="/" className="menu-link nav-link" onClick={()=>setSideBarToggle(false)}>
+                  <NavLink
+                    to="/"
+                    className="menu-link nav-link"
+                    onClick={OffCanvasCancelHanlder}
+                  >
                     {({ isActive }) => (
-                      <>
-                        <box-icon
-                          size="sm"
-                          name="home-circle"
-                          color={isActive ? "#696cff" : "#697a8d "}
-                          style={{ width: "19px" }}
-                        ></box-icon>
-                        <div className="ms-2">Dashboard</div>
-                      </>
+                      <RouteLink
+                        name="Dashboards"
+                        icon="home-circle"
+                        isActive={isActive}
+                      />
                     )}
                   </NavLink>
                 </li>
@@ -61,53 +66,50 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
                   <span className="menu-header-text">Transaction</span>
                 </li>
                 <li className="menu-item">
-                  <NavLink to="/transaction" className="menu-link nav-link" onClick={()=>setSideBarToggle(false)}>
+                  <NavLink
+                    to="/transaction"
+                    className="menu-link nav-link"
+                    onClick={OffCanvasCancelHanlder}
+                  >
                     {({ isActive }) => (
-                      <>
-                        <box-icon
-                          size="sm"
-                          name="book-add"
-                          color={isActive ? "#696cff" : "#697a8d "}
-                          style={{ width: "19px" }}
-                        ></box-icon>
-                        <div className="ms-2">Entry</div>
-                      </>
+                      <RouteLink
+                        name="Entry"
+                        icon="book-add"
+                        isActive={isActive}
+                      />
                     )}
                   </NavLink>
                 </li>
                 <li className="menu-item">
-                  <Link
-                    to="#"
-                    className="menu-link"
-                    onClick={() => {
-                      toggle();
-                      setSideBarToggle(false);
-                    }}
+                  <NavLink
+                    to="/transactionCategories"
+                    className="menu-link nav-link"
+                    onClick={OffCanvasCancelHanlder}
                   >
-                    <box-icon
-                      size="sm"
-                      name="category"
-                      color="#697a8d"
-                      style={{ width: "19px" }}
-                    ></box-icon>
-                    <div className="ms-2">Custom Categories</div>
-                  </Link>
+                    {({ isActive }) => (
+                      <RouteLink
+                        name="Custom Categories"
+                        icon="category"
+                        isActive={isActive}
+                      />
+                    )}
+                  </NavLink>
                 </li>
                 <li className="menu-header small text-uppercase">
                   <span className="menu-header-text">Budget</span>
                 </li>
                 <li className="menu-item">
-                  <NavLink to="/budget" className="menu-link nav-link" onClick={()=>setSideBarToggle(false)}>
+                  <NavLink
+                    to="/budget"
+                    className="menu-link nav-link"
+                    onClick={OffCanvasCancelHanlder}
+                  >
                     {({ isActive }) => (
-                      <>
-                        <box-icon
-                          size="sm"
-                          name="book-add"
-                          color={isActive ? "#696cff" : "#697a8d "}
-                          style={{ width: "19px" }}
-                        ></box-icon>
-                        <div className="ms-2">Budget Entry</div>
-                      </>
+                      <RouteLink
+                        name="Budget Entry"
+                        icon="book-add"
+                        isActive={isActive}
+                      />
                     )}
                   </NavLink>
                 </li>
@@ -115,17 +117,17 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
                   <span className="menu-header-text">Visualization</span>
                 </li>
                 <li className="menu-item">
-                  <NavLink to="/report" className="menu-link nav-link" onClick={()=>setSideBarToggle(false)}>
+                  <NavLink
+                    to="/report"
+                    className="menu-link nav-link"
+                    onClick={OffCanvasCancelHanlder}
+                  >
                     {({ isActive }) => (
-                      <>
-                        <box-icon
-                          size="sm"
-                          name="dock-top"
-                          color={isActive ? "#696cff" : "#697a8d "}
-                          style={{ width: "19px" }}
-                        ></box-icon>
-                        <div className="ms-2">Report Generation</div>
-                      </>
+                      <RouteLink
+                        name="Report Generation"
+                        icon="dock-top"
+                        isActive={isActive}
+                      />
                     )}
                   </NavLink>
                 </li>
@@ -133,17 +135,17 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
                   <span className="menu-header-text">Profile</span>
                 </li>
                 <li className="menu-item">
-                  <NavLink to="/account" className="menu-link nav-link" onClick={()=>setSideBarToggle(false)}>
+                  <NavLink
+                    to="/account"
+                    className="menu-link nav-link"
+                    onClick={OffCanvasCancelHanlder}
+                  >
                     {({ isActive }) => (
-                      <>
-                        <box-icon
-                          size="sm"
-                          name="lock-open-alt"
-                          color={isActive ? "#696cff" : "#697a8d "}
-                          style={{ width: "19px" }}
-                        ></box-icon>
-                        <div className="ms-2">Account Settings</div>
-                      </>
+                      <RouteLink
+                        name="Account Settings"
+                        icon="lock-open-alt"
+                        isActive={isActive}
+                      />
                     )}
                   </NavLink>
                 </li>
@@ -180,17 +182,14 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
                 <NavLink
                   to="/"
                   className="menu-link nav-link"
+                  onClick={OffCanvasCancelHanlder}
                 >
                   {({ isActive }) => (
-                    <>
-                      <box-icon
-                        size="sm"
-                        name="home-circle"
-                        color={isActive ? "#696cff" : "#697a8d "}
-                        style={{ width: "19px" }}
-                      ></box-icon>
-                      <div className="ms-2">Dashboard</div>
-                    </>
+                    <RouteLink
+                      name="Dashboards"
+                      icon="home-circle"
+                      isActive={isActive}
+                    />
                   )}
                 </NavLink>
               </li>
@@ -198,17 +197,17 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
                 <span className="menu-header-text">Transaction</span>
               </li>
               <li className="menu-item">
-                <NavLink to="/transaction" className="menu-link nav-link">
+                <NavLink
+                  to="/transaction"
+                  className="menu-link nav-link"
+                  onClick={OffCanvasCancelHanlder}
+                >
                   {({ isActive }) => (
-                    <>
-                      <box-icon
-                        size="sm"
-                        name="book-add"
-                        color={isActive ? "#696cff" : "#697a8d "}
-                        style={{ width: "19px" }}
-                      ></box-icon>
-                      <div className="ms-2">Entry</div>
-                    </>
+                    <RouteLink
+                      name="Entry"
+                      icon="book-add"
+                      isActive={isActive}
+                    />
                   )}
                 </NavLink>
               </li>
@@ -234,17 +233,17 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
                 <span className="menu-header-text">Budget</span>
               </li>
               <li className="menu-item">
-                <NavLink to="/budget" className="menu-link nav-link">
+                <NavLink
+                  to="/budget"
+                  className="menu-link nav-link"
+                  onClick={OffCanvasCancelHanlder}
+                >
                   {({ isActive }) => (
-                    <>
-                      <box-icon
-                        size="sm"
-                        name="book-add"
-                        color={isActive ? "#696cff" : "#697a8d "}
-                        style={{ width: "19px" }}
-                      ></box-icon>
-                      <div className="ms-2">Budget Entry</div>
-                    </>
+                    <RouteLink
+                      name="Budget Entry"
+                      icon="book-add"
+                      isActive={isActive}
+                    />
                   )}
                 </NavLink>
               </li>
@@ -252,17 +251,17 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
                 <span className="menu-header-text">Visualization</span>
               </li>
               <li className="menu-item">
-                <NavLink to="/report" className="menu-link nav-link">
+                <NavLink
+                  to="/report"
+                  className="menu-link nav-link"
+                  onClick={OffCanvasCancelHanlder}
+                >
                   {({ isActive }) => (
-                    <>
-                      <box-icon
-                        size="sm"
-                        name="dock-top"
-                        color={isActive ? "#696cff" : "#697a8d "}
-                        style={{ width: "19px" }}
-                      ></box-icon>
-                      <div className="ms-2">Report Generation</div>
-                    </>
+                    <RouteLink
+                      name="Report Generation"
+                      icon="dock-top"
+                      isActive={isActive}
+                    />
                   )}
                 </NavLink>
               </li>
@@ -270,17 +269,17 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
                 <span className="menu-header-text">Profile</span>
               </li>
               <li className="menu-item">
-                <NavLink to="/account" className="menu-link nav-link">
+                <NavLink
+                  to="/account"
+                  className="menu-link nav-link"
+                  onClick={OffCanvasCancelHanlder}
+                >
                   {({ isActive }) => (
-                    <>
-                      <box-icon
-                        size="sm"
-                        name="lock-open-alt"
-                        color={isActive ? "#696cff" : "#697a8d "}
-                        style={{ width: "19px" }}
-                      ></box-icon>
-                      <div className="ms-2">Account Settings</div>
-                    </>
+                    <RouteLink
+                      name="Account Settings"
+                      icon="lock-open-alt"
+                      isActive={isActive}
+                    />
                   )}
                 </NavLink>
               </li>

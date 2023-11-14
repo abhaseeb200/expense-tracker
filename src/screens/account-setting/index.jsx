@@ -10,14 +10,14 @@ import {
   Spinner,
 } from "reactstrap";
 import { useEffect, useState } from "react";
-import CustomInput from "../../../components/input";
-import getUserByID from "../../../config/service/firebase/getUserByID";
+import CustomInput from "../../components/input";
+import getUserByID from "../../config/service/firebase/getUserByID";
 import {
   updateUser,
   updateUserWithImage,
-} from "../../../config/service/firebase/updateUser";
-import { storage } from "../../../config/firebaseConfig";
-import avatarImg from '../../../assets/1.png'
+} from "../../config/service/firebase/updateUser";
+import { storage } from "../../config/firebaseConfig";
+import avatarImg from "../../assets/1.png";
 import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -36,15 +36,14 @@ const Account = () => {
     isError: false,
     messageError: "",
   });
+  const [
+    currentUserID,
+    getUserByIDHanlder,
+  ] = useOutletContext();
 
-  useEffect(() => {
-    getUserByIDHandler();
-  }, []);
-
-  const [getUserByIDHanlder] = useOutletContext();
-
+ 
   const getUserByIDHandler = () => {
-    getUserByID().then((res) => {
+    getUserByID(currentUserID).then((res) => {
       res.forEach((element) => {
         setDocID(element.id);
         setEmail(element.data().email);
@@ -61,8 +60,6 @@ const Account = () => {
       });
     });
   };
-
-  // const toggle = () => setModal(!modal);
 
   const firstNameHandler = (e) => {
     setFirstName(e.target.value);
@@ -152,13 +149,13 @@ const Account = () => {
             url,
             docID
           );
+          getUserByIDHanlder(currentUserID);
           setLoader(false);
-          toast.success("Profile update successfully!",{
+          toast.success("Profile update successfully!", {
             autoClose: 1500,
           });
-          getUserByIDHanlder()
         } catch (err) {
-          toast.error(err,{
+          toast.error(err, {
             autoClose: 1500,
           });
         }
@@ -174,18 +171,22 @@ const Account = () => {
             docID
           );
           setLoader(false);
-          toast.success("Profile update successfully!",{
+          toast.success("Profile update successfully!", {
             autoClose: 1500,
           });
-          getUserByIDHanlder()
+          getUserByIDHanlder(currentUserID);
         } catch (err) {
-          toast.error(err,{
+          toast.error(err, {
             autoClose: 1500,
           });
         }
       }
     }
   };
+
+  useEffect(() => {
+    getUserByIDHandler();
+  }, [currentUserID]);
 
   return (
     <>

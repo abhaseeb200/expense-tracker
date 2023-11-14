@@ -16,7 +16,7 @@ import "./style.css";
 import { useState } from "react";
 import "boxicons";
 import { authLogout } from "../../config/service/firebase/auth";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import avatarImg from "../../assets/1.png";
 import { toast } from "react-toastify";
 
@@ -44,7 +44,7 @@ const CustomNavbar = ({
         navigate("/login", { replace: true });
       })
       .catch((err) => {
-        toast.error(err,{
+        toast.error(err, {
           autoClose: 1500,
         });
       });
@@ -84,13 +84,15 @@ const CustomNavbar = ({
                 />
               </DropdownToggle>
               <DropdownMenu {...args}>
-                <DropdownItem className="user-navbar">
-                  <img
-                    src={currentProfileImage || avatarImg}
-                    className="w-px-40 rounded-circle"
-                  />
-                  <span className="ms-2">{currentUsername}</span>
-                </DropdownItem>
+                <Link to="/account">
+                  <DropdownItem className="user-navbar">
+                    <img
+                      src={currentProfileImage || avatarImg}
+                      className="w-px-40 rounded-circle"
+                    />
+                    <span className="ms-2">{currentUsername}</span>
+                  </DropdownItem>
+                </Link>
                 <DropdownItem className="logout-btn" onClick={logoutHanlder}>
                   <box-icon name="power-off" color="#697a8d"></box-icon>
                   <span className="ms-2">Log Out</span>

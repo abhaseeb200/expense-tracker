@@ -1,7 +1,6 @@
-import { db } from "../../firebaseConfig"
+import { auth, db } from "../../firebaseConfig"
 
-const getUserByID = () => {
-    let localUserId = localStorage.getItem("currentUser")
-    return db.collection("users").where("userId","==",localUserId).get()
+const getUserByID = (currentUserID) => {
+    return db.collection("users").where("userId","==",currentUserID).get()
 }
 export default getUserByID

@@ -33,40 +33,35 @@ const Register = ({ user, setUser }) => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (user) {
-      navigate("/", { replace: true });
-    }
-  }, []);
-
   const usernameHanlder = (e) => {
-    if (e.target.value.trim() === "") {
+    let usernameVal = e.target.value.trim()
+    if (usernameVal === "") {
       setUsername({
-        value: e.target.value,
+        value: usernameVal,
         isError: true,
         messageError: "Please enter your username",
       });
-    } else if (e.target.value.match(/[A-Z]/)) {
+    } else if (usernameVal.match(/[A-Z]/)) {
       setUsername({
-        value: e.target.value,
+        value: usernameVal,
         isError: true,
         messageError: "Username must be lowercase letters",
       });
-    } else if (e.target.value.trim().length <= 3) {
+    } else if (usernameVal.length <= 3) {
       setUsername({
-        value: e.target.value,
+        value: usernameVal,
         isError: true,
         messageError: "Username should be greater than 3",
       });
-    } else if (!e.target.value.trim().match(/^\S*$/)) {
+    } else if (!usernameVal.match(/^\S*$/)) {
       setUsername({
-        value: e.target.value,
+        value: usernameVal,
         isError: true,
         messageError: "Username should not contain spaces",
       });
     } else {
       setUsername({
-        value: e.target.value,
+        value: usernameVal,
         isError: false,
         messageError: "",
       });
@@ -74,32 +69,33 @@ const Register = ({ user, setUser }) => {
   };
 
   const emailHanlder = (e) => {
-    if (e.target.value.trim() === "") {
+    let emailVal = e.target.value.trim()
+    if (emailVal === "") {
       setEmail({
-        value: e.target.value,
+        value: emailVal,
         isError: true,
         messageError: "Please enter your email address.",
       });
     } else if (
-      !e.target.value
+      !emailVal
         .trim()
         .charAt(0)
         .match(/[a-zA-Z/]/)
     ) {
       setEmail({
-        value: e.target.value,
+        value: emailVal,
         isError: true,
         messageError: "Email must start with a letter",
       });
-    } else if (e.target.value.charAt(e.target.value.length - 4) === "@") {
+    } else if (emailVal.charAt(emailVal.length - 4) === "@") {
       setEmail({
-        value: e.target.value,
+        value: emailVal,
         isError: true,
         messageError: "@ isn't used in last 4 charactor",
       });
     } else {
       setEmail({
-        value: e.target.value,
+        value: emailVal,
         isError: false,
         messageError: "",
       });
@@ -107,47 +103,48 @@ const Register = ({ user, setUser }) => {
   };
 
   const passwordHanlder = (e) => {
-    if (e.target.value.trim() === "") {
+    let passwordVal = e.target.value
+    if (passwordVal === "") {
       setPassword({
         value: e.target.value,
         isError: true,
         messageError: "Please enter your password",
       });
-    } else if (e.target.value.trim().length < 6) {
+    } else if (passwordVal.length < 6) {
       setPassword({
-        value: e.target.value,
+        value: passwordVal,
         isError: true,
         messageError: "Password should be greater than 6",
       });
-    } else if (!e.target.value.match(/[a-zA-Z/]/)) {
+    } else if (!passwordVal.match(/[a-zA-Z/]/)) {
       setPassword({
-        value: e.target.value,
+        value: passwordVal,
         isError: true,
         messageError: "Password required Alphabats",
       });
-    } else if (!e.target.value.match(/[0-9]/)) {
+    } else if (!passwordVal.match(/[0-9]/)) {
       setPassword({
-        value: e.target.value,
+        value: passwordVal,
         isError: true,
         messageError: "Password required Numbers",
       });
-    } else if (!e.target.value.match(/[!@#$%^&*]/)) {
+    } else if (!passwordVal.match(/[!@#$%^&*]/)) {
       setPassword({
-        value: e.target.value,
+        value: passwordVal,
         isError: true,
         messageError: "Password required Special Character",
       });
     } else {
       setPassword({
-        value: e.target.value,
+        value: passwordVal,
         isError: false,
         messageError: "",
       });
     }
 
-    if (e.target.value !== "") {
+    if (passwordVal !== "") {
       if (
-        e.target.value !== confirmPassword.value &&
+        passwordVal !== confirmPassword.value &&
         confirmPassword.value !== ""
       ) {
         setConfirmPassword({
@@ -166,21 +163,22 @@ const Register = ({ user, setUser }) => {
   };
 
   const confirmPasswordHanlder = (e) => {
-    if (e.target.value === "") {
+    let confirmVal = e.target.value
+    if (confirmVal === "") {
       setConfirmPassword({
-        value: e.target.value,
+        value: confirmVal,
         isError: true,
         messageError: "Password can't be empty",
       });
-    } else if (e.target.value !== password.value) {
+    } else if (confirmVal !== password.value) {
       setConfirmPassword({
-        value: e.target.value,
+        value: confirmVal,
         isError: true,
         messageError: "Password does't match",
       });
     } else {
       setConfirmPassword({
-        value: e.target.value,
+        value: confirmVal,
         isError: false,
         messageError: "",
       });
@@ -251,7 +249,7 @@ const Register = ({ user, setUser }) => {
               profileURL: "",
               address: "",
             })
-            .then((res) => {
+            .then(() => {
               toast.success("Register account successfully!", {
                 autoClose: 1500,
               });
@@ -270,6 +268,12 @@ const Register = ({ user, setUser }) => {
         });
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      navigate("/", { replace: true });
+    }
+  }, []);
 
   return (
     <div className="container-lg">
@@ -316,6 +320,7 @@ const Register = ({ user, setUser }) => {
                     isError={password.isError}
                     messageError={password.messageError}
                     onChange={passwordHanlder}
+                    autoComplete = "off"
                   />
                 </div>
                 <div className="mb-3">
@@ -327,6 +332,7 @@ const Register = ({ user, setUser }) => {
                     isError={confirmPassword.isError}
                     messageError={confirmPassword.messageError}
                     onChange={confirmPasswordHanlder}
+                    autoComplete = "off"
                   />
                 </div>
                 <Button
@@ -334,7 +340,7 @@ const Register = ({ user, setUser }) => {
                   className={loader ? "btn-disabled w-100" : "w-100"}
                   type="submit"
                 >
-                  {loader ? <Spinner size="sm"></Spinner> : "Sign up"}
+                  {loader ? <Spinner size="sm"/> : "Sign up"}
                 </Button>
               </Form>
               <p className="text-center">

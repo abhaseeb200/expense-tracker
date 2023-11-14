@@ -10,9 +10,10 @@ import {
   Table,
 } from "reactstrap";
 import { useEffect, useState } from "react";
-import CustomInput from "../../../components/input";
-import { getBudget, setBudget } from "../../../config/service/firebase/budget";
+import CustomInput from "../../components/input";
+import { getBudget, setBudget } from "../../config/service/firebase/budget";
 import { toast } from "react-toastify";
+import { useOutletContext } from "react-router-dom";
 
 const Budget = () => {
   const [loader, setLoader] = useState(false);
@@ -36,6 +37,10 @@ const Budget = () => {
     isError: false,
     messageError: "",
   });
+
+  const [
+    currentUserID,
+  ] = useOutletContext();
 
   const nameHandler = (e) => {
     let expVal = e.target.value.trim().toLowerCase();
@@ -98,10 +103,6 @@ const Budget = () => {
     }
   };
 
-  useEffect(() => {
-    getBudgetHandler();
-  }, []);
-
   const addBudget = () => {
     if (name.value === "") {
       setName({
@@ -132,7 +133,7 @@ const Budget = () => {
     //check validation
     if (!name.isError && !date.isError && !amount.isError) {
       setLoader(true);
-      setBudget(name.value, date.value, amount.value)
+      setBudget(name.value, date.value, amount.value, currentUserID)
         .then((res) => {
           setLoader(false);
           getBudgetHandler();
@@ -147,7 +148,7 @@ const Budget = () => {
   };
 
   const getBudgetHandler = () => {
-    getBudget()
+    getBudget(currentUserID)
       .then((res) => {
         let tempBudgetData = [];
         res.forEach((element) => {
@@ -170,6 +171,10 @@ const Budget = () => {
       d.getFullYear() + "-" + parseInt(d.getMonth() + 1) + "-" + d.getDate()
     );
   };
+
+  useEffect(() => {
+    getBudgetHandler();
+  }, [currentUserID]);
 
   return (
     <>
@@ -219,7 +224,7 @@ const Budget = () => {
               className={loader ? "btn-disabled w-100" : "w-100"}
               onClick={addBudget}
             >
-              {loader ? <Spinner size="sm"></Spinner> : "Add Budget"}
+              {loader ? <Spinner size="sm" /> : "Add Budget"}
             </Button>
           </div>
         </CardBody>
@@ -231,7 +236,7 @@ const Budget = () => {
         <CardBody className="pt-0">
           {tableLoader ? (
             <div className="no-data">
-              <Spinner></Spinner>
+              <Spinner />
             </div>
           ) : budgetData.length ? (
             <div className="table-responsive">

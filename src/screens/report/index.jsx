@@ -10,9 +10,10 @@ import {
   Table,
 } from "reactstrap";
 import { useEffect, useState } from "react";
-import CustomInput from "../../../components/input";
-import { getTransaction } from "../../../config/service/firebase/transaction";
+import CustomInput from "../../components/input";
+import { getTransaction } from "../../config/service/firebase/transaction";
 import "./style.css";
+import { useOutletContext } from "react-router-dom";
 
 const Report = () => {
   const [transactionData, setTransactionData] = useState({});
@@ -32,9 +33,7 @@ const Report = () => {
     messageError: "",
   });
 
-  useEffect(() => {
-    getTransactionDataHandler();
-  }, []);
+  const [currentUserID] = useOutletContext();
 
   const startDateHandler = (e) => {
     if (e.target.value === "") {
@@ -72,7 +71,7 @@ const Report = () => {
     let tempReportData = {};
     let tempExpenseAmount = 0;
     let tempIncomeAmount = 0;
-    getTransaction().then((res) => {
+    getTransaction(currentUserID).then((res) => {
       totalAmountHanlder();
       setTableLoader(false);
       res.forEach((element) => {
@@ -190,6 +189,10 @@ const Report = () => {
     });
   };
 
+  useEffect(() => {
+    getTransactionDataHandler();
+  }, [currentUserID]);
+
   return (
     <>
       <div className="">
@@ -242,7 +245,7 @@ const Report = () => {
             <div>
               {tableLoader ? (
                 <div className="no-data">
-                  <Spinner></Spinner>
+                  <Spinner />
                 </div>
               ) : Object.keys(transactionData).length ? (
                 <div className="table-responsive">

@@ -1,10 +1,8 @@
-import { db } from "../../firebaseConfig"
+import { auth, db } from "../../firebaseConfig"
 
-let currentUserId = localStorage.getItem("currentUser")
-
-const setTransaction = (name, category, date, amount, type) => {
+const setTransaction = (name, category, date, amount, type,currentUserID) => {
     return db.collection("transaction").add({
-        userId: currentUserId,
+        userId: currentUserID,
         timeStamp: Date.now(),
         name: name,
         category: category,
@@ -14,9 +12,9 @@ const setTransaction = (name, category, date, amount, type) => {
     })
 }
 
-const getTransaction = () => {
+const getTransaction = (currentUserID) => {
     return db.collection("transaction")
-        .where("userId", "==", currentUserId)
+        .where("userId", "==", currentUserID)
         .orderBy("timeStamp", "desc")
         .get()
 }
@@ -39,7 +37,7 @@ const updateTransaction = (name,type,category,date,amount,docId) => {
     })
 }
 
-const setTransactionCategory = (name, category) => {
+const setTransactionCategory = (name, category,currentUserId) => {
     return db.collection("transactionCategory").add({
         name: name,
         category: category,
@@ -48,9 +46,10 @@ const setTransactionCategory = (name, category) => {
     })
 }
 
-const getTransactionCategory = () => {
+const getTransactionCategory = (currentUserID) => {
+    console.log("form service folder,,,,, ======");
     return db.collection("transactionCategory")
-        .where("userId", "==", currentUserId)
+        .where("userId", "==", currentUserID)
         .orderBy("timeStamp", "desc")
         .get()
 }

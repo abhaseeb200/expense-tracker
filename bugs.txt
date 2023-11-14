@@ -1,0 +1,5 @@
+- config file name change to -> main
+- folder struture: home delete and outside page outside the folder
+- useEffect should be used above the return
+- trim should be used in all places
+- Navbar link should be components

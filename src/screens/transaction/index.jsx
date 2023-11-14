@@ -16,19 +16,19 @@ import {
   Table,
 } from "reactstrap";
 import { useEffect, useState } from "react";
-import CustomInput from "../../../components/input";
-import Select from "../../../components/selectInput/select";
+import CustomInput from "../../components/input";
+import Select from "../../components/selectInput/select";
 import "boxicons";
 import {
   deleteTransaction,
   getTransaction,
-  getTransactionCategory,
   setTransaction,
   updateTransaction,
-} from "../../../config/service/firebase/transaction";
+} from "../../config/service/firebase/transaction";
 import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { auth } from "../../config/firebaseConfig";
 
 const Transaction = ({ direction, ...args }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -41,8 +41,12 @@ const Transaction = ({ direction, ...args }) => {
   const [saveLoader, setSaveLoader] = useState(false);
   const [currentDocID, setCurrentDocID] = useState("");
 
-  const [getUserByIDHanlder, expenseCategoryData, incomeCategoryData] =
-    useOutletContext();
+  const [
+    currentUserID,
+    getUserByIDHanlder,
+    expenseCategoryData,
+    incomeCategoryData,
+  ] = useOutletContext();
 
   useEffect(() => {}, []);
   const [name, setName] = useState({
@@ -70,26 +74,6 @@ const Transaction = ({ direction, ...args }) => {
     isError: false,
     messageError: "",
   });
-
-  useEffect(() => {
-    getTransactionHandler();
-  }, []);
-
-  // const notifyAdd = () => {
-  //   toast.success('Transaction added successfully!', {
-  //     position: toast.POSITION.TOP_RIGHT,
-  //     autoClose: 3000, // Auto close the toast after 3000 milliseconds (3 seconds)
-  //   });
-  // };
-
-  const notifyDelete = () => {};
-
-  // const notifyUpdate = () => {
-  //   toast.success('Transaction update successfully!', {
-  //     position: toast.POSITION.TOP_RIGHT,
-  //     autoClose: 3000, // Auto close the toast after 3000 milliseconds (3 seconds)
-  //   });
-  // };
 
   const toggleDropdown = (ind) => {
     setDropdownOpen((prevState) => !prevState);
@@ -233,18 +217,18 @@ const Transaction = ({ direction, ...args }) => {
       setTransaction(
         name.value,
         category.value,
-
         date.value,
         amount.value,
-        transactionSelect
+        transactionSelect,
+        currentUserID
       )
         .then((res) => {
           setLoader(false);
-          getTransactionHandler();
           resetFeilds();
           toast.success("Transaction add successfully!", {
             autoClose: 1500,
           });
+          getTransactionHandler();
         })
         .catch((err) => {
           setLoader(false);
@@ -256,7 +240,8 @@ const Transaction = ({ direction, ...args }) => {
   };
 
   const getTransactionHandler = () => {
-    getTransaction().then((res) => {
+    getTransaction(currentUserID).then((res) => {
+      let user = auth.currentUser.uid;
       let tempTransactionData = [];
       res.forEach((element) => {
         tempTransactionData.push({
@@ -396,6 +381,10 @@ const Transaction = ({ direction, ...args }) => {
     );
   };
 
+  useEffect(() => {
+    getTransactionHandler();
+  }, [currentUserID]);
+
   return (
     <>
       <h5 className="fw-bold py-3 my-3">Transaction Entry</h5>
@@ -483,7 +472,7 @@ const Transaction = ({ direction, ...args }) => {
                   className={saveLoader ? "btn-disabled w-100" : "w-100"}
                   onClick={() => saveHandler()}
                 >
-                  {saveLoader ? <Spinner size="sm"></Spinner> : "Save"}
+                  {saveLoader ? <Spinner size="sm" /> : "Save"}
                 </Button>
               </div>
               <div className="col-md-6">
@@ -504,7 +493,7 @@ const Transaction = ({ direction, ...args }) => {
                 className={loader ? "btn-disabled w-100" : "w-100"}
                 onClick={addTransacion}
               >
-                {loader ? <Spinner size="sm"></Spinner> : "Add Transaction"}
+                {loader ? <Spinner size="sm" /> : "Add Transaction"}
               </Button>
             </div>
           )}

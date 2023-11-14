@@ -8,24 +8,21 @@ import {
   Label,
   Spinner,
 } from "reactstrap";
-import CustomInput from "../../../components/input";
-import Select from "../../../components/selectInput/select";
-import {
-  setTransaction,
-  setTransactionCategory,
-} from "../../../config/service/firebase/transaction";
+import CustomInput from "../../components/input";
+import Select from "../../components/selectInput/select";
+import { setTransactionCategory } from "../../config/service/firebase/transaction";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { elements } from "chart.js";
 
-function TransactionCategoryModal({
+const TransactionCategoryModal = ({
   args,
   modal,
   toggle,
   getTransactionCategoryHandler,
   incomeCategoryData,
   expenseCategoryData,
-}) {
+  currentUserID
+}) => {
   const [name, setName] = useState({
     value: "",
     isError: false,
@@ -127,17 +124,17 @@ function TransactionCategoryModal({
     //check validation
     if (!name.isError && !category.isError) {
       setLoader(true);
-      setTransactionCategory(name.value.trim(), category.value)
+      setTransactionCategory(name.value.trim(), category.value,currentUserID)
         .then((res) => {
           setLoader(false);
-          getTransactionCategoryHandler();
-          toast.success("Category add successfully!",{
+          toast.success("Category add successfully!", {
             autoClose: 1500,
           });
           restAllFields();
+          getTransactionCategoryHandler(currentUserID);
         })
         .catch((err) => {
-          toast.error(err,{
+          toast.error(err, {
             autoClose: 1500,
           });
           setLoader(false);
@@ -212,12 +209,12 @@ function TransactionCategoryModal({
             className={loader ? "btn-disabled cust-button" : "cust-button"}
             onClick={addCategory}
           >
-            {loader ? <Spinner size="sm"></Spinner> : "Add Category"}
+            {loader ? <Spinner size="sm"/> : "Add Category"}
           </Button>
         </ModalFooter>
       </Modal>
     </div>
   );
-}
+};
 
 export default TransactionCategoryModal;
