@@ -52,7 +52,10 @@
     min-height: 1px;
   }
   
-  
+  .category-table td {
+    vertical-align: middle;
+}
+
   @media (min-width: 1200px) {
     .layout-content-navbar .layout-menu {
       z-index: 10;

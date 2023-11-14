@@ -4,12 +4,12 @@ import "firebase/compat/auth"
 import "firebase/compat/storage"
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAr4pwo4scxlSI7D-kn9eBg4uMtBr8PaPI",
-  authDomain: "react-expenser-tracker.firebaseapp.com",
-  projectId: "react-expenser-tracker",
-  storageBucket: "react-expenser-tracker.appspot.com",
-  messagingSenderId: "652291453516",
-  appId: "1:652291453516:web:c44e7073a4bba1fcf8bae9"
+  apiKey: "AIzaSyB2gkaxcrUPs27J1dzr7cApF9vDA9Vk1EU",
+  authDomain: "react-xpensr-system.firebaseapp.com",
+  projectId: "react-xpensr-system",
+  storageBucket: "react-xpensr-system.appspot.com",
+  messagingSenderId: "760878505426",
+  appId: "1:760878505426:web:07da5fab4b1ef4dcabfc0b"
 };
 
 firebase.initializeApp(firebaseConfig)

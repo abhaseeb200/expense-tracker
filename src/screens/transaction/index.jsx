@@ -22,6 +22,7 @@ import "boxicons";
 import {
   deleteTransaction,
   getTransaction,
+  getTransactionCategory,
   setTransaction,
   updateTransaction,
 } from "../../config/service/firebase/transaction";
@@ -40,13 +41,10 @@ const Transaction = ({ direction, ...args }) => {
   const [isUpdate, setIsUpdate] = useState(false);
   const [saveLoader, setSaveLoader] = useState(false);
   const [currentDocID, setCurrentDocID] = useState("");
+  const [expenseCategoryData, setExpenseCategoryData] = useState([]);
+  const [incomeCategoryData, setIncomeCategoryData] = useState([]);
 
-  const [
-    currentUserID,
-    getUserByIDHanlder,
-    expenseCategoryData,
-    incomeCategoryData,
-  ] = useOutletContext();
+  const [currentUserID] = useOutletContext();
 
   useEffect(() => {}, []);
   const [name, setName] = useState({
@@ -240,17 +238,41 @@ const Transaction = ({ direction, ...args }) => {
   };
 
   const getTransactionHandler = () => {
-    getTransaction(currentUserID).then((res) => {
-      let user = auth.currentUser.uid;
-      let tempTransactionData = [];
-      res.forEach((element) => {
-        tempTransactionData.push({
-          docID: element.id,
-          docData: element.data(),
+    getTransaction(currentUserID)
+      .then((res) => {
+        let tempTransactionData = [];
+        let tempExpenseCategoryData = [];
+        let tempIncomeCategoryData = [];
+        res.forEach((element) => {
+          tempTransactionData.push({
+            docID: element.id,
+            docData: element.data(),
+          });
         });
+
+        setTransactionData(tempTransactionData);
+        setTableLoader(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setTableLoader(false);
       });
-      setTransactionData(tempTransactionData);
-      setTableLoader(false);
+  };
+
+  const getTransactionCategoryHandler = () => {
+    let tempExpenseCategoryData = [];
+    let tempIncomeCategoryData = [];
+    getTransactionCategory(currentUserID).then((res) => {
+      console.log("-------------------");
+      res.forEach((element) => {
+        if (element.data().category === "expense") {
+          tempExpenseCategoryData.push(element.data());
+        } else {
+          tempIncomeCategoryData.push(element.data());
+        }
+      });
+      setExpenseCategoryData(tempExpenseCategoryData);
+      setIncomeCategoryData(tempIncomeCategoryData);
     });
   };
 
@@ -383,6 +405,7 @@ const Transaction = ({ direction, ...args }) => {
 
   useEffect(() => {
     getTransactionHandler();
+    getTransactionCategoryHandler();
   }, [currentUserID]);
 
   return (
@@ -506,8 +529,7 @@ const Transaction = ({ direction, ...args }) => {
         <CardBody className="pt-0">
           {tableLoader ? (
             <div className="no-data">
-              {" "}
-              <Spinner></Spinner>{" "}
+              <Spinner />
             </div>
           ) : transactionData.length ? (
             <div className="table-responsive">

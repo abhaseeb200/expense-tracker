@@ -17,6 +17,7 @@ const Main = () => {
   const [user, setUser] = useState(getLocalUser);
   useEffect(() => {
     auth.onAuthStateChanged((currentUser) => {
+      console.log("onAuth","MAIN");
       if (currentUser) {
         localStorage.setItem("currentUser", currentUser.uid);
         setUser(currentUser.uid);

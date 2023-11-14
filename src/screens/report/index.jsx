@@ -90,6 +90,9 @@ const Report = () => {
       setTransactionDataBackUp(tempReportData);
       setExpenseaAmount(tempExpenseAmount);
       setIncomeAmount(tempIncomeAmount);
+    }).catch((err)=>{
+      console.log(err);
+      setTableLoader(false)
     });
   };
 

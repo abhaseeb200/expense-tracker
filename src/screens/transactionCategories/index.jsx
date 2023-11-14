@@ -1,17 +1,27 @@
-import { Button, Card, CardBody, CardText, CardTitle, Label, Table } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardText,
+  CardTitle,
+  Label,
+  Spinner,
+  Table,
+} from "reactstrap";
 import CustomInput from "../../components/input";
 import Select from "../../components/selectInput/select";
 import { useState } from "react";
+import {
+  deleteTransactionCatgory,
+  getTransactionCategory,
+  setTransactionCategory,
+  updateTransactionCategory,
+} from "../../config/service/firebase/transaction";
+import { useOutletContext } from "react-router";
+import { toast } from "react-toastify";
+import { useEffect } from "react";
 
-const TransactionCategories = (
-  args,
-  modal,
-  toggle,
-  getTransactionCategoryHandler,
-  incomeCategoryData,
-  expenseCategoryData,
-  currentUserID
-) => {
+const TransactionCategories = () => {
   const [name, setName] = useState({
     value: "",
     isError: false,
@@ -24,9 +34,13 @@ const TransactionCategories = (
     messageError: "",
   });
 
-  const [categoryData, setCategoryData] = useState(["hh"]);
   const [loader, setLoader] = useState(false);
-  const [tableLoader, setTableLoader] = useState(false);
+  const [tableLoader, setTableLoader] = useState(true);
+  const [categoryData, setCategoryData] = useState([]);
+  const [curretnDocID, setCurretnDocID] = useState("");
+  const [saveLoader, setSaveLoader] = useState(false);
+  const [deleteLoader, setDeleteLoader] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
 
   const nameHandler = (e) => {
     let expVal = e.target.value.trim().toLowerCase();
@@ -67,8 +81,9 @@ const TransactionCategories = (
     }
   };
 
-  const addCategory = () => {
-    let allCategoryData = [...incomeCategoryData, ...expenseCategoryData];
+  const [currentUserID] = useOutletContext();
+
+  const addCategory = async () => {
     let isAready = false;
     if (name.value === "") {
       setName({
@@ -77,9 +92,9 @@ const TransactionCategories = (
         messageError: "Please provide name",
       });
     } else {
-      for (let i = 0; i < allCategoryData.length; i++) {
+      for (let i = 0; i < categoryData?.length; i++) {
         if (
-          allCategoryData[i].name.replace(/ /g, "").toLowerCase() ===
+          categoryData[i].docData.name.replace(/ /g, "").toLowerCase() ===
           name.value.toLowerCase().replace(/ /g, "")
         ) {
           setName({
@@ -115,22 +130,120 @@ const TransactionCategories = (
     //check validation
     if (!name.isError && !category.isError) {
       setLoader(true);
-      setTransactionCategory(name.value.trim(), category.value, currentUserID)
-        .then((res) => {
-          setLoader(false);
-          toast.success("Category add successfully!", {
-            autoClose: 1500,
-          });
-          restAllFields();
-          getTransactionCategoryHandler(currentUserID);
-        })
-        .catch((err) => {
-          toast.error(err, {
-            autoClose: 1500,
-          });
-          setLoader(false);
+      try {
+        await setTransactionCategory(
+          name.value.trim(),
+          category.value,
+          currentUserID
+        );
+        setLoader(false);
+        toast.success("Category add successfully!", {
+          autoClose: 1500,
         });
+        restAllFields();
+        getTransactionCategoryHandler();
+      } catch (error) {
+        console.log(error);
+        toast.error(err, {
+          autoClose: 1500,
+        });
+        setLoader(false);
+      }
     }
+  };
+
+  const getTransactionCategoryHandler = async () => {
+    console.log(
+      "getTransactionCategoryHandler",
+      "=================================="
+    );
+    try {
+      let response = await getTransactionCategory(currentUserID);
+      let temp = [];
+      response.forEach((element) => {
+        temp.push({ docID: element.id, docData: element.data() });
+      });
+      setCategoryData(temp);
+      setTableLoader(false)
+    } catch (error) {
+      console.log(error);
+      toast.error(error, {
+        autoClose: 1500,
+      });
+    }
+  };
+
+  const deleteHandler = async (item) => {
+    setDeleteLoader(true)
+    setCurretnDocID(item.docID);
+    try {
+      await deleteTransactionCatgory(item.docID);
+      await getTransactionCategoryHandler();
+      toast.error("Delete category successfully!", {
+        autoClose: 1500,
+      });
+      restAllFields();
+    } catch (error) {
+      console.log(error);
+      setDeleteLoader(false)
+      toast.error(error, {
+        autoClose: 1500,
+      });
+    }
+  };
+
+  const editHandler = (item) => {
+    setName({
+      value: item.docData.name,
+      isError: false,
+      messageError: "",
+    });
+    setCategory({
+      value: item.docData.category,
+      isError: false,
+      messageError: "",
+    });
+    setCurretnDocID(item.docID);
+    setIsUpdate(true);
+  };
+
+  const saveHandler = async () => {
+    if (
+      name.value === "" ||
+      category.value === "" ||
+      category.selectedIndex === 0
+    ) {
+      return;
+    }
+
+    //check validition
+    if (!name.isError && !category.isError) {
+      setSaveLoader(true);
+      try {
+        await updateTransactionCategory(
+          name.value,
+          category.value,
+          curretnDocID
+        );
+        await getTransactionCategoryHandler();
+        toast.success("Delete category successfully!", {
+          autoClose: 1500,
+        });
+        setIsUpdate(false)
+        setSaveLoader(false);
+        restAllFields();
+      } catch (error) {
+        console.log(error);
+        toast.error(error, {
+          autoClose: 1500,
+        });
+      }
+    }
+  };
+
+  const cancelHandler = () => {
+    restAllFields();
+    setIsUpdate(false);
   };
 
   const restAllFields = () => {
@@ -146,6 +259,10 @@ const TransactionCategories = (
       messageError: "",
     });
   };
+
+  useEffect(() => {
+    getTransactionCategoryHandler();
+  }, [currentUserID]);
 
   return (
     <>
@@ -181,34 +298,56 @@ const TransactionCategories = (
               <option value="income">Income</option>
             </Select>
           </div>
-          <div className="col-md-12 mb-3">
-            <Button
-              color="primary"
-              className={loader ? "btn-disabled w-100" : "w-100"}
-              onClick={addCategory}
-            >
-              {loader ? <Spinner size="sm" /> : "Add Category"}
-            </Button>
-          </div>
+          {isUpdate ? (
+            <>
+              <div className="col-md-6 mb-3">
+                <Button
+                  color="primary"
+                  className={saveLoader ? "btn-disabled w-100" : "w-100"}
+                  onClick={() => saveHandler()}
+                >
+                  {saveLoader ? <Spinner size="sm" /> : "Save"}
+                </Button>
+              </div>
+              <div className="col-md-6">
+                <Button
+                  color="secondary"
+                  outline
+                  onClick={cancelHandler}
+                  className="w-100"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="col-md-12 mb-3">
+              <Button
+                color="primary"
+                className={loader ? "btn-disabled w-100" : "w-100"}
+                onClick={addCategory}
+              >
+                {loader ? <Spinner size="sm" /> : "Add Category"}
+              </Button>
+            </div>
+          )}
         </CardBody>
       </Card>
 
       <Card className="mb-3">
         <CardBody>
-          <CardTitle>Catgories Data</CardTitle>
-          <CardBody className="pt-0">
+          <CardTitle className="mb-4">Catgories Data</CardTitle>
           {tableLoader ? (
             <div className="no-data">
               <Spinner />
             </div>
-          ) : categoryData.length ? (
-            <div className="table-responsive">
+          ) : categoryData?.length ? (
+            <div className="table-responsive category-table">
               <Table bordered>
                 <thead>
                   <tr>
                     <th>Name</th>
-                    <th>Date</th>
-                    <th>Amount</th>
+                    <th>Type</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -216,10 +355,32 @@ const TransactionCategories = (
                   {categoryData.map((item, ind) => {
                     return (
                       <tr key={ind}>
-                        <td>{item.name}</td>
-                        <td>{item.date}</td>
-                        <td>{item.amount}</td>
-                        <td>{item.amount}</td>
+                        <td>{item.docData.name}</td>
+                        <td>{item.docData.category}</td>
+                        <td style={{ width: "200px" }}>
+                          <div className="d-inline-flex w-100">
+                            <Button
+                              color="primary"
+                              className="me-2"
+                              onClick={() => editHandler(item)}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              color="danger"
+                              className={
+                                item?.docID === curretnDocID && deleteLoader ? "btn-disabled w-100":"w-100"
+                              }
+                              onClick={() => deleteHandler(item)}
+                            >
+                              {item?.docID === curretnDocID && deleteLoader ? (
+                                <Spinner size="sm" />
+                              ) : (
+                                "Delete"
+                              )}
+                            </Button>
+                          </div>
+                        </td>
                       </tr>
                     );
                   })}
@@ -229,7 +390,6 @@ const TransactionCategories = (
           ) : (
             <CardText className="no-data">No Data found</CardText>
           )}
-        </CardBody>
         </CardBody>
       </Card>
     </>
