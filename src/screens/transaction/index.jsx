@@ -283,7 +283,7 @@ const Transaction = ({ direction, ...args }) => {
         setActionLoader(false);
         getTransactionHandler();
         resetFeilds();
-        toast.error("Transaction delete successfully!", {
+        toast.success("Transaction delete successfully!", {
           autoClose: 1500,
         });
         setIsUpdate(false);

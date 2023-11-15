@@ -36,15 +36,13 @@ const Account = () => {
     isError: false,
     messageError: "",
   });
-  const [
-    currentUserID,
-    getUserByIDHanlder,
-  ] = useOutletContext();
+  const [currentUserID, getUserByIDHanlder] = useOutletContext();
 
- 
-  const getUserByIDHandler = () => {
-    getUserByID(currentUserID).then((res) => {
-      res.forEach((element) => {
+  const getUserByIDHandler = async () => {
+    try {
+      let response = await getUserByID(currentUserID);
+      response.forEach((element) => {
+        console.log();
         setDocID(element.id);
         setEmail(element.data().email);
         setUsername({
@@ -58,7 +56,11 @@ const Account = () => {
         setAddress(element.data().address);
         setImageURL(element.data().profileURL);
       });
-    });
+    } catch (error) {
+      toast.error(error, {
+        autoClose: 1500,
+      });
+    }
   };
 
   const firstNameHandler = (e) => {
@@ -149,7 +151,7 @@ const Account = () => {
             url,
             docID
           );
-          getUserByIDHanlder(currentUserID);
+          await getUserByIDHanlder(currentUserID);
           setLoader(false);
           toast.success("Profile update successfully!", {
             autoClose: 1500,
@@ -170,11 +172,11 @@ const Account = () => {
             address.trim(),
             docID
           );
+          await getUserByIDHanlder(currentUserID);
           setLoader(false);
           toast.success("Profile update successfully!", {
             autoClose: 1500,
           });
-          getUserByIDHanlder(currentUserID);
         } catch (err) {
           toast.error(err, {
             autoClose: 1500,

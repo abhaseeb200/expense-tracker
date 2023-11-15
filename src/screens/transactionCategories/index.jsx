@@ -153,10 +153,6 @@ const TransactionCategories = () => {
   };
 
   const getTransactionCategoryHandler = async () => {
-    console.log(
-      "getTransactionCategoryHandler",
-      "=================================="
-    );
     try {
       let response = await getTransactionCategory(currentUserID);
       let temp = [];
@@ -179,10 +175,11 @@ const TransactionCategories = () => {
     try {
       await deleteTransactionCatgory(item.docID);
       await getTransactionCategoryHandler();
-      toast.error("Delete category successfully!", {
+      setDeleteLoader(false)
+      restAllFields();
+      toast.success("Delete category successfully!", {
         autoClose: 1500,
       });
-      restAllFields();
     } catch (error) {
       console.log(error);
       setDeleteLoader(false)
@@ -226,7 +223,7 @@ const TransactionCategories = () => {
           curretnDocID
         );
         await getTransactionCategoryHandler();
-        toast.success("Delete category successfully!", {
+        toast.success("Add category successfully!", {
           autoClose: 1500,
         });
         setIsUpdate(false)
