@@ -1,6 +1,4 @@
-import { Input } from "reactstrap";
 import "./style.css";
-import { useState } from "react";
 
 const Select = ({ children, onChange, value, isError, messageError }) => {
   return (

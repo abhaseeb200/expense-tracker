@@ -9,7 +9,7 @@ import {
   Table,
 } from "reactstrap";
 import CustomInput from "../../components/input";
-import Select from "../../components/selectInput/select";
+import Select from "../../components/selectInput/index";
 import { useState } from "react";
 import {
   deleteTransactionCatgory,

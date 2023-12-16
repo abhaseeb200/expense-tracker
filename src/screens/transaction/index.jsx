@@ -17,7 +17,7 @@ import {
 } from "reactstrap";
 import { useEffect, useState } from "react";
 import CustomInput from "../../components/input";
-// import Select from "../../components/selectInput/select";
+import Select from "../../components/selectInput/index";
 import "boxicons";
 import {
   deleteTransaction,
