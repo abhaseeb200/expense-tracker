@@ -17,7 +17,7 @@ import {
 } from "reactstrap";
 import { useEffect, useState } from "react";
 import CustomInput from "../../components/input";
-import Select from "../../components/selectInput/select";
+// import Select from "../../components/selectInput/select";
 import "boxicons";
 import {
   deleteTransaction,
@@ -29,7 +29,6 @@ import {
 import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { auth } from "../../config/firebaseConfig";
 
 const Transaction = ({ direction, ...args }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -429,13 +428,13 @@ const Transaction = ({ direction, ...args }) => {
           </div>
           <div className="col-md-4 mb-3">
             <Label>Transaction Type</Label>
-            <Select
+            {/* <Select
               onChange={selectTransactionHandler}
               value={transactionSelect}
             >
               <option value="expense">Expense</option>
               <option value="income">Income</option>
-            </Select>
+            </Select> */}
           </div>
           <div className="col-md-4 mb-3">
             <Label>Select Category</Label>
