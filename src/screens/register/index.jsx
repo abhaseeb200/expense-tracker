@@ -34,7 +34,7 @@ const Register = ({ user, setUser }) => {
   const navigate = useNavigate();
 
   const usernameHanlder = (e) => {
-    let usernameVal = e.target.value.trim()
+    let usernameVal = e.target.value.trim();
     if (usernameVal === "") {
       setUsername({
         value: usernameVal,
@@ -69,7 +69,7 @@ const Register = ({ user, setUser }) => {
   };
 
   const emailHanlder = (e) => {
-    let emailVal = e.target.value.trim()
+    let emailVal = e.target.value.trim();
     if (emailVal === "") {
       setEmail({
         value: emailVal,
@@ -103,7 +103,7 @@ const Register = ({ user, setUser }) => {
   };
 
   const passwordHanlder = (e) => {
-    let passwordVal = e.target.value
+    let passwordVal = e.target.value;
     if (passwordVal === "") {
       setPassword({
         value: e.target.value,
@@ -163,7 +163,7 @@ const Register = ({ user, setUser }) => {
   };
 
   const confirmPasswordHanlder = (e) => {
-    let confirmVal = e.target.value
+    let confirmVal = e.target.value;
     if (confirmVal === "") {
       setConfirmPassword({
         value: confirmVal,
@@ -255,13 +255,14 @@ const Register = ({ user, setUser }) => {
               });
               setLoader(false);
               navigate("/", { replace: true });
+            })
+            .catch((error) => {
+              console.log(error);
+              setLoader(false);
             });
         })
         .catch((err) => {
           setLoader(false);
-          toast.error(err, {
-            autoClose: 1500,
-          });
           toast.error(err.message, {
             autoClose: 1500,
           });
@@ -320,7 +321,7 @@ const Register = ({ user, setUser }) => {
                     isError={password.isError}
                     messageError={password.messageError}
                     onChange={passwordHanlder}
-                    autoComplete = "off"
+                    autoComplete="off"
                   />
                 </div>
                 <div className="mb-3">
@@ -332,7 +333,7 @@ const Register = ({ user, setUser }) => {
                     isError={confirmPassword.isError}
                     messageError={confirmPassword.messageError}
                     onChange={confirmPasswordHanlder}
-                    autoComplete = "off"
+                    autoComplete="off"
                   />
                 </div>
                 <Button
@@ -340,7 +341,7 @@ const Register = ({ user, setUser }) => {
                   className={loader ? "btn-disabled w-100" : "w-100"}
                   type="submit"
                 >
-                  {loader ? <Spinner size="sm"/> : "Sign up"}
+                  {loader ? <Spinner size="sm" /> : "Sign up"}
                 </Button>
               </Form>
               <p className="text-center">

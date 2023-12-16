@@ -163,9 +163,7 @@ const TransactionCategories = () => {
       setTableLoader(false)
     } catch (error) {
       console.log(error);
-      toast.error(error, {
-        autoClose: 1500,
-      });
+      setTableLoader(false)
     }
   };
 
