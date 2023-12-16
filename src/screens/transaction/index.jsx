@@ -439,7 +439,7 @@ const Transaction = ({ direction, ...args }) => {
           </div>
           <div className="col-md-4 mb-3">
             <Label>Select Category</Label>
-            <Select
+            {/* <Select
               onChange={categoryHandler}
               value={category.value}
               isError={category.isError}
@@ -448,7 +448,8 @@ const Transaction = ({ direction, ...args }) => {
               <option value="" hidden>
                 Select Category
               </option>
-              {transactionSelect === "income"
+              {
+              transactionSelect === "income"
                 ? incomeCategoryData.map((item, ind) => {
                     return (
                       <option key={ind} value={item.name}>
@@ -463,7 +464,7 @@ const Transaction = ({ direction, ...args }) => {
                       </option>
                     );
                   })}
-            </Select>
+            </Select> */}
           </div>
           <div className="col-md-6 mb-3">
             <Label>Select Date</Label>
