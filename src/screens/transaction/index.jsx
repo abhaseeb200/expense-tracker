@@ -428,17 +428,17 @@ const Transaction = ({ direction, ...args }) => {
           </div>
           <div className="col-md-4 mb-3">
             <Label>Transaction Type</Label>
-            {/* <Select
+            <Select
               onChange={selectTransactionHandler}
               value={transactionSelect}
             >
               <option value="expense">Expense</option>
               <option value="income">Income</option>
-            </Select> */}
+            </Select>
           </div>
           <div className="col-md-4 mb-3">
             <Label>Select Category</Label>
-            {/* <Select
+            <Select
               onChange={categoryHandler}
               value={category.value}
               isError={category.isError}
@@ -463,7 +463,7 @@ const Transaction = ({ direction, ...args }) => {
                       </option>
                     );
                   })}
-            </Select> */}
+            </Select>
           </div>
           <div className="col-md-6 mb-3">
             <Label>Select Date</Label>
