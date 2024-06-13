@@ -85,12 +85,6 @@ const Transaction = ({ direction, ...args }) => {
         isError: true,
         messageError: "Please provide name",
       });
-    } else if (!expVal.match(/^[0-9a-z\s]+$/)) {
-      setName({
-        value: e.target.value,
-        isError: true,
-        messageError: "Special Character not allowed",
-      });
     } else {
       setName({
         value: e.target.value,
@@ -447,8 +441,7 @@ const Transaction = ({ direction, ...args }) => {
               <option value="" hidden>
                 Select Category
               </option>
-              {
-              transactionSelect === "income"
+              {transactionSelect === "income"
                 ? incomeCategoryData.map((item, ind) => {
                     return (
                       <option key={ind} value={item.name}>
