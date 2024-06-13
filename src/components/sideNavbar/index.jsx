@@ -212,22 +212,19 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
                 </NavLink>
               </li>
               <li className="menu-item">
-                <Link
-                  to="#"
-                  className="menu-link"
-                  onClick={() => {
-                    toggle();
-                    setSideBarToggle(false);
-                  }}
+                <NavLink
+                  to="/transactionCategories"
+                  className="menu-link nav-link"
+                  onClick={OffCanvasCancelHanlder}
                 >
-                  <box-icon
-                    size="sm"
-                    name="category"
-                    color="#697a8d"
-                    style={{ width: "19px" }}
-                  ></box-icon>
-                  <div className="ms-2">Custom Categories</div>
-                </Link>
+                  {({ isActive }) => (
+                    <RouteLink
+                      name="Custom Categories"
+                      icon="category"
+                      isActive={isActive}
+                    />
+                  )}
+                </NavLink>
               </li>
               <li className="menu-header small text-uppercase">
                 <span className="menu-header-text">Budget</span>
