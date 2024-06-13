@@ -38,9 +38,7 @@ const Budget = () => {
     messageError: "",
   });
 
-  const [
-    currentUserID,
-  ] = useOutletContext();
+  const [currentUserID] = useOutletContext();
 
   const nameHandler = (e) => {
     let expVal = e.target.value.trim().toLowerCase();
@@ -49,12 +47,6 @@ const Budget = () => {
         value: e.target.value,
         isError: true,
         messageError: "Please provide name",
-      });
-    } else if (!expVal.match(/^[0-9a-z\s]+$/)) {
-      setName({
-        value: e.target.value,
-        isError: true,
-        messageError: "Special Character not allowed",
       });
     } else {
       setName({
