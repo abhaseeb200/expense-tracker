@@ -129,12 +129,15 @@ const Budget = () => {
         .then((res) => {
           setLoader(false);
           getBudgetHandler();
-          toast.success("Profile update successfully!", {
+          toast.success("Budget add successfully!", {
             autoClose: 1500,
           });
         })
         .catch((err) => {
           setLoader(false);
+          toast.error(err?.message, {
+            autoClose: 1500,
+          });
         });
     }
   };
@@ -151,7 +154,7 @@ const Budget = () => {
       })
       .catch((err) => {
         setTableLoader(false);
-        toast.error(err, {
+        toast.error(err?.message, {
           autoClose: 1500,
         });
       });
