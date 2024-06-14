@@ -1,8 +1,6 @@
 import { db } from "../../firebaseConfig";
 
-// let currentUserId = localStorage.getItem("currentUser");
-
-const setBudget = (name, date, amount,currentUserID) => {
+const setBudget = (name, date, amount, currentUserID) => {
   return db.collection("budget").add({
     userId: currentUserID,
     timeStamp: Date.now(),
