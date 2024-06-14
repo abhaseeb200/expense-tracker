@@ -19,6 +19,8 @@ import { authLogout } from "../../config/service/firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import avatarImg from "../../assets/1.png";
 import { toast } from "react-toastify";
+import { clearUserProfile } from "../../feature/auth/userSlice";
+import { useDispatch } from "react-redux";
 
 const CustomNavbar = ({
   currentUsername,
@@ -31,6 +33,8 @@ const CustomNavbar = ({
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const navigate = useNavigate();
 
+  const dispatch = useDispatch();
+
   const toggle = () => setDropdownOpen((prevState) => !prevState);
 
   window.addEventListener("resize", () => {
@@ -41,6 +45,7 @@ const CustomNavbar = ({
     authLogout()
       .then(() => {
         localStorage.clear();
+        dispatch(clearUserProfile());
         navigate("/login", { replace: true });
       })
       .catch((err) => {

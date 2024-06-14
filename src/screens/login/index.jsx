@@ -7,6 +7,8 @@ import { Link, Navigate, redirect, useNavigate } from "react-router-dom";
 import { authSignIn } from "../../config/service/firebase/auth";
 import { auth } from "../../config/firebaseConfig";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { getUserProfile } from "../../feature/auth/userSlice";
 
 const Login = ({ user,setUser }) => {
   const [email, setEmail] = useState({
@@ -21,6 +23,8 @@ const Login = ({ user,setUser }) => {
   });
   const [loader, setLoader] = useState(false);
   const navigate = useNavigate();
+
+  const dispatch = useDispatch()
 
   const emailHanlder = (e) => {
     let emailVal = e.target.value.trim()
@@ -119,11 +123,16 @@ const Login = ({ user,setUser }) => {
 
     //check validation
     if (!email.isError && !password.isError) {
+      let userData = {}
       setLoader(true);
       authSignIn(email.value, password.value)
         .then(() => {
           setLoader(false);
           let user = auth.currentUser;
+          userData = {
+            userId: user.uid,
+          }
+          dispatch(getUserProfile(userData))
           localStorage.setItem("currentUser", user.uid);
           setUser(user.uid)
           navigate("/", { replace: true });

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import SideNavbar from "../../components/sideNavbar";
 import CustomNavbar from "../../components/navbar";
 import getUserByID from "../service/firebase/getUserByID";
 import { auth } from "../firebaseConfig";
+import { getUserProfile } from "../../feature/auth/userSlice";
 
 const ProtectRoute = ({ user }) => {
   const [sideBarToggle, setSideBarToggle] = useState(false);
@@ -11,6 +13,7 @@ const ProtectRoute = ({ user }) => {
   const [currentProfileImage, setCurrentProfileImage] = useState("");
   const [currentUserID, setCurrentUserID] = useState("");
 
+  const dispatch = useDispatch();
 
   useEffect(() => {
     authChangeHanlder();
@@ -28,11 +31,12 @@ const ProtectRoute = ({ user }) => {
 
   //for account setting page real time
   const getUserByIDHanlder = (currentUser) => {
+    console.log("getUserByIDHanlder");
     getUserByID(currentUser).then((res) => {
-      console.log("=====");
       res.forEach((element) => {
         setCurrrentUsername(element.data().username);
         setCurrentProfileImage(element.data().profileURL);
+        dispatch(getUserProfile(element.data()));
       });
     });
   };
@@ -55,12 +59,7 @@ const ProtectRoute = ({ user }) => {
             currentProfileImage={currentProfileImage}
             currentUserID={currentUserID}
           />
-          <Outlet
-            context={[
-              currentUserID,
-              getUserByIDHanlder,
-            ]}
-          />
+          <Outlet context={[currentUserID, getUserByIDHanlder]} />
         </div>
       </div>
     </>
