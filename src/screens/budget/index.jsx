@@ -11,14 +11,31 @@ import {
 } from "reactstrap";
 import { useEffect, useState } from "react";
 import CustomInput from "../../components/input";
-import { getBudget, setBudget } from "../../config/service/firebase/budget";
+import {
+  deleteBudget as firebaseDeleteBudget,
+  getBudget as firebaseGetBudget,
+  setBudget,
+  updateBudget as firebaseUpdateBudget,
+} from "../../config/service/firebase/budget";
 import { toast } from "react-toastify";
 import { useOutletContext } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addBudget,
+  deleteBudget,
+  editBudget,
+  getBudget,
+} from "../../feature/budget/budgetSlice";
 
 const Budget = () => {
   const [loader, setLoader] = useState(false);
-  const [tableLoader, setTableLoader] = useState(true);
-  const [budgetData, setBudgetData] = useState([]);
+  const [tableLoader, setTableLoader] = useState(false);
+  const [currentDocID, setCurrentDocID] = useState("");
+  const [saveLoader, setSaveLoader] = useState(false);
+  const [deleteLoader, setDeleteLoader] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+
+  // const [budgetData, setBudgetData] = useState([]);
 
   const [name, setName] = useState({
     value: "",
@@ -37,6 +54,9 @@ const Budget = () => {
     isError: false,
     messageError: "",
   });
+
+  const dispatch = useDispatch();
+  const { budgetData } = useSelector((state) => state?.budget);
 
   const [currentUserID] = useOutletContext();
 
@@ -95,7 +115,7 @@ const Budget = () => {
     }
   };
 
-  const addBudget = () => {
+  const addBudgetHandler = () => {
     if (name.value === "") {
       setName({
         value: name.value,
@@ -128,7 +148,15 @@ const Budget = () => {
       setBudget(name.value, date.value, amount.value, currentUserID)
         .then((res) => {
           setLoader(false);
-          getBudgetHandler();
+          let data = {
+            docID: currentDocID,
+            docData: {
+              name: name.value,
+              date: date.value,
+              amount: amount.value,
+            },
+          };
+          dispatch(addBudget(data));
           toast.success("Budget add successfully!", {
             autoClose: 1500,
           });
@@ -143,14 +171,18 @@ const Budget = () => {
   };
 
   const getBudgetHandler = () => {
-    getBudget(currentUserID)
+    setTableLoader(true)
+    firebaseGetBudget(currentUserID)
       .then((res) => {
         let tempBudgetData = [];
         res.forEach((element) => {
-          tempBudgetData.push(element.data());
+          tempBudgetData.push({
+            docID: element.id,
+            docData: element.data(),
+          });
         });
         setTableLoader(false);
-        setBudgetData(tempBudgetData);
+        dispatch(getBudget(tempBudgetData));
       })
       .catch((err) => {
         setTableLoader(false);
@@ -160,7 +192,103 @@ const Budget = () => {
       });
   };
 
-  const todayDateAttributeHanlder = () => {
+  const deleteHandler = async (item) => {
+    setDeleteLoader(true);
+    setCurrentDocID(item?.docID);
+    try {
+      await firebaseDeleteBudget(item?.docID);
+      dispatch(deleteBudget(item?.docID));
+      setDeleteLoader(false);
+      restAllFields();
+      toast.success("Delete budget successfully!", {
+        autoClose: 1500,
+      });
+    } catch (error) {
+      setDeleteLoader(false);
+      toast.error(error.message, {
+        autoClose: 1500,
+      });
+    }
+  };
+
+  const editHandler = (item) => {
+    setName({
+      value: item.docData.name,
+      isError: false,
+      messageError: "",
+    });
+    setDate({
+      value: item.docData.date,
+      isError: false,
+      messageError: "",
+    });
+    setAmount({
+      value: item.docData.amount,
+      isError: false,
+      messageError: "",
+    });
+    setCurrentDocID(item.docID);
+    setIsUpdate(true);
+  };
+
+  const saveHandler = async () => {
+    if (name.value === "" || amount.value === "" || date.value === "") {
+      return;
+    }
+
+    //CHECK VALIDATION
+    if (!name.isError && !amount.isError && !date.isError) {
+      setSaveLoader(true);
+      try {
+        await firebaseUpdateBudget(
+          name.value,
+          amount.value,
+          date.value,
+          currentDocID
+        );
+        let data = {
+          docID: currentDocID,
+          docData: { name: name.value, amount: amount.value, date: date.value },
+        };
+        dispatch(editBudget(data));
+        toast.success("Update Budget successfully!", {
+          autoClose: 1500,
+        });
+        setIsUpdate(false);
+        setSaveLoader(false);
+        restAllFields();
+      } catch (error) {
+        toast.error(error?.message, {
+          autoClose: 1500,
+        });
+      }
+    }
+  };
+
+  const cancelHandler = () => {
+    restAllFields();
+    setIsUpdate(false);
+  };
+
+  const restAllFields = () => {
+    setName({
+      value: "",
+      isError: false,
+      messageError: "",
+    });
+    setDate({
+      value: "",
+      isError: false,
+      messageError: "",
+    });
+    setAmount({
+      value: "",
+      isError: false,
+      messageError: "",
+    });
+  };
+
+  const todayDateAttributeHandler = () => {
     let d = new Date();
     return (
       d.getFullYear() + "-" + parseInt(d.getMonth() + 1) + "-" + d.getDate()
@@ -168,7 +296,9 @@ const Budget = () => {
   };
 
   useEffect(() => {
-    getBudgetHandler();
+    if (!budgetData?.length) {
+      getBudgetHandler();
+    }
   }, [currentUserID]);
 
   return (
@@ -195,7 +325,7 @@ const Budget = () => {
             <CustomInput
               placeholder=""
               type="date"
-              max={todayDateAttributeHanlder()}
+              max={todayDateAttributeHandler()}
               value={date.value}
               isError={date.isError}
               messageError={date.messageError}
@@ -213,15 +343,39 @@ const Budget = () => {
               onChange={amountHandler}
             />
           </div>
-          <div className="col-md-12 w-100">
-            <Button
-              color="primary"
-              className={loader ? "btn-disabled w-100" : "w-100"}
-              onClick={addBudget}
-            >
-              {loader ? <Spinner size="sm" /> : "Add Budget"}
-            </Button>
-          </div>
+          {isUpdate ? (
+            <>
+              <div className="col-md-6 mb-2">
+                <Button
+                  color="primary"
+                  className={saveLoader ? "btn-disabled w-100" : "w-100"}
+                  onClick={saveHandler}
+                >
+                  {saveLoader ? <Spinner size="sm" /> : "Save"}
+                </Button>
+              </div>
+              <div className="col-md-6">
+                <Button
+                  color="secondary"
+                  outline
+                  onClick={cancelHandler}
+                  className="w-100"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="col-md-12 w-100">
+              <Button
+                color="primary"
+                className={loader ? "btn-disabled w-100" : "w-100"}
+                onClick={addBudgetHandler}
+              >
+                {loader ? <Spinner size="sm" /> : "Add Budget"}
+              </Button>
+            </div>
+          )}
         </CardBody>
       </Card>
       <Card className="mt-4">
@@ -247,9 +401,35 @@ const Budget = () => {
                   {budgetData.map((item, ind) => {
                     return (
                       <tr key={ind}>
-                        <td>{item.name}</td>
-                        <td>{item.date}</td>
-                        <td>{item.amount}</td>
+                        <td>{item?.docData?.name}</td>
+                        <td>{item?.docData?.date}</td>
+                        <td>{item?.docData?.amount}</td>
+                        <td style={{ width: "200px" }}>
+                          <div className="d-inline-flex w-100">
+                            <Button
+                              color="primary"
+                              className="me-2"
+                              onClick={() => editHandler(item)}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              color="danger"
+                              className={
+                                item?.docID === currentDocID && deleteLoader
+                                  ? "btn-disabled w-100"
+                                  : "w-100"
+                              }
+                              onClick={() => deleteHandler(item)}
+                            >
+                              {item?.docID === currentDocID && deleteLoader ? (
+                                <Spinner size="sm" />
+                              ) : (
+                                "Delete"
+                              )}
+                            </Button>
+                          </div>
+                        </td>
                       </tr>
                     );
                   })}

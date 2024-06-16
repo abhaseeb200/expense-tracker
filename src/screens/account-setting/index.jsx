@@ -20,6 +20,8 @@ import { storage } from "../../config/firebaseConfig";
 import avatarImg from "../../assets/1.png";
 import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { editUserProfile } from "../../feature/auth/userSlice";
 
 const Account = () => {
   const [firstName, setFirstName] = useState("");
@@ -38,29 +40,22 @@ const Account = () => {
   });
   const [currentUserID, getUserByIDHanlder] = useOutletContext();
 
+  const { userData } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
   const getUserByIDHandler = async () => {
-    try {
-      let response = await getUserByID(currentUserID);
-      response.forEach((element) => {
-        console.log();
-        setDocID(element.id);
-        setEmail(element.data().email);
-        setUsername({
-          value: element.data().username,
-          isError: false,
-          messageError: "",
-        });
-        setFirstName(element.data().fname);
-        setLastName(element.data().lname);
-        setPhone(element.data().phone);
-        setAddress(element.data().address);
-        setImageURL(element.data().profileURL);
-      });
-    } catch (error) {
-      toast.error(error, {
-        autoClose: 1500,
-      });
-    }
+    setFirstName(userData?.fname);
+    setLastName(userData?.lname);
+    setPhone(userData?.phone);
+    setAddress(userData?.address);
+    setImageURL(userData?.profileURL);
+    setDocID(userData?.docID);
+    setEmail(userData?.email);
+    setUsername({
+      value: userData?.username,
+      isError: false,
+      messageError: "",
+    });
   };
 
   const firstNameHandler = (e) => {
@@ -151,7 +146,18 @@ const Account = () => {
             url,
             docID
           );
-          await getUserByIDHanlder(currentUserID);
+          let data = {
+            profileURL: url,
+            phone: phone,
+            email: email,
+            lname: lastName,
+            userId: userData?.userId,
+            username: username.value.trim(),
+            fname: firstName,
+            address: address,
+            docID: docID,
+          };
+          dispatch(editUserProfile(data));
           setLoader(false);
           toast.success("Profile update successfully!", {
             autoClose: 1500,
@@ -172,13 +178,23 @@ const Account = () => {
             address.trim(),
             docID
           );
-          await getUserByIDHanlder(currentUserID);
+          let data = {
+            phone: phone,
+            email: email,
+            lname: lastName,
+            userId: userData?.userId,
+            username: username.value.trim(),
+            fname: firstName,
+            address: address,
+            docID: docID,
+          };
           setLoader(false);
+          dispatch(editUserProfile(data));
           toast.success("Profile update successfully!", {
             autoClose: 1500,
           });
         } catch (err) {
-          toast.error(err, {
+          toast.error(err?.message, {
             autoClose: 1500,
           });
         }
@@ -188,7 +204,7 @@ const Account = () => {
 
   useEffect(() => {
     getUserByIDHandler();
-  }, [currentUserID]);
+  }, [currentUserID, userData]);
 
   return (
     <>
@@ -199,7 +215,7 @@ const Account = () => {
             <div className="d-flex align-items-start align-items-sm-center gap-4">
               <img
                 src={imageURL || avatarImg}
-                className="d-block rounded"
+                className="d-block rounded object-fit-cover"
                 height="100"
                 width="100"
               />

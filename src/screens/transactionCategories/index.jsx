@@ -20,6 +20,13 @@ import {
 import { useOutletContext } from "react-router";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addCategory,
+  deleteCategory,
+  editCategory,
+  getCategory,
+} from "../../feature/category/categorySlice";
 
 const TransactionCategories = () => {
   const [name, setName] = useState({
@@ -36,11 +43,13 @@ const TransactionCategories = () => {
 
   const [loader, setLoader] = useState(false);
   const [tableLoader, setTableLoader] = useState(true);
-  const [categoryData, setCategoryData] = useState([]);
   const [curretnDocID, setCurretnDocID] = useState("");
   const [saveLoader, setSaveLoader] = useState(false);
   const [deleteLoader, setDeleteLoader] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
+
+  const dispatch = useDispatch();
+  const { categoryData } = useSelector((state) => state.category);
 
   const nameHandler = (e) => {
     let expVal = e.target.value.trim().toLowerCase();
@@ -83,7 +92,7 @@ const TransactionCategories = () => {
 
   const [currentUserID] = useOutletContext();
 
-  const addCategory = async () => {
+  const createCategory = async () => {
     let isAready = false;
     if (name.value === "") {
       setName({
@@ -131,22 +140,29 @@ const TransactionCategories = () => {
     if (!name.isError && !category.isError) {
       setLoader(true);
       try {
-        await setTransactionCategory(
+        let response = await setTransactionCategory(
           name.value.trim(),
           category.value,
           currentUserID
         );
-        setLoader(false);
+        let data = {
+          docID: response.id,
+          docData: {
+            name: name.value,
+            category: category.value,
+            userId: currentUserID,
+          },
+        };
+        dispatch(addCategory(data));
         toast.success("Category add successfully!", {
           autoClose: 1500,
         });
         restAllFields();
-        getTransactionCategoryHandler();
       } catch (error) {
-        console.log(error);
-        toast.error(err, {
+        toast.error(error.message, {
           autoClose: 1500,
         });
+      } finally {
         setLoader(false);
       }
     }
@@ -154,34 +170,37 @@ const TransactionCategories = () => {
 
   const getTransactionCategoryHandler = async () => {
     try {
-      let response = await getTransactionCategory(currentUserID);
-      let temp = [];
-      response.forEach((element) => {
-        temp.push({ docID: element.id, docData: element.data() });
-      });
-      setCategoryData(temp);
-      setTableLoader(false)
+      if (!categoryData?.length) {
+        let response = await getTransactionCategory(currentUserID);
+        let temp = [];
+        response.forEach((element) => {
+          temp.push({ docID: element.id, docData: element.data() });
+        });
+        dispatch(getCategory(temp));
+      }
     } catch (error) {
-      console.log(error);
-      setTableLoader(false)
+      toast.error(error?.message, {
+        autoClose: 1500,
+      });
+    } finally {
+      setTableLoader(false);
     }
   };
 
   const deleteHandler = async (item) => {
-    setDeleteLoader(true)
-    setCurretnDocID(item.docID);
+    setDeleteLoader(true);
+    setCurretnDocID(item?.docID);
     try {
-      await deleteTransactionCatgory(item.docID);
-      await getTransactionCategoryHandler();
-      setDeleteLoader(false)
+      await deleteTransactionCatgory(item?.docID);
+      dispatch(deleteCategory(item?.docID));
+      setDeleteLoader(false);
       restAllFields();
       toast.success("Delete category successfully!", {
         autoClose: 1500,
       });
     } catch (error) {
-      console.log(error);
-      setDeleteLoader(false)
-      toast.error(error, {
+      setDeleteLoader(false);
+      toast.error(error.message, {
         autoClose: 1500,
       });
     }
@@ -220,16 +239,19 @@ const TransactionCategories = () => {
           category.value,
           curretnDocID
         );
-        await getTransactionCategoryHandler();
-        toast.success("Add category successfully!", {
+        let data = {
+          docID: curretnDocID,
+          docData: { name: name.value, category: category.value },
+        };
+        dispatch(editCategory(data));
+        toast.success("Update category successfully!", {
           autoClose: 1500,
         });
-        setIsUpdate(false)
+        setIsUpdate(false);
         setSaveLoader(false);
         restAllFields();
       } catch (error) {
-        console.log(error);
-        toast.error(error, {
+        toast.error(error?.message, {
           autoClose: 1500,
         });
       }
@@ -320,7 +342,7 @@ const TransactionCategories = () => {
               <Button
                 color="primary"
                 className={loader ? "btn-disabled w-100" : "w-100"}
-                onClick={addCategory}
+                onClick={createCategory}
               >
                 {loader ? <Spinner size="sm" /> : "Add Category"}
               </Button>
@@ -331,7 +353,7 @@ const TransactionCategories = () => {
 
       <Card className="mb-3">
         <CardBody>
-          <CardTitle className="mb-4">Catgories Data</CardTitle>
+          <CardTitle className="mb-4">Categories Data</CardTitle>
           {tableLoader ? (
             <div className="no-data">
               <Spinner />
@@ -364,7 +386,9 @@ const TransactionCategories = () => {
                             <Button
                               color="danger"
                               className={
-                                item?.docID === curretnDocID && deleteLoader ? "btn-disabled w-100":"w-100"
+                                item?.docID === curretnDocID && deleteLoader
+                                  ? "btn-disabled w-100"
+                                  : "w-100"
                               }
                               onClick={() => deleteHandler(item)}
                             >

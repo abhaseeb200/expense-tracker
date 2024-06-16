@@ -20,8 +20,8 @@ import CustomInput from "../../components/input";
 import Select from "../../components/selectInput/index";
 import "boxicons";
 import {
-  deleteTransaction,
-  getTransaction,
+  deleteTransaction as firebaseDeleteTransaction,
+  getTransaction as firebaseGetTransaction,
   getTransactionCategory,
   setTransaction,
   updateTransaction,
@@ -29,10 +29,19 @@ import {
 import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addTransaction,
+  getTransaction,
+  deleteTransaction,
+  editTransaction,
+} from "../../feature/transaction/transactionSlice";
+import { getCategory } from "../../feature/category/categorySlice";
+import TransactionCategoryModal from "../modal";
 
 const Transaction = ({ direction, ...args }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [transactionData, setTransactionData] = useState([]);
+  // const [transactionData, setTransactionData] = useState([]);
   const [loader, setLoader] = useState(false);
   const [tableLoader, setTableLoader] = useState(true);
   const [currentSelect, setCurrentSelect] = useState(false);
@@ -42,10 +51,10 @@ const Transaction = ({ direction, ...args }) => {
   const [currentDocID, setCurrentDocID] = useState("");
   const [expenseCategoryData, setExpenseCategoryData] = useState([]);
   const [incomeCategoryData, setIncomeCategoryData] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [currentUserID] = useOutletContext();
 
-  useEffect(() => {}, []);
   const [name, setName] = useState({
     value: "",
     isError: false,
@@ -71,6 +80,10 @@ const Transaction = ({ direction, ...args }) => {
     isError: false,
     messageError: "",
   });
+
+  const dispatch = useDispatch();
+  const { transactionData } = useSelector((state) => state.transaction);
+  const { categoryData } = useSelector((state) => state.category);
 
   const toggleDropdown = (ind) => {
     setDropdownOpen((prevState) => !prevState);
@@ -158,7 +171,7 @@ const Transaction = ({ direction, ...args }) => {
     });
   };
 
-  const addTransacion = () => {
+  const addTransactionHandler = () => {
     if (name.value === "") {
       setName({
         value: name.value,
@@ -180,9 +193,9 @@ const Transaction = ({ direction, ...args }) => {
         messageError: "Please provide amount",
       });
     }
-    if (category.value === "") {
+    if (category?.value === "" || category?.selectedIndex === 0) {
       setCategory({
-        value: category.value,
+        value: category?.value,
         isError: true,
         messageError: "Please select type",
       });
@@ -192,6 +205,7 @@ const Transaction = ({ direction, ...args }) => {
       name.value === "" ||
       date.value === "" ||
       amount.value === "" ||
+      category?.value === "" ||
       category.selectedIndex === 0
     ) {
       return;
@@ -214,16 +228,27 @@ const Transaction = ({ direction, ...args }) => {
         currentUserID
       )
         .then((res) => {
+          let data = {
+            docID: res.id,
+            docData: {
+              name: name.value,
+              category: category.value,
+              date: date.value,
+              amount: amount.value,
+              type: transactionSelect,
+              userId: currentUserID,
+            },
+          };
+          dispatch(addTransaction(data));
           setLoader(false);
           resetFeilds();
           toast.success("Transaction add successfully!", {
             autoClose: 1500,
           });
-          getTransactionHandler();
         })
         .catch((err) => {
           setLoader(false);
-          toast.error(err, {
+          toast.error(err.message, {
             autoClose: 1500,
           });
         });
@@ -231,50 +256,64 @@ const Transaction = ({ direction, ...args }) => {
   };
 
   const getTransactionHandler = () => {
-    getTransaction(currentUserID)
-      .then((res) => {
-        let tempTransactionData = [];
-        let tempExpenseCategoryData = [];
-        let tempIncomeCategoryData = [];
-        res.forEach((element) => {
-          tempTransactionData.push({
-            docID: element.id,
-            docData: element.data(),
+    if (!transactionData?.length) {
+      firebaseGetTransaction(currentUserID)
+        .then((res) => {
+          let tempTransactionData = [];
+          res.forEach((element) => {
+            tempTransactionData.push({
+              docID: element.id,
+              docData: element.data(),
+            });
           });
+          dispatch(getTransaction(tempTransactionData));
+          setTableLoader(false);
+        })
+        .catch((err) => {
+          setTableLoader(false);
         });
-
-        setTransactionData(tempTransactionData);
-        setTableLoader(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setTableLoader(false);
-      });
+    }
+    setTableLoader(false);
   };
 
   const getTransactionCategoryHandler = () => {
     let tempExpenseCategoryData = [];
     let tempIncomeCategoryData = [];
-    getTransactionCategory(currentUserID).then((res) => {
-      console.log("-------------------");
-      res.forEach((element) => {
-        if (element.data().category === "expense") {
-          tempExpenseCategoryData.push(element.data());
+    if (!categoryData?.length) {
+      getTransactionCategory(currentUserID).then((res) => {
+        let data = [];
+        res.forEach((element) => {
+          data.push({
+            docID: element.id,
+            docData: element.data(),
+          });
+          if (element.data().category === "expense") {
+            tempExpenseCategoryData.push(element.data());
+          } else {
+            tempIncomeCategoryData.push(element.data());
+          }
+        });
+        dispatch(getCategory(data));
+      });
+    } else {
+      categoryData.forEach((element) => {
+        if (element?.docData?.category === "expense") {
+          tempExpenseCategoryData.push(element?.docData);
         } else {
-          tempIncomeCategoryData.push(element.data());
+          tempIncomeCategoryData.push(element?.docData);
         }
       });
-      setExpenseCategoryData(tempExpenseCategoryData);
-      setIncomeCategoryData(tempIncomeCategoryData);
-    });
+    }
+    setExpenseCategoryData(tempExpenseCategoryData);
+    setIncomeCategoryData(tempIncomeCategoryData);
   };
 
   const deleteItem = (ind, item) => {
     setActionLoader(true);
-    deleteTransaction(item.docID)
+    firebaseDeleteTransaction(item.docID)
       .then(() => {
         setActionLoader(false);
-        getTransactionHandler();
+        dispatch(deleteTransaction(item?.docID));
         resetFeilds();
         toast.success("Transaction delete successfully!", {
           autoClose: 1500,
@@ -283,7 +322,7 @@ const Transaction = ({ direction, ...args }) => {
         setDropdownOpen((prevState) => !prevState);
       })
       .catch((err) => {
-        toast.error(err, {
+        toast.error(err?.message, {
           autoClose: 1500,
         });
         setDropdownOpen((prevState) => !prevState);
@@ -344,7 +383,18 @@ const Transaction = ({ direction, ...args }) => {
         .then((res) => {
           setSaveLoader(false);
           setIsUpdate(false);
-          getTransactionHandler();
+          let data = {
+            docID: currentDocID,
+            docData: {
+              name: name.value,
+              type: transactionSelect,
+              category: category.value,
+              data: date.value,
+              amount: amount.value,
+              userId: currentUserID,
+            },
+          };
+          dispatch(editTransaction(data));
           resetFeilds();
           toast.success("Transaction update successfully!", {
             autoClose: 1500,
@@ -396,6 +446,14 @@ const Transaction = ({ direction, ...args }) => {
     );
   };
 
+  const addCategoryHandler = () => {
+    setIsModalOpen(true);
+  };
+
+  useEffect(() => {
+    getTransactionCategoryHandler()
+  }, [categoryData])
+  
   useEffect(() => {
     getTransactionHandler();
     getTransactionCategoryHandler();
@@ -430,8 +488,15 @@ const Transaction = ({ direction, ...args }) => {
               <option value="income">Income</option>
             </Select>
           </div>
-          <div className="col-md-4 mb-3">
+          <div className="col-md-4 mb-3 d-flex flex-wrap justify-content-between align-items-center">
             <Label>Select Category</Label>
+            <h6
+              role="button"
+              className="form-label fw-bolder text-primary"
+              onClick={addCategoryHandler}
+            >
+              Add Category
+            </h6>
             <Select
               onChange={categoryHandler}
               value={category.value}
@@ -441,21 +506,29 @@ const Transaction = ({ direction, ...args }) => {
               <option value="" hidden>
                 Select Category
               </option>
-              {transactionSelect === "income"
-                ? incomeCategoryData.map((item, ind) => {
-                    return (
-                      <option key={ind} value={item.name}>
-                        {item.name}
-                      </option>
-                    );
-                  })
-                : expenseCategoryData.map((item, ind) => {
-                    return (
-                      <option key={ind} value={item.name}>
-                        {item.name}
-                      </option>
-                    );
-                  })}
+              {transactionSelect === "income" ? (
+                incomeCategoryData.length > 0 ? (
+                  incomeCategoryData.map((item, ind) => (
+                    <option key={ind} value={item.name}>
+                      {item.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    No Income category found
+                  </option>
+                )
+              ) : expenseCategoryData.length > 0 ? (
+                expenseCategoryData.map((item, ind) => (
+                  <option key={ind} value={item.name}>
+                    {item.name}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  No Expense category found
+                </option>
+              )}
             </Select>
           </div>
           <div className="col-md-6 mb-3">
@@ -507,7 +580,7 @@ const Transaction = ({ direction, ...args }) => {
               <Button
                 color="primary"
                 className={loader ? "btn-disabled w-100" : "w-100"}
-                onClick={addTransacion}
+                onClick={() => addTransactionHandler}
               >
                 {loader ? <Spinner size="sm" /> : "Add Transaction"}
               </Button>
@@ -538,7 +611,7 @@ const Transaction = ({ direction, ...args }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {transactionData.map((item, ind) => {
+                  {transactionData?.map((item, ind) => {
                     return (
                       <tr key={ind}>
                         <td>{item.docData.name}</td>
@@ -619,6 +692,14 @@ const Transaction = ({ direction, ...args }) => {
           )}
         </CardBody>
       </Card>
+      <TransactionCategoryModal
+        modal={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        incomeCategoryData={incomeCategoryData}
+        expenseCategoryData={expenseCategoryData}
+        currentUserID={currentUserID}
+        getTransactionCategoryHandler={getTransactionCategoryHandler}
+      />
     </>
   );
 };

@@ -14,13 +14,14 @@ import CustomInput from "../../components/input";
 import { getTransaction } from "../../config/service/firebase/transaction";
 import "./style.css";
 import { useOutletContext } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Report = () => {
   const [transactionData, setTransactionData] = useState({});
   const [transactionDataBackUp, setTransactionDataBackUp] = useState({});
-  const [expenseaAmount, setExpenseaAmount] = useState(0);
+  const [expenseaAmount, setExpenseAmount] = useState(0);
   const [incomeAmount, setIncomeAmount] = useState(0);
-  const [tableLoader, setTableLoader] = useState(true);
+  const [tableLoader, setTableLoader] = useState(false);
 
   const [startDate, setStartDate] = useState({
     value: "",
@@ -32,6 +33,10 @@ const Report = () => {
     isError: false,
     messageError: "",
   });
+
+  const transactions = useSelector(
+    (state) => state.transaction.transactionData
+  );
 
   const [currentUserID] = useOutletContext();
 
@@ -71,29 +76,23 @@ const Report = () => {
     let tempReportData = {};
     let tempExpenseAmount = 0;
     let tempIncomeAmount = 0;
-    getTransaction(currentUserID).then((res) => {
-      totalAmountHanlder();
-      setTableLoader(false);
-      res.forEach((element) => {
-        if (!tempReportData[element.data().category]) {
-          tempReportData[element.data().category] = [];
-        }
-        tempReportData[element.data().category].push(element.data());
 
-        if (element.data().type === "expense") {
-          tempExpenseAmount += parseInt(element.data().amount);
-        } else {
-          tempIncomeAmount += parseInt(element.data().amount);
-        }
-      });
-      setTransactionData(tempReportData);
-      setTransactionDataBackUp(tempReportData);
-      setExpenseaAmount(tempExpenseAmount);
-      setIncomeAmount(tempIncomeAmount);
-    }).catch((err)=>{
-      console.log(err);
-      setTableLoader(false)
+    transactions.forEach((element) => {
+      if (!tempReportData[element?.docData?.category]) {
+        tempReportData[element?.docData?.category] = [];
+      }
+      tempReportData[element?.docData?.category].push(element?.docData);
+
+      if (element?.docData?.type === "expense") {
+        tempExpenseAmount += parseInt(element?.docData?.amount);
+      } else {
+        tempIncomeAmount += parseInt(element?.docData?.amount);
+      }
     });
+    setTransactionData(tempReportData);
+    setTransactionDataBackUp(tempReportData);
+    setExpenseAmount(tempExpenseAmount);
+    setIncomeAmount(tempIncomeAmount);
   };
 
   const filterData = () => {
@@ -165,7 +164,7 @@ const Report = () => {
         tempTotalIncomeAmount += parseInt(income.amount);
       });
     }
-    setExpenseaAmount(tempTotalExpenseAmount);
+    setExpenseAmount(tempTotalExpenseAmount);
     setIncomeAmount(tempTotalIncomeAmount);
     setStartDate({
       value: startDate.value,

@@ -13,15 +13,18 @@ import Select from "../../components/selectInput/index";
 import { setTransactionCategory } from "../../config/service/firebase/transaction";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useDispatch } from "react-redux";
+import { addCategory } from "../../feature/category/categorySlice";
 
 const TransactionCategoryModal = ({
   args,
   modal,
   toggle,
+  setIsModalOpen,
   getTransactionCategoryHandler,
   incomeCategoryData,
   expenseCategoryData,
-  currentUserID
+  currentUserID,
 }) => {
   const [name, setName] = useState({
     value: "",
@@ -36,6 +39,8 @@ const TransactionCategoryModal = ({
   });
 
   const [loader, setLoader] = useState(false);
+
+  const dispatch = useDispatch();
 
   const nameHandler = (e) => {
     let expVal = e.target.value.trim().toLowerCase();
@@ -76,7 +81,7 @@ const TransactionCategoryModal = ({
     }
   };
 
-  const addCategory = () => {
+  const addCategoryHandler = () => {
     let allCategoryData = [...incomeCategoryData, ...expenseCategoryData];
     let isAready = false;
     if (name.value === "") {
@@ -124,17 +129,26 @@ const TransactionCategoryModal = ({
     //check validation
     if (!name.isError && !category.isError) {
       setLoader(true);
-      setTransactionCategory(name.value.trim(), category.value,currentUserID)
+      setTransactionCategory(name.value.trim(), category.value, currentUserID)
         .then((res) => {
           setLoader(false);
+          let data = {
+            docID: res.id,
+            docData: {
+              name: name.value,
+              category: category.value,
+              userId: currentUserID,
+            },
+          };
+          dispatch(addCategory(data));
           toast.success("Category add successfully!", {
             autoClose: 1500,
           });
+          getTransactionCategoryHandler();
           restAllFields();
-          getTransactionCategoryHandler(currentUserID);
         })
         .catch((err) => {
-          toast.error(err, {
+          toast.error(err?.message, {
             autoClose: 1500,
           });
           setLoader(false);
@@ -165,7 +179,7 @@ const TransactionCategoryModal = ({
         onClosed={restAllFields}
         {...args}
       >
-        <ModalHeader toggle={toggle}>Add Transaction Cateogory</ModalHeader>
+        <ModalHeader toggle={toggle}>Add Transaction Category</ModalHeader>
         <ModalBody>
           <div className="col-md-12 mb-3">
             <Label>Category name</Label>
@@ -199,7 +213,7 @@ const TransactionCategoryModal = ({
             color="secondary"
             outline
             onClick={() => {
-              toggle();
+              setIsModalOpen(false);
             }}
           >
             Cancel
@@ -207,9 +221,9 @@ const TransactionCategoryModal = ({
           <Button
             color="primary"
             className={loader ? "btn-disabled cust-button" : "cust-button"}
-            onClick={addCategory}
+            onClick={addCategoryHandler}
           >
-            {loader ? <Spinner size="sm"/> : "Add Category"}
+            {loader ? <Spinner size="sm" /> : "Add Category"}
           </Button>
         </ModalFooter>
       </Modal>
