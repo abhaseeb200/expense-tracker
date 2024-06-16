@@ -20,20 +20,18 @@ import { Link, useNavigate } from "react-router-dom";
 import avatarImg from "../../assets/1.png";
 import { toast } from "react-toastify";
 import { clearUserProfile } from "../../feature/auth/userSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { clearTransactions } from "../../feature/transaction/transactionSlice";
+import { clearCategory } from "../../feature/category/categorySlice";
+import { clearBudget } from "../../feature/budget/budgetSlice";
 
-const CustomNavbar = ({
-  currentUsername,
-  currentProfileImage,
-  setSideBarToggle,
-  direction,
-  ...args
-}) => {
+const CustomNavbar = ({ setSideBarToggle, direction, ...args }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
+  const { userData } = useSelector((state) => state.auth);
 
   const toggle = () => setDropdownOpen((prevState) => !prevState);
 
@@ -46,6 +44,9 @@ const CustomNavbar = ({
       .then(() => {
         localStorage.clear();
         dispatch(clearUserProfile());
+        dispatch(clearTransactions())
+        dispatch(clearCategory())
+        dispatch(clearBudget())
         navigate("/login", { replace: true });
       })
       .catch((err) => {
@@ -74,7 +75,7 @@ const CustomNavbar = ({
             ) : (
               ""
             )}
-            <span>Welcome {currentUsername}</span>
+            <span>Welcome {userData?.username}</span>
           </div>
           <span>
             <Dropdown
@@ -84,18 +85,18 @@ const CustomNavbar = ({
             >
               <DropdownToggle className="rounded-circle p-0 border-0">
                 <img
-                  src={currentProfileImage || avatarImg}
-                  className="w-px-40 rounded-circle"
+                  src={userData?.profileURL || avatarImg}
+                  className="w-px-40 rounded-circle object-fit-cover"
                 />
               </DropdownToggle>
               <DropdownMenu {...args}>
                 <Link to="/account">
                   <DropdownItem className="user-navbar">
                     <img
-                      src={currentProfileImage || avatarImg}
-                      className="w-px-40 rounded-circle"
+                      src={userData?.profileURL || avatarImg}
+                      className="w-px-40 rounded-circle object-fit-cover"
                     />
-                    <span className="ms-2">{currentUsername}</span>
+                    <span className="ms-2">{userData?.username}</span>
                   </DropdownItem>
                 </Link>
                 <DropdownItem className="logout-btn" onClick={logoutHanlder}>
