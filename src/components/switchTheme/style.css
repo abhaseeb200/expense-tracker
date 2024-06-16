@@ -1,0 +1,53 @@
+body.dark-theme {
+  background-color: #05050c;
+  min-height: 100vh;
+}
+.dark-theme .card {
+  background-color: #212529;
+}
+.dark-theme span,
+.dark-theme p {
+  color: #afb4b9;
+}
+.dark-theme .card-title {
+  color: #afb4b9;
+}
+.dark-theme aside {
+  background-color: #05050c;
+}
+.dark-theme .dropdown-menu {
+  background-color: #05050c;
+}
+
+.dark-theme h6,
+.dark-theme .h6,
+.dark-theme h5,
+.dark-theme .h5,
+.dark-theme h4,
+.dark-theme .h4,
+.dark-theme h3,
+.dark-theme .h3,
+.dark-theme h2,
+.dark-theme .h2,
+.dark-theme h1,
+.dark-theme .h1 {
+  color: #afb4b9 !important;
+}
+
+.dark-theme .form-label,
+.dark-theme .col-form-label {
+  color: #afb4b9;
+}
+
+.dark-theme .form-select,
+.dark-theme .form-control {
+  background-color: #05050c;
+  border-color: #05050c;
+  color: #afb4b9;
+}
+
+.dark-theme .table > :not(caption) > * > *,
+.dark-theme .table {
+  background-color: #05050c;
+  color: #afb4b9 !important;
+}

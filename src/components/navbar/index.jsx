@@ -24,6 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearTransactions } from "../../feature/transaction/transactionSlice";
 import { clearCategory } from "../../feature/category/categorySlice";
 import { clearBudget } from "../../feature/budget/budgetSlice";
+import SwitchTheme from "../switchTheme";
 
 const CustomNavbar = ({ setSideBarToggle, direction, ...args }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -44,9 +45,9 @@ const CustomNavbar = ({ setSideBarToggle, direction, ...args }) => {
       .then(() => {
         localStorage.clear();
         dispatch(clearUserProfile());
-        dispatch(clearTransactions())
-        dispatch(clearCategory())
-        dispatch(clearBudget())
+        dispatch(clearTransactions());
+        dispatch(clearCategory());
+        dispatch(clearBudget());
         navigate("/login", { replace: true });
       })
       .catch((err) => {
@@ -77,7 +78,8 @@ const CustomNavbar = ({ setSideBarToggle, direction, ...args }) => {
             )}
             <span>Welcome {userData?.username}</span>
           </div>
-          <span>
+          <span className="d-flex gap-3 align-items-center">
+            <SwitchTheme />
             <Dropdown
               isOpen={dropdownOpen}
               toggle={toggle}
