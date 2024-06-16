@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import SideNavbar from "../../components/sideNavbar";
 import CustomNavbar from "../../components/navbar";
 import getUserByID from "../service/firebase/getUserByID";
@@ -9,11 +9,10 @@ import { getUserProfile } from "../../feature/auth/userSlice";
 
 const ProtectRoute = ({ user }) => {
   const [sideBarToggle, setSideBarToggle] = useState(false);
-  const [currentUsername, setCurrrentUsername] = useState("");
-  const [currentProfileImage, setCurrentProfileImage] = useState("");
   const [currentUserID, setCurrentUserID] = useState("");
 
   const dispatch = useDispatch();
+  const { userData } = useSelector((state) => state.auth);
 
   useEffect(() => {
     authChangeHanlder();
@@ -21,7 +20,6 @@ const ProtectRoute = ({ user }) => {
 
   const authChangeHanlder = () => {
     auth.onAuthStateChanged(async (currentUser) => {
-      console.log("onAuth","PROTECT ROUTE");
       if (currentUser) {
         setCurrentUserID(currentUser.uid);
         await getUserByIDHanlder(currentUser.uid);
@@ -31,14 +29,18 @@ const ProtectRoute = ({ user }) => {
 
   //for account setting page real time
   const getUserByIDHanlder = (currentUser) => {
-    console.log("getUserByIDHanlder");
-    getUserByID(currentUser).then((res) => {
-      res.forEach((element) => {
-        setCurrrentUsername(element.data().username);
-        setCurrentProfileImage(element.data().profileURL);
-        dispatch(getUserProfile(element.data()));
+    if (!userData?.email) {
+      let data = {};
+      getUserByID(currentUser).then((res) => {
+        res.forEach((element) => {
+          data = {
+            ...element.data(),
+            docID: element.id,
+          };
+          dispatch(getUserProfile(data));
+        });
       });
-    });
+    }
   };
 
   if (!user) {
@@ -53,12 +55,7 @@ const ProtectRoute = ({ user }) => {
           setSideBarToggle={setSideBarToggle}
         />
         <div className="layout-page">
-          <CustomNavbar
-            setSideBarToggle={setSideBarToggle}
-            currentUsername={currentUsername}
-            currentProfileImage={currentProfileImage}
-            currentUserID={currentUserID}
-          />
+          <CustomNavbar setSideBarToggle={setSideBarToggle} />
           <Outlet context={[currentUserID, getUserByIDHanlder]} />
         </div>
       </div>
