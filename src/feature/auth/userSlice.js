@@ -5,7 +5,6 @@ export const userSlice = createSlice({
   initialState: { userData: {}, isLogin: false },
   reducers: {
     getUserProfile: (state, action) => {
-      console.log(action, "PLAYLOAD");
       return {
         ...state,
         userData: {
@@ -13,6 +12,9 @@ export const userSlice = createSlice({
         },
         isLogin: true,
       };
+    },
+    editUserProfile: (state, action) => {
+      state.userData = action?.payload;
     },
     clearUserProfile: (state) => {
       return {
@@ -24,6 +26,7 @@ export const userSlice = createSlice({
   },
 });
 
-export const { getUserProfile, clearUserProfile } = userSlice.actions;
+export const { getUserProfile, editUserProfile, clearUserProfile } =
+  userSlice.actions;
 
 export default userSlice.reducer;
