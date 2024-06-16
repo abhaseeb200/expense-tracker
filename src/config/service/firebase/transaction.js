@@ -1,5 +1,6 @@
 import { auth, db } from "../../firebaseConfig";
 
+
 const setTransaction = (name, category, date, amount, type, currentUserID) => {
   return db.collection("transaction").add({
     userId: currentUserID,
@@ -44,7 +45,6 @@ const setTransactionCategory = (name, category, currentUserId) => {
 };
 
 const getTransactionCategory = (currentUserID) => {
-  console.log("form service folder", "--------------------------------");
   return db
     .collection("transactionCategory")
     .where("userId", "==", currentUserID)
