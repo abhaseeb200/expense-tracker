@@ -18,4 +18,16 @@ const getBudget = (currentUserID) => {
     .get();
 };
 
-export { setBudget, getBudget };
+const deleteBudget = (docId) => {
+  return db.collection("budget").doc(docId).delete();
+};
+
+const updateBudget = (name, amount, date, docId) => {
+  return db.collection("budget").doc(docId).update({
+    name: name,
+    amount: amount,
+    date: date,
+  });
+};
+
+export { setBudget, getBudget, deleteBudget, updateBudget };
