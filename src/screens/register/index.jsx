@@ -257,7 +257,9 @@ const Register = ({ user, setUser }) => {
               navigate("/", { replace: true });
             })
             .catch((error) => {
-              console.log(error);
+              toast.error(error.message, {
+                autoClose: 1500,
+              });
               setLoader(false);
             });
         })
