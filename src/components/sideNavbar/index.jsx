@@ -37,13 +37,6 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle, toggle }) => {
                     Xpensr
                   </span>
                 </Link>
-                <a
-                  href=""
-                  id="dashboard-close"
-                  className="layout-menu-toggle menu-link text-large ms-auto d-xl-none"
-                >
-                  <i className="bx bx-chevron-left bx-sm align-middle"></i>
-                </a>
               </div>
               <div className="menu-inner-shadow"></div>
               <ul className="menu-inner py-1 nav">
