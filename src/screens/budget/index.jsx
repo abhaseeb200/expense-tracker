@@ -149,7 +149,7 @@ const Budget = () => {
         .then((res) => {
           setLoader(false);
           let data = {
-            docID: currentDocID,
+            docID: res.id,
             docData: {
               name: name.value,
               date: date.value,
@@ -171,7 +171,7 @@ const Budget = () => {
   };
 
   const getBudgetHandler = () => {
-    setTableLoader(true)
+    setTableLoader(true);
     firebaseGetBudget(currentUserID)
       .then((res) => {
         let tempBudgetData = [];
@@ -193,6 +193,7 @@ const Budget = () => {
   };
 
   const deleteHandler = async (item) => {
+    console.log(item);
     setDeleteLoader(true);
     setCurrentDocID(item?.docID);
     try {
@@ -232,6 +233,7 @@ const Budget = () => {
   };
 
   const saveHandler = async () => {
+    console.log(currentDocID);
     if (name.value === "" || amount.value === "" || date.value === "") {
       return;
     }
@@ -395,6 +397,7 @@ const Budget = () => {
                     <th>Name</th>
                     <th>Date</th>
                     <th>Amount</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
