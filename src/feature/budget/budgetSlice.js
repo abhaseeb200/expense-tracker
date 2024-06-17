@@ -13,7 +13,7 @@ export const budgetSlice = createSlice({
     addBudget: (state, action) => {
       return {
         ...state,
-        budgetData: [...state.budgetData, action.payload],
+        budgetData: [action.payload, ...state.budgetData],
       };
     },
     editBudget: (state, action) => {
@@ -43,12 +43,7 @@ export const budgetSlice = createSlice({
   },
 });
 
-export const {
-  getBudget,
-  addBudget,
-  editBudget,
-  deleteBudget,
-  clearBudget,
-} = budgetSlice.actions;
+export const { getBudget, addBudget, editBudget, deleteBudget, clearBudget } =
+  budgetSlice.actions;
 
 export default budgetSlice.reducer;
