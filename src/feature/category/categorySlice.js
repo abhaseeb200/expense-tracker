@@ -13,7 +13,7 @@ export const categorySlice = createSlice({
     addCategory: (state, action) => {
       return {
         ...state,
-        categoryData: [...state.categoryData, action.payload],
+        categoryData: [action.payload, ...state.categoryData],
       };
     },
     editCategory: (state, action) => {

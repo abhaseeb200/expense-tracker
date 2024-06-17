@@ -13,7 +13,7 @@ export const transactionSlice = createSlice({
     addTransaction: (state, action) => {
       return {
         ...state,
-        transactionData: [...state.transactionData, action.payload],
+        transactionData: [action.payload,...state.transactionData],
       };
     },
     editTransaction: (state, action) => {
