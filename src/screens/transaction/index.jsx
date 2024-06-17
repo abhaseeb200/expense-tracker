@@ -580,7 +580,7 @@ const Transaction = ({ direction, ...args }) => {
               <Button
                 color="primary"
                 className={loader ? "btn-disabled w-100" : "w-100"}
-                onClick={() => addTransactionHandler}
+                onClick={() => addTransactionHandler()}
               >
                 {loader ? <Spinner size="sm" /> : "Add Transaction"}
               </Button>
