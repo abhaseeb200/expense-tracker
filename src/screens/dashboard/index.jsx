@@ -33,6 +33,7 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const { transactionData } = useSelector((state) => state.transaction);
   const { budgetData } = useSelector((state) => state.budget);
+  const { isDarkMode } = useSelector((state) => state?.themeMode);
 
   const [currentUserID] = useOutletContext();
 
@@ -153,12 +154,27 @@ const Dashboard = () => {
     ],
   };
   const optionsVertical = {
+    scales: {
+      x: {
+        ticks: {
+          color: isDarkMode ? "#afb4b9" : "#697a8d",
+        },
+      },
+      y: {
+        ticks: {
+          color: isDarkMode ? "#afb4b9" : "#697a8d",
+        },
+      },
+    },
     plugins: {
       title: {
         display: false,
       },
       legend: {
         display: true,
+        labels: {
+          color: isDarkMode ? "#afb4b9" : "#697a8d",
+        },
       },
       responsive: true,
     },
@@ -187,6 +203,18 @@ const Dashboard = () => {
         borderWidth: 2,
       },
     },
+    scales: {
+      x: {
+        ticks: {
+          color: isDarkMode ? "#afb4b9" : "#697a8d",
+        },
+      },
+      y: {
+        ticks: {
+          color: isDarkMode ? "#afb4b9" : "#697a8d",
+        },
+      },
+    },
     responsive: true,
     plugins: {
       title: {
@@ -194,6 +222,9 @@ const Dashboard = () => {
       },
       legend: {
         position: "top",
+        labels: {
+          color: isDarkMode ? "#afb4b9" : "#697a8d",
+        },
       },
     },
   };

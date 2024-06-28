@@ -1,21 +1,28 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
-import './style.css'
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { isDark } from "../../feature/themeMode/themeSlice";
+import "./style.css";
 
 function SwitchTheme() {
-  const [isDark, setIsDark] = useState(false);
+  const dispatch = useDispatch();
+  const { isDarkMode } = useSelector((state) => state?.themeMode);
 
   useEffect(() => {
-    if (isDark) {
+    if (isDarkMode) {
       document.body.classList.add("dark-theme");
     } else {
       document.body.classList.remove("dark-theme");
     }
-  }, [isDark]);
+  }, [isDarkMode]);
 
   return (
-    <div onClick={() => setIsDark((prev) => !prev)} role="button">
-      {isDark ? "Light" : "Dark"}
+    <div
+      onClick={() => {
+        dispatch(isDark(!isDarkMode));
+      }}
+      role="button"
+    >
+      {isDarkMode ? "Light" : "Dark"}
     </div>
   );
 }

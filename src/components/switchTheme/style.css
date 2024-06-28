@@ -1,9 +1,9 @@
 body.dark-theme {
-  background-color: #05050c;
+  background-color: #121212;
   min-height: 100vh;
 }
 .dark-theme .card {
-  background-color: #212529;
+  background-color: #282828;
 }
 .dark-theme span,
 .dark-theme p {
@@ -13,11 +13,19 @@ body.dark-theme {
   color: #afb4b9;
 }
 .dark-theme aside {
-  background-color: #05050c;
+  background-color: #282828;
   min-height: 100vh;
 }
 .dark-theme .dropdown-menu {
-  background-color: #05050c;
+  background-color: #282828;
+}
+
+.dark-theme .dropdown-menu {
+  box-shadow: 0 0.25rem 1rem rgb(18 18 18 / 49%);
+}
+.dark-theme .dropdown-item:focus,
+.dark-theme .dropdown-item:hover {
+  background: rgb(105, 108, 255, 0.16) !important;
 }
 
 .dark-theme h6,
@@ -32,7 +40,7 @@ body.dark-theme {
 .dark-theme .h2,
 .dark-theme h1,
 .dark-theme .h1 {
-  color: #afb4b9 !important;
+  color: #dddddd !important;
 }
 
 .dark-theme .form-label,
@@ -42,13 +50,39 @@ body.dark-theme {
 
 .dark-theme .form-select,
 .dark-theme .form-control {
-  background-color: #05050c;
-  border-color: #05050c;
-  color: #afb4b9;
+  background-color: transparent;
+  color: #878787;
+  border-color: #717171;
+}
+
+.dark-theme .form-select::placeholder,
+.dark-theme .form-control::placeholder {
+  color: #878787;
 }
 
 .dark-theme .table > :not(caption) > * > *,
 .dark-theme .table {
-  background-color: #05050c;
+  background-color: transparent;
   color: #afb4b9 !important;
+  border-color: #717171;
+}
+
+.dark-theme .app-brand-text,
+.dark-theme .nav-link,
+.dark-theme #icon {
+  color: #fff;
+}
+
+.dark-theme .modal-content {
+  background-color: #282828;
+}
+.dark-theme .modal-header {
+  border-bottom: 1px solid #717171;
+}
+.dark-theme .modal-footer {
+  border-top: 1px solid #717171;
+}
+
+.dark-theme .modal-backdrop.show {
+  opacity: .8;
 }

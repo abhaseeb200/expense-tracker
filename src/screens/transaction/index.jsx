@@ -451,9 +451,9 @@ const Transaction = ({ direction, ...args }) => {
   };
 
   useEffect(() => {
-    getTransactionCategoryHandler()
-  }, [categoryData])
-  
+    getTransactionCategoryHandler();
+  }, [categoryData]);
+
   useEffect(() => {
     getTransactionHandler();
     getTransactionCategoryHandler();
@@ -490,13 +490,13 @@ const Transaction = ({ direction, ...args }) => {
           </div>
           <div className="col-md-4 mb-3 d-flex flex-wrap justify-content-between align-items-center">
             <Label>Select Category</Label>
-            <h6
+            <div
               role="button"
               className="form-label fw-bolder text-primary"
               onClick={addCategoryHandler}
             >
               Add Category
-            </h6>
+            </div>
             <Select
               onChange={categoryHandler}
               value={category.value}
