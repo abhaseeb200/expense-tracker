@@ -1,0 +1,11 @@
+tr:nth-child(odd) {
+  background-color: #2d2d2d;
+}
+
+thead tr {
+  background-color: transparent !important;
+}
+
+.table > :not(caption) > * > * {
+  padding: 1rem 1.25rem !important;
+}

@@ -34,11 +34,19 @@
   font-size: 80%;
 }
 
-.validationError:focus, .validationError:focus-within, .validationError {
+.validationError:focus,
+.validationError:focus-within,
+.validationError {
   border-color: #ff4b4b !important;
 }
 
+input:invalid {
+  border: 1px solid red;
+}
 
+input:invalid ~ small {
+  display: block !important;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .form-control {

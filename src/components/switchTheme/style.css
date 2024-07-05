@@ -20,6 +20,10 @@ body.dark-theme {
   background-color: #282828;
 }
 
+.dark-theme span.badge {
+  color: #fbfbfb;
+}
+
 .dark-theme .dropdown-menu {
   box-shadow: 0 0.25rem 1rem rgb(18 18 18 / 49%);
 }
@@ -51,7 +55,7 @@ body.dark-theme {
 .dark-theme .form-select,
 .dark-theme .form-control {
   background-color: transparent;
-  color: #878787;
+  color: #afb4b9;
   border-color: #717171;
 }
 
@@ -64,7 +68,7 @@ body.dark-theme {
 .dark-theme .table {
   background-color: transparent;
   color: #afb4b9 !important;
-  border-color: #717171;
+  border-color: #71717169;
 }
 
 .dark-theme .app-brand-text,
