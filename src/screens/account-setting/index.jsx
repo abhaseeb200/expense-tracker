@@ -10,7 +10,7 @@ import {
   Spinner,
 } from "reactstrap";
 import { useEffect, useState } from "react";
-import CustomInput from "../../components/input";
+import {CustomInput} from "../../components/input";
 import getUserByID from "../../config/service/firebase/getUserByID";
 import {
   updateUser,

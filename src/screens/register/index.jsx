@@ -2,7 +2,7 @@ import { Card, CardBody, Row, Button, Form, Label, Spinner } from "reactstrap";
 import "./style.css";
 import logo from "../../assets/logo.svg";
 import { useEffect, useState } from "react";
-import CustomInput from "../../components/input";
+import {CustomInput} from "../../components/input";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { authSignUp } from "../../config/service/firebase/auth.js";
 import { db } from "../../config/firebaseConfig.js";

@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { useOutletContext } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Button,
   Card,
@@ -8,19 +12,14 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
-import CustomInput from "../../components/input";
+import {CustomInput} from "../../components/input";
 import Select from "../../components/selectInput/index";
-import { useState } from "react";
 import {
   deleteTransactionCatgory,
   getTransactionCategory,
   setTransactionCategory,
   updateTransactionCategory,
 } from "../../config/service/firebase/transaction";
-import { useOutletContext } from "react-router";
-import { toast } from "react-toastify";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import {
   addCategory,
   deleteCategory,
@@ -50,6 +49,8 @@ const TransactionCategories = () => {
 
   const dispatch = useDispatch();
   const { categoryData } = useSelector((state) => state.category);
+
+  const [currentUserID] = useOutletContext();
 
   const nameHandler = (e) => {
     let expVal = e.target.value.trim().toLowerCase();
@@ -89,8 +90,6 @@ const TransactionCategories = () => {
       });
     }
   };
-
-  const [currentUserID] = useOutletContext();
 
   const createCategory = async () => {
     let isAready = false;

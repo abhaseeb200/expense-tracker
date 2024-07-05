@@ -1,33 +1,26 @@
 import { db } from "../../firebaseConfig";
+import { store } from "../../store";
 
-const setBudget = (name, date, amount, currentUserID) => {
-  return db.collection("budget").add({
-    userId: currentUserID,
-    timeStamp: Date.now(),
-    name: name,
-    date: date,
-    amount: amount,
-  });
+// console.log(store.getState(),"++++++");
+
+const addBudgetAPI = (body, userId) => {
+  return db.collection("budget").add({ ...body, userId: userId });
 };
 
-const getBudget = (currentUserID) => {
+const getBudgetAPI = (userId) => {
   return db
     .collection("budget")
-    .where("userId", "==", currentUserID)
+    .where("userId", "==", userId)
     .orderBy("timeStamp", "desc")
     .get();
 };
 
-const deleteBudget = (docId) => {
+const deleteBudgetAPI = (docId) => {
   return db.collection("budget").doc(docId).delete();
 };
 
-const updateBudget = (name, amount, date, docId) => {
-  return db.collection("budget").doc(docId).update({
-    name: name,
-    amount: amount,
-    date: date,
-  });
+const updateBudgetAPI = (body, docId) => {
+  return db.collection("budget").doc(docId).update(body);
 };
 
-export { setBudget, getBudget, deleteBudget, updateBudget };
+export { addBudgetAPI, getBudgetAPI, deleteBudgetAPI, updateBudgetAPI };

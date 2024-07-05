@@ -1,19 +1,46 @@
-import { Input } from "reactstrap";
+import { Label, Input as ReactStrapInput } from "reactstrap";
 import { useSelector } from "react-redux";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
+import { useState } from "react";
+import { useEffect } from "react";
 
-const CustomInput = ({ isError, messageError, ...props }) => {
+const CustomInput = ({ className, isError, messageError, ...props }) => {
   const { isDarkMode } = useSelector((state) => state?.themeMode);
   return (
     <div className="w-100" data-bs-theme={isDarkMode ? "dark" : "light"}>
-      <Input {...props} className={isError ? "validationError" : ""} />
+      <ReactStrapInput
+        {...props}
+        className={`${className} ${isError && "validationError"}`}
+      />
       {messageError !== "" ? (
-        <small className="d-block text-error">{messageError}</small>
+        <small className="d-block text-errors">{messageError}</small>
       ) : (
         ""
       )}
     </div>
   );
 };
-export default CustomInput;
+
+const Input = (props) => {
+  const { isDarkMode } = useSelector((state) => state?.themeMode);
+  const { label, errors, errorMessage, onChange, ...inputProps } = props;
+
+  return (
+    <div
+      className="d-flex flex-column"
+      data-bs-theme={isDarkMode ? "dark" : "light"}
+    >
+      {label && <Label>{label}</Label>}
+      <ReactStrapInput {...inputProps} onChange={onChange} />
+      {inputProps?.value && (
+        <small className="text-danger d-none">{errorMessage}</small>
+      )}
+      {errors && (
+        <small className="text-danger mt-1">{`Please provide ${inputProps?.name}`}</small>
+      )}
+    </div>
+  );
+};
+
+export { Input, CustomInput };

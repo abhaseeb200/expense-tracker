@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useOutletContext } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   Button,
   Card,
@@ -6,36 +10,84 @@ import {
   CardTitle,
   Container,
   Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   Spinner,
-  Table,
 } from "reactstrap";
-import { useEffect, useState } from "react";
-import CustomInput from "../../components/input";
-import {
-  deleteBudget as firebaseDeleteBudget,
-  getBudget as firebaseGetBudget,
-  setBudget,
-  updateBudget as firebaseUpdateBudget,
-} from "../../config/service/firebase/budget";
-import { toast } from "react-toastify";
-import { useOutletContext } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  addBudget,
-  deleteBudget,
-  editBudget,
-  getBudget,
-} from "../../feature/budget/budgetSlice";
+import { CustomInput, Input } from "../../components/input";
+import Table from "../../components/table";
+// import {
+//   deleteBudget as firebaseDeleteBudget,
+//   getBudget as firebaseGetBudget,
+//   setBudget,
+//   updateBudget as firebaseUpdateBudget,
+// } from "../../config/service/firebase/budget";
+// import {
+//   addBudget,
+//   deleteBudget,
+//   editBudget,
+//   getBudget,
+// } from "../../feature/budget/budgetSlice";
+import useBudget from "../../hooks/useBudget";
+import BudgetColumns from "../../config/constant/budgetColumns";
+import Search from "../../components/Search";
+
+const inputs = [
+  {
+    id: 1,
+    name: "name",
+    type: "text",
+    placeholder: "Bills.",
+    label: "name",
+  },
+  {
+    id: 2,
+    name: "date",
+    type: "date",
+    label: "date",
+    max: new Date().toISOString().split("T")[0],
+  },
+  {
+    id: 3,
+    name: "amount",
+    type: "number",
+    placeholder: "200...",
+    label: "amount",
+    required: true,
+    min: 1,
+    pattern: "/^[1-9]d*$/",
+    errorMessage: "Amount must be greater than 01",
+  },
+];
 
 const Budget = () => {
-  const [loader, setLoader] = useState(false);
+  // const [loader, setLoader] = useState(false);
   const [tableLoader, setTableLoader] = useState(false);
   const [currentDocID, setCurrentDocID] = useState("");
   const [saveLoader, setSaveLoader] = useState(false);
   const [deleteLoader, setDeleteLoader] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
+  const [backUp, setBackUp] = useState([]);
 
-  // const [budgetData, setBudgetData] = useState([]);
+  const [values, setValues] = useState({
+    name: "",
+    date: "",
+    amount: "",
+  });
+  const [errors, setErrors] = useState({});
+
+  const {
+    useGetBudget,
+    useUpdateBudget,
+    useDeleteBudget,
+    useAddBudget,
+    initLoading,
+    loading,
+  } = useBudget();
 
   const [name, setName] = useState({
     value: "",
@@ -57,6 +109,9 @@ const Budget = () => {
 
   const dispatch = useDispatch();
   const { budgetData } = useSelector((state) => state?.budget);
+  const { userData } = useSelector((state) => state.auth);
+
+  console.log({ budgetData });
 
   const [currentUserID] = useOutletContext();
 
@@ -163,7 +218,7 @@ const Budget = () => {
         })
         .catch((err) => {
           setLoader(false);
-          toast.error(err?.message, {
+          toast.errors(err?.message, {
             autoClose: 1500,
           });
         });
@@ -186,7 +241,7 @@ const Budget = () => {
       })
       .catch((err) => {
         setTableLoader(false);
-        toast.error(err?.message, {
+        toast.errors(err?.message, {
           autoClose: 1500,
         });
       });
@@ -204,9 +259,9 @@ const Budget = () => {
       toast.success("Delete budget successfully!", {
         autoClose: 1500,
       });
-    } catch (error) {
+    } catch (errors) {
       setDeleteLoader(false);
-      toast.error(error.message, {
+      toast.errors(errors.message, {
         autoClose: 1500,
       });
     }
@@ -259,8 +314,8 @@ const Budget = () => {
         setIsUpdate(false);
         setSaveLoader(false);
         restAllFields();
-      } catch (error) {
-        toast.error(error?.message, {
+      } catch (errors) {
+        toast.errors(errors?.message, {
           autoClose: 1500,
         });
       }
@@ -297,153 +352,199 @@ const Budget = () => {
     );
   };
 
+  const handleDelete = async (data) => {
+    setCurrentDocID(data?.docID);
+    await useDeleteBudget(data?.docID);
+  };
+
+  const handleUpdate = (data) => {
+    console.log(data);
+    setIsUpdate(true);
+    setIsOpenModal(true);
+    setValues(data);
+    setCurrentDocID(data?.docID);
+  };
+
+  const handleClosedModal = () => {
+    setValues({});
+    setErrors({});
+  };
+
+  const handleOnSort = (columnKey, objectKey) => {
+    let newDirection = "asc";
+    if (sortConfig?.direction === "desc" && sortConfig?.key === columnKey) {
+      newDirection = "asc";
+    } else {
+      newDirection = "desc";
+    }
+
+    setSortConfig({
+      key: columnKey,
+      direction: newDirection,
+      objectKey: objectKey,
+    });
+  };
+
+  const handleModalCancel = () => {
+    setIsOpenModal(false);
+    setIsUpdate(false);
+  };
+
+  const onChange = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value });
+
+    if (!e.target.value) {
+      setErrors({ ...errors, [e.target.name]: true });
+    } else {
+      setErrors({ ...errors, [e.target.name]: false });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // return console.log(e.target.reset);
+
+    const data = {};
+    let error = {};
+    let formData = new FormData(e.target);
+
+    formData.forEach((value, key) => {
+      data[key] = value;
+      if (!value) {
+        error[key] = true;
+      }
+    });
+
+    setErrors(error);
+
+    //SUBMIT THE FORM BY USING 'DATA'
+    if (!Object.values(error).includes(true)) {
+      //REQUIRED BODY KEYS
+      let body = {
+        userId: userData?.userId,
+        timeStamp: Date.now(),
+        amount: +data?.amount,
+        ...data,
+      };
+
+      if (isUpdate) {
+        await useUpdateBudget(body, currentDocID);
+      } else {
+        await useAddBudget(body);
+        setValues({});
+      }
+    }
+  };
+
+  useEffect(() => {
+    let updatedData = [...budgetData];
+
+    if (sortConfig.key && sortConfig.direction) {
+      updatedData.sort((a, b) => {
+        let valueA = a[sortConfig?.key];
+        let valueB = b[sortConfig?.key];
+
+        if (typeof valueA === "string" && typeof valueB === "string") {
+          valueA = valueA.toLowerCase();
+          valueB = valueB.toLowerCase();
+        }
+
+        if (sortConfig.direction === "asc") {
+          if (valueA < valueB) return -1;
+          if (valueA > valueB) return 1;
+        } else if (sortConfig.direction === "desc") {
+          if (valueA > valueB) return -1;
+          if (valueA < valueB) return 1;
+        }
+        return 0;
+      });
+    }
+
+    setBackUp(updatedData);
+  }, [sortConfig]);
+
+  useEffect(() => {
+    setSortConfig({ key: "", direction: "" });
+    setBackUp(budgetData);
+  }, [budgetData]);
+
   useEffect(() => {
     if (!budgetData?.length) {
-      getBudgetHandler();
+      useGetBudget();
     }
   }, [currentUserID]);
 
   return (
     <>
-      <h5 className="fw-bold py-3 my-3">Budget</h5>
-      <Card className="">
-        <CardBody className="pb-3">
-          <CardTitle>Add Budget Goals</CardTitle>
+      <Card className="my-3 h-100">
+        {/* ================================ SCREEN TITLE ================================ */}
+        <CardBody className="pb-3 d-flex justify-content-between gap-3 flex-column">
+          <CardTitle className="text-uppercase">Add Budget Goals</CardTitle>
+          <Search
+            onClick={() => setIsOpenModal(true)}
+            isOpenModal={isOpenModal}
+          />
         </CardBody>
-        <CardBody className="pt-3 row">
-          <div className="col-md-12 mb-3">
-            <Label>Budget name</Label>
-            <CustomInput
-              placeholder="Bills"
-              type="text"
-              value={name.value}
-              isError={name.isError}
-              messageError={name.messageError}
-              onChange={nameHandler}
-            />
-          </div>
-          <div className="col-md-6 mb-3">
-            <Label>Select Date</Label>
-            <CustomInput
-              placeholder=""
-              type="date"
-              max={todayDateAttributeHandler()}
-              value={date.value}
-              isError={date.isError}
-              messageError={date.messageError}
-              onChange={dateHandler}
-            />
-          </div>
-          <div className="col-md-6 mb-3">
-            <Label>Amount</Label>
-            <CustomInput
-              placeholder="1234"
-              type="number"
-              value={amount.value}
-              isError={amount.isError}
-              messageError={amount.messageError}
-              onChange={amountHandler}
-            />
-          </div>
-          {isUpdate ? (
-            <>
-              <div className="col-md-6 mb-2">
-                <Button
-                  color="primary"
-                  className={saveLoader ? "btn-disabled w-100" : "w-100"}
-                  onClick={saveHandler}
-                >
-                  {saveLoader ? <Spinner size="sm" /> : "Save"}
-                </Button>
-              </div>
-              <div className="col-md-6">
-                <Button
-                  color="secondary"
-                  outline
-                  onClick={cancelHandler}
-                  className="w-100"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </>
-          ) : (
-            <div className="col-md-12 w-100">
-              <Button
-                color="primary"
-                className={loader ? "btn-disabled w-100" : "w-100"}
-                onClick={addBudgetHandler}
-              >
-                {loader ? <Spinner size="sm" /> : "Add Budget"}
-              </Button>
-            </div>
-          )}
+
+        {/* ================================ TABLE ================================ */}
+        <CardBody className="pt-3 row fill-available flex-column">
+          <Table
+            onDelete={handleDelete}
+            onUpdate={handleUpdate}
+            onSort={handleOnSort}
+            sortConfig={sortConfig}
+            columns={BudgetColumns}
+            rows={backUp}
+            loading={initLoading}
+            iconLoading={loading}
+            docId={currentDocID}
+          />
         </CardBody>
       </Card>
-      <Card className="mt-4">
-        <CardBody className="pb-0">
-          <CardTitle>Budget Goals</CardTitle>
-        </CardBody>
-        <CardBody className="pt-0">
-          {tableLoader ? (
-            <div className="no-data">
-              <Spinner />
-            </div>
-          ) : budgetData.length ? (
-            <div className="table-responsive">
-              <Table bordered>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {budgetData.map((item, ind) => {
-                    return (
-                      <tr key={ind}>
-                        <td>{item?.docData?.name}</td>
-                        <td>{item?.docData?.date}</td>
-                        <td>{item?.docData?.amount}</td>
-                        <td style={{ width: "200px" }}>
-                          <div className="d-inline-flex w-100">
-                            <Button
-                              color="primary"
-                              className="me-2"
-                              onClick={() => editHandler(item)}
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              color="danger"
-                              className={
-                                item?.docID === currentDocID && deleteLoader
-                                  ? "btn-disabled w-100"
-                                  : "w-100"
-                              }
-                              onClick={() => deleteHandler(item)}
-                            >
-                              {item?.docID === currentDocID && deleteLoader ? (
-                                <Spinner size="sm" />
-                              ) : (
-                                "Delete"
-                              )}
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-            </div>
-          ) : (
-            <CardText className="no-data">No Data found</CardText>
-          )}
-        </CardBody>
-      </Card>
+
+      {/* ================================ FORM - MODAL ================================ */}
+      <Modal
+        className="modal-dialog-centered"
+        isOpen={isOpenModal}
+        onClosed={handleClosedModal}
+      >
+        <ModalHeader>{isUpdate ? "Update Budget" : "Add Budget"}</ModalHeader>
+        <form onSubmit={handleSubmit} className="d-flex flex-column">
+          <ModalBody className="gap-3 d-flex flex-column">
+            {inputs?.map((input) => {
+              return (
+                <Input
+                  key={input?.id}
+                  {...input}
+                  value={values[input.name] || ""}
+                  onChange={onChange}
+                  errors={errors[input.name]}
+                />
+              );
+            })}
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              color="secondary"
+              outline
+              type="button"
+              onClick={handleModalCancel}
+            >
+              Cancel
+            </Button>
+            <Button
+              color="primary"
+              className="custom-button"
+              disabled={loading}
+              type="submit"
+            >
+              {loading ? <Spinner size="sm" /> : isUpdate ? "Save" : "Create"}
+            </Button>
+          </ModalFooter>
+        </form>
+      </Modal>
     </>
   );
 };

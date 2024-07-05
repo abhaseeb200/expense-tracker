@@ -10,7 +10,7 @@ import {
   Table,
 } from "reactstrap";
 import { useEffect, useState } from "react";
-import CustomInput from "../../components/input";
+import {CustomInput} from "../../components/input";
 import { getTransaction } from "../../config/service/firebase/transaction";
 import "./style.css";
 import { useOutletContext } from "react-router-dom";

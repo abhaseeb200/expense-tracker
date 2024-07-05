@@ -11,12 +11,15 @@ import {
   DropdownMenu,
   DropdownToggle,
   Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   Navbar,
   Spinner,
-  Table,
 } from "reactstrap";
 import { useEffect, useState } from "react";
-import CustomInput from "../../components/input";
+import { CustomInput } from "../../components/input";
 import Select from "../../components/selectInput/index";
 import "boxicons";
 import {
@@ -38,6 +41,9 @@ import {
 } from "../../feature/transaction/transactionSlice";
 import { getCategory } from "../../feature/category/categorySlice";
 import TransactionCategoryModal from "../modal";
+import Table from "../../components/table";
+import transitionColumns from "../../config/constant/transitionColumns";
+import Search from "../../components/Search";
 
 const Transaction = ({ direction, ...args }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -52,6 +58,9 @@ const Transaction = ({ direction, ...args }) => {
   const [expenseCategoryData, setExpenseCategoryData] = useState([]);
   const [incomeCategoryData, setIncomeCategoryData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTransitionModal, setIsTransitionModal] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
+  const [backUp, setBackUp] = useState([]);
 
   const [currentUserID] = useOutletContext();
 
@@ -222,7 +231,7 @@ const Transaction = ({ direction, ...args }) => {
       setTransaction(
         name.value,
         category.value,
-        date.value,
+        new Date(date.value),
         amount.value,
         transactionSelect,
         currentUserID
@@ -233,7 +242,7 @@ const Transaction = ({ direction, ...args }) => {
             docData: {
               name: name.value,
               category: category.value,
-              date: date.value,
+              date: new Date(date.value),
               amount: amount.value,
               type: transactionSelect,
               userId: currentUserID,
@@ -308,9 +317,9 @@ const Transaction = ({ direction, ...args }) => {
     setIncomeCategoryData(tempIncomeCategoryData);
   };
 
-  const deleteItem = (ind, item) => {
+  const deleteItem = (item) => {
     setActionLoader(true);
-    firebaseDeleteTransaction(item.docID)
+    firebaseDeleteTransaction(item?.docID)
       .then(() => {
         setActionLoader(false);
         dispatch(deleteTransaction(item?.docID));
@@ -330,7 +339,9 @@ const Transaction = ({ direction, ...args }) => {
     setDropdownOpen(false);
   };
 
-  const updateItem = (ind, item) => {
+  const updateItem = (item) => {
+    setIsTransitionModal(true);
+    setIsUpdate(true);
     setName({
       value: item.docData.name,
       isError: false,
@@ -352,7 +363,6 @@ const Transaction = ({ direction, ...args }) => {
       isError: false,
       messageError: "",
     });
-    setIsUpdate(true);
     setCurrentDocID(item.docID);
   };
 
@@ -376,7 +386,7 @@ const Transaction = ({ direction, ...args }) => {
         name.value,
         transactionSelect,
         category.value,
-        date.value,
+        new Date(date.value),
         amount.value,
         currentDocID
       )
@@ -389,7 +399,7 @@ const Transaction = ({ direction, ...args }) => {
               name: name.value,
               type: transactionSelect,
               category: category.value,
-              data: date.value,
+              date: new Date(date.value),
               amount: amount.value,
               userId: currentUserID,
             },
@@ -401,11 +411,10 @@ const Transaction = ({ direction, ...args }) => {
           });
         })
         .catch((err) => {
-          toast.error(err, {
+          toast.error(err?.message, {
             autoClose: 1500,
           });
           setSaveLoader(false);
-          setIsUpdate(false);
         });
     }
   };
@@ -415,7 +424,11 @@ const Transaction = ({ direction, ...args }) => {
     resetFeilds();
   };
 
+  console.log(isUpdate);
+
   const resetFeilds = () => {
+    setIsUpdate(false);
+    setIsTransitionModal(false);
     setName({
       value: "",
       isError: false,
@@ -450,6 +463,20 @@ const Transaction = ({ direction, ...args }) => {
     setIsModalOpen(true);
   };
 
+  const handleOnSort = (columnKey, objectKey) => {
+    let newDirection = "asc";
+    if (sortConfig?.direction === "desc" && sortConfig?.key === columnKey) {
+      newDirection = "asc";
+    } else {
+      newDirection = "desc";
+    }
+    setSortConfig({
+      key: columnKey,
+      direction: newDirection,
+      objectKey: objectKey,
+    });
+  };
+
   useEffect(() => {
     getTransactionCategoryHandler();
   }, [categoryData]);
@@ -459,15 +486,71 @@ const Transaction = ({ direction, ...args }) => {
     getTransactionCategoryHandler();
   }, [currentUserID]);
 
+  useEffect(() => {
+    let updatedData = [...transactionData];
+
+    if (sortConfig.key && sortConfig.direction) {
+      updatedData.sort((a, b) => {
+        let valueA = a[sortConfig?.objectKey][sortConfig?.key];
+        let valueB = b[sortConfig?.objectKey][sortConfig?.key];
+
+        if (typeof valueA === "string" && typeof valueB === "string") {
+          valueA = valueA.toLowerCase();
+          valueB = valueB.toLowerCase();
+        }
+
+        if (sortConfig.direction === "asc") {
+          if (valueA < valueB) return -1;
+          if (valueA > valueB) return 1;
+        } else if (sortConfig.direction === "desc") {
+          if (valueA > valueB) return -1;
+          if (valueA < valueB) return 1;
+        }
+        return 0;
+      });
+    }
+
+    setBackUp(updatedData);
+  }, [sortConfig]);
+
   return (
     <>
-      <h5 className="fw-bold py-3 my-3">Transaction Entry</h5>
-      <Card>
-        <CardBody className="pb-3">
-          <CardTitle>Add Transaction</CardTitle>
+      {/* ========================= TRANSACTIONS VIEW CARD ========================= */}
+      <Card className="mt-4 mb-3 h-100">
+        <CardBody className="pb-0 d-flex justify-content-between">
+          <CardTitle>Transactions</CardTitle>
+          <Search
+            onClick={() => setIsTransitionModal(true)}
+            isOpenModal={isTransitionModal}
+          />
         </CardBody>
-        <CardBody className="pt-3 row">
-          <div className="col-md-4 mb-3">
+
+        <CardBody className="pt-0 fill-available">
+          <div className="table-responsive">
+            <Table
+              onDelete={deleteItem}
+              onUpdate={updateItem}
+              onSort={handleOnSort}
+              sortConfig={sortConfig}
+              columns={transitionColumns}
+              rows={backUp}
+              loading={tableLoader}
+            />
+          </div>
+        </CardBody>
+      </Card>
+
+      {/* ========================= CREATE TRANSITION - MODAL ========================= */}
+      <Modal
+        className="modal-dialog-centered"
+        isOpen={isTransitionModal}
+        onClosed={resetFeilds}
+        {...args}
+      >
+        <ModalHeader>Add Transaction</ModalHeader>
+        <ModalBody>
+          {/* ========================= NAME ========================= */}
+          <div className="col-md-4 mb-3 w-100">
             <Label>name</Label>
             <CustomInput
               placeholder="Bills"
@@ -478,7 +561,9 @@ const Transaction = ({ direction, ...args }) => {
               onChange={nameHandler}
             />
           </div>
-          <div className="col-md-4 mb-3">
+
+          {/* ========================= TRANSACTION TYPE ========================= */}
+          <div className="col-md-4 mb-3 w-100">
             <Label>Transaction Type</Label>
             <Select
               onChange={selectTransactionHandler}
@@ -488,7 +573,9 @@ const Transaction = ({ direction, ...args }) => {
               <option value="income">Income</option>
             </Select>
           </div>
-          <div className="col-md-4 mb-3 d-flex flex-wrap justify-content-between align-items-center">
+
+          {/* ========================= SELECT CATEGORY ========================= */}
+          <div className="col-md-4 mb-3 d-flex flex-wrap justify-content-between align-items-center w-100">
             <Label>Select Category</Label>
             <div
               role="button"
@@ -531,7 +618,9 @@ const Transaction = ({ direction, ...args }) => {
               )}
             </Select>
           </div>
-          <div className="col-md-6 mb-3">
+
+          {/* ========================= DATE ========================= */}
+          <div className="col-md-6 mb-3 w-100">
             <Label>Select Date</Label>
             <CustomInput
               max={todayDateAttributeHanlder()}
@@ -542,7 +631,9 @@ const Transaction = ({ direction, ...args }) => {
               onChange={dateHandler}
             />
           </div>
-          <div className="col-md-6 mb-3">
+
+          {/* ========================= AMOUNT ========================= */}
+          <div className="col-md-6 mb-3 w-100">
             <Label>Amount</Label>
             <CustomInput
               placeholder="1234"
@@ -553,145 +644,43 @@ const Transaction = ({ direction, ...args }) => {
               onChange={amountHandler}
             />
           </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            color="secondary"
+            outline
+            onClick={() => {
+              setIsTransitionModal(false);
+              setIsUpdate(false);
+            }}
+          >
+            Cancel
+          </Button>
           {isUpdate ? (
-            <>
-              <div className="col-md-6 mb-2">
-                <Button
-                  color="primary"
-                  className={saveLoader ? "btn-disabled w-100" : "w-100"}
-                  onClick={() => saveHandler()}
-                >
-                  {saveLoader ? <Spinner size="sm" /> : "Save"}
-                </Button>
-              </div>
-              <div className="col-md-6">
-                <Button
-                  color="secondary"
-                  outline
-                  onClick={cancelHanlder}
-                  className="w-100"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </>
+            <Button
+              color="primary"
+              className={
+                loader ? "btn-disabled custom-button" : "custom-button"
+              }
+              onClick={saveHandler}
+            >
+              {saveLoader ? <Spinner size="sm" /> : "Save"}
+            </Button>
           ) : (
-            <div className="col-md-12 w-100">
-              <Button
-                color="primary"
-                className={loader ? "btn-disabled w-100" : "w-100"}
-                onClick={() => addTransactionHandler()}
-              >
-                {loader ? <Spinner size="sm" /> : "Add Transaction"}
-              </Button>
-            </div>
+            <Button
+              color="primary"
+              className={
+                loader ? "btn-disabled custom-button" : "custom-button"
+              }
+              onClick={addTransactionHandler}
+            >
+              {loader ? <Spinner size="sm" /> : "Create"}
+            </Button>
           )}
-        </CardBody>
-      </Card>
-      <Card className="mt-4">
-        <CardBody className="pb-0">
-          <CardTitle>Transaction Data</CardTitle>
-        </CardBody>
-        <CardBody className="pt-0">
-          {tableLoader ? (
-            <div className="no-data">
-              <Spinner />
-            </div>
-          ) : transactionData.length ? (
-            <div className="table-responsive">
-              <Table bordered>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Type</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactionData?.map((item, ind) => {
-                    return (
-                      <tr key={ind}>
-                        <td>{item.docData.name}</td>
-                        <td>{item.docData.category}</td>
-                        <td>{item.docData.date}</td>
-                        <td>{item.docData.amount}</td>
-                        <td>
-                          {item.docData.type === "expense" ? (
-                            <Badge color="danger">{item.docData.type}</Badge>
-                          ) : (
-                            <Badge color="primary">{item.docData.type}</Badge>
-                          )}
-                        </td>
-                        <td className="text-end">
-                          <Dropdown
-                            isOpen={currentSelect === ind && dropdownOpen}
-                            toggle={() => toggleDropdown(ind)}
-                            direction={direction}
-                          >
-                            <DropdownToggle className="p-0 bg-white border-0">
-                              <box-icon
-                                name="dots-vertical-rounded"
-                                color="#697a8d"
-                                style={{ width: "18px" }}
-                              ></box-icon>
-                            </DropdownToggle>
-                            <DropdownMenu {...args}>
-                              <DropdownItem
-                                onClick={() => deleteItem(ind, item)}
-                                style={{
-                                  padding: "9px 20px",
-                                  display: "inline-flex",
-                                  color: "#697a8d",
-                                }}
-                              >
-                                {actionLoader ? (
-                                  <Spinner size="sm"></Spinner>
-                                ) : (
-                                  <>
-                                    <box-icon
-                                      name="trash"
-                                      color="#697a8d"
-                                      style={{
-                                        width: "18px",
-                                        marginRight: "6px",
-                                      }}
-                                    ></box-icon>
-                                    Delete
-                                  </>
-                                )}
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() => updateItem(ind, item)}
-                                style={{
-                                  padding: "9px 20px",
-                                  display: "inline-flex",
-                                  color: "#697a8d",
-                                }}
-                              >
-                                <box-icon
-                                  name="edit-alt"
-                                  color="#697a8d"
-                                  style={{ width: "18px", marginRight: "6px" }}
-                                ></box-icon>
-                                Edit
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </Dropdown>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-            </div>
-          ) : (
-            <CardText className="no-data">No Data found</CardText>
-          )}
-        </CardBody>
-      </Card>
+        </ModalFooter>
+      </Modal>
+
+      {/* ========================= TRANSITION CATEGORY - MODAL ========================= */}
       <TransactionCategoryModal
         modal={isModalOpen}
         setIsModalOpen={setIsModalOpen}

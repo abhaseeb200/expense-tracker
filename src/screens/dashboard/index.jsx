@@ -13,12 +13,12 @@ import { Bar } from "react-chartjs-2";
 import Chart from "chart.js/auto";
 import { CategoryScale, elements } from "chart.js";
 import { getTransaction as firebaseGetTransaction } from "../../config/service/firebase/transaction";
-import { getBudget as firebaseGetBudget } from "../../config/service/firebase/budget";
+// import { getBudget as firebaseGetBudget } from "../../config/service/firebase/budget";
 import { toast } from "react-toastify";
 import { useOutletContext } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getTransaction } from "../../feature/transaction/transactionSlice";
-import { getBudget } from "../../feature/budget/budgetSlice";
+// import { getBudget } from "../../feature/budget/budgetSlice";
 
 Chart.register(CategoryScale);
 

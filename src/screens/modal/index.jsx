@@ -8,7 +8,7 @@ import {
   Label,
   Spinner,
 } from "reactstrap";
-import CustomInput from "../../components/input";
+import {CustomInput} from "../../components/input";
 import Select from "../../components/selectInput/index";
 import { setTransactionCategory } from "../../config/service/firebase/transaction";
 import { toast } from "react-toastify";
@@ -220,7 +220,7 @@ const TransactionCategoryModal = ({
           </Button>
           <Button
             color="primary"
-            className={loader ? "btn-disabled cust-button" : "cust-button"}
+            className={loader ? "btn-disabled custom-button" : "custom-button"}
             onClick={addCategoryHandler}
           >
             {loader ? <Spinner size="sm" /> : "Add Category"}
