@@ -1,10 +1,10 @@
 import formatDate from "./formatDate";
 
-const BudgetColumns = [
+const budgetColumns = [
   { title: "Name", key: "name" },
   { title: "Amount", key: "amount" },
   { title: "Date", key: "date", function: formatDate },
   { title: "Action", key: "action" },
 ];
 
-export default BudgetColumns;
+export default budgetColumns;
