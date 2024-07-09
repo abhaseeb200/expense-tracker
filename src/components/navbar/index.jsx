@@ -22,7 +22,7 @@ import { toast } from "react-toastify";
 import { clearUserProfile } from "../../feature/auth/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { clearTransactions } from "../../feature/transaction/transactionSlice";
-import { clearCategory } from "../../feature/category/categorySlice";
+import { clearCategoryReducer } from "../../feature/category/categorySlice";
 import { clearBudget } from "../../feature/budget/budgetSlice";
 import SwitchTheme from "../switchTheme";
 
