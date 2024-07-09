@@ -12,12 +12,12 @@ import { getUserProfile } from "../../feature/auth/userSlice";
 
 const Login = ({ user,setUser }) => {
   const [email, setEmail] = useState({
-    value: "",
+    value: "admin1@admin.com",
     isError: false,
     messageError: "",
   });
   const [password, setPassword] = useState({
-    value: "",
+    value: "admin123!",
     isError: false,
     messageError: "",
   });

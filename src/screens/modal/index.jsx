@@ -14,7 +14,7 @@ import { setTransactionCategory } from "../../config/service/firebase/transactio
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from "react-redux";
-import { addCategory } from "../../feature/category/categorySlice";
+import { addCategoryReducer } from "../../feature/category/categorySlice";
 
 const TransactionCategoryModal = ({
   args,

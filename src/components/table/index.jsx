@@ -150,7 +150,7 @@ const Table = ({
             <tr>
               <td colSpan={columns?.length + 1}>
                 <div className="d-flex justify-content-center align-items-center h-100px">
-                  <Spinner size="md" />
+                  <Spinner size="sm" />
                 </div>
               </td>
             </tr>

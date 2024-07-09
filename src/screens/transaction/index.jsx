@@ -39,7 +39,7 @@ import {
   deleteTransaction,
   editTransaction,
 } from "../../feature/transaction/transactionSlice";
-import { getCategory } from "../../feature/category/categorySlice";
+import { getCategoryReducer } from "../../feature/category/categorySlice";
 import TransactionCategoryModal from "../modal";
 import Table from "../../components/table";
 import transitionColumns from "../../config/constant/transitionColumns";
@@ -478,7 +478,7 @@ const Transaction = ({ direction, ...args }) => {
   };
 
   useEffect(() => {
-    getTransactionCategoryHandler();
+    // getTransactionCategoryHandler();
   }, [categoryData]);
 
   useEffect(() => {
@@ -515,17 +515,18 @@ const Transaction = ({ direction, ...args }) => {
 
   return (
     <>
-      {/* ========================= TRANSACTIONS VIEW CARD ========================= */}
-      <Card className="mt-4 mb-3 h-100">
-        <CardBody className="pb-0 d-flex justify-content-between">
-          <CardTitle>Transactions</CardTitle>
+      <Card className="my-3 h-100">
+        {/* ================================ SCREEN TITLE ================================ */}
+        <CardBody className="pb-3 d-flex justify-content-between gap-3 flex-column">
+          <CardTitle className="text-uppercase">Add Transaction</CardTitle>
           <Search
             onClick={() => setIsTransitionModal(true)}
             isOpenModal={isTransitionModal}
           />
         </CardBody>
 
-        <CardBody className="pt-0 fill-available">
+        {/* ================================ TABLE ================================ */}
+        <CardBody className="pt-3 row fill-available flex-column card-body">
           <div className="table-responsive">
             <Table
               onDelete={deleteItem}
@@ -549,8 +550,7 @@ const Transaction = ({ direction, ...args }) => {
       >
         <ModalHeader>Add Transaction</ModalHeader>
         <ModalBody>
-          {/* ========================= NAME ========================= */}
-          <div className="col-md-4 mb-3 w-100">
+          {/* <div className="col-md-4 mb-3 w-100">
             <Label>name</Label>
             <CustomInput
               placeholder="Bills"
@@ -562,7 +562,6 @@ const Transaction = ({ direction, ...args }) => {
             />
           </div>
 
-          {/* ========================= TRANSACTION TYPE ========================= */}
           <div className="col-md-4 mb-3 w-100">
             <Label>Transaction Type</Label>
             <Select
@@ -574,7 +573,6 @@ const Transaction = ({ direction, ...args }) => {
             </Select>
           </div>
 
-          {/* ========================= SELECT CATEGORY ========================= */}
           <div className="col-md-4 mb-3 d-flex flex-wrap justify-content-between align-items-center w-100">
             <Label>Select Category</Label>
             <div
@@ -619,7 +617,6 @@ const Transaction = ({ direction, ...args }) => {
             </Select>
           </div>
 
-          {/* ========================= DATE ========================= */}
           <div className="col-md-6 mb-3 w-100">
             <Label>Select Date</Label>
             <CustomInput
@@ -632,7 +629,6 @@ const Transaction = ({ direction, ...args }) => {
             />
           </div>
 
-          {/* ========================= AMOUNT ========================= */}
           <div className="col-md-6 mb-3 w-100">
             <Label>Amount</Label>
             <CustomInput
@@ -643,7 +639,7 @@ const Transaction = ({ direction, ...args }) => {
               messageError={amount.messageError}
               onChange={amountHandler}
             />
-          </div>
+          </div> */}
         </ModalBody>
         <ModalFooter>
           <Button
@@ -681,14 +677,14 @@ const Transaction = ({ direction, ...args }) => {
       </Modal>
 
       {/* ========================= TRANSITION CATEGORY - MODAL ========================= */}
-      <TransactionCategoryModal
+      {/* <TransactionCategoryModal
         modal={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         incomeCategoryData={incomeCategoryData}
         expenseCategoryData={expenseCategoryData}
         currentUserID={currentUserID}
         getTransactionCategoryHandler={getTransactionCategoryHandler}
-      />
+      /> */}
     </>
   );
 };

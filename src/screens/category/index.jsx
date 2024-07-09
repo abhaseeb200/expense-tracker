@@ -12,36 +12,50 @@ import {
   Spinner,
 } from "reactstrap";
 import { Input } from "../../components/input";
-import Table from "../../components/table";
+import Select from "../../components/selectInput/index";
 import Search from "../../components/Search";
-import useBudget from "../../hooks/useBudget";
-import budgetInputs from "../../config/constant/budgetInputs";
-import budgetColumns from "../../config/constant/budgetColumns";
+import categoryColumns from "../../config/constant/categoryColumns";
+import useCategory from "../../hooks/useCategory";
+import Table from "../../components/table";
+import {
+  categoryInputs,
+  categorySelects,
+} from "../../config/constant/categoryInputs";
 
-const Budget = () => {
+const Category = () => {
+  const [isOpenModal, setIsOpenModal] = useState(false);
   const [currentDocID, setCurrentDocID] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
-  const [isOpenModal, setIsOpenModal] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
   const [backUp, setBackUp] = useState([]);
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
 
+  const { categoryData } = useSelector((state) => state.category);
+  const { userData } = useSelector((state) => state?.auth);
+
   const {
-    useGetBudget,
-    useUpdateBudget,
-    useDeleteBudget,
-    useAddBudget,
+    useGetCategory,
+    useUpdateCategory,
+    useDeleteCategory,
+    useAddCategory,
     initLoading,
     loading,
-  } = useBudget();
-
-  const { budgetData } = useSelector((state) => state?.budget);
-  const { userData } = useSelector((state) => state?.auth);
+  } = useCategory();
 
   const handleDelete = async (data) => {
     setCurrentDocID(data?.docID);
-    await useDeleteBudget(data?.docID);
+    await useDeleteCategory(data?.docID);
+  };
+
+  const onChange = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value });
+
+    if (!e.target.value?.trim()) {
+      setErrors({ ...errors, [e.target.name]: true });
+    } else {
+      setErrors({ ...errors, [e.target.name]: false });
+    }
   };
 
   const handleUpdate = (data) => {
@@ -77,16 +91,6 @@ const Budget = () => {
     setIsUpdate(false);
   };
 
-  const onChange = (e) => {
-    setValues({ ...values, [e.target.name]: e.target.value });
-
-    if (!e.target.value?.trim()) {
-      setErrors({ ...errors, [e.target.name]: true });
-    } else {
-      setErrors({ ...errors, [e.target.name]: false });
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -107,22 +111,18 @@ const Budget = () => {
     if (!Object.values(error).includes(true)) {
       let body = {
         userId: userData?.userId,
-        timeStamp: Date.now(),
-        amount: +data?.amount,
         ...data,
       };
-
       if (isUpdate) {
-        await useUpdateBudget(body, currentDocID);
+        await useUpdateCategory(body, currentDocID);
       } else {
-        await useAddBudget(body);
-        setValues({});
+        await useAddCategory(body);
       }
     }
   };
 
   useEffect(() => {
-    let updatedData = [...budgetData];
+    let updatedData = [...categoryData];
 
     if (sortConfig.key && sortConfig.direction) {
       updatedData.sort((a, b) => {
@@ -150,21 +150,21 @@ const Budget = () => {
 
   useEffect(() => {
     setSortConfig({ key: "", direction: "" });
-    setBackUp(budgetData);
-  }, [budgetData]);
+    setBackUp(categoryData);
+  }, [categoryData]);
 
   useEffect(() => {
-    if (!budgetData?.length) {
-      useGetBudget();
+    if (!categoryData?.length) {
+      useGetCategory();
     }
-  }, []);
+  }, [userData]);
 
   return (
     <>
       <Card className="my-3 h-100">
         {/* ================================ SCREEN TITLE ================================ */}
         <CardBody className="pb-3 d-flex justify-content-between gap-3 flex-column">
-          <CardTitle className="text-uppercase">Add Budget Goals</CardTitle>
+          <CardTitle className="text-uppercase">Add Category</CardTitle>
           <Search
             onClick={() => setIsOpenModal(true)}
             isOpenModal={isOpenModal}
@@ -178,11 +178,11 @@ const Budget = () => {
             onUpdate={handleUpdate}
             onSort={handleOnSort}
             sortConfig={sortConfig}
-            columns={budgetColumns}
+            columns={categoryColumns}
             rows={backUp}
-            loading={initLoading}
-            iconLoading={loading}
             docId={currentDocID}
+            iconLoading={loading}
+            loading={initLoading}
           />
         </CardBody>
       </Card>
@@ -193,10 +193,12 @@ const Budget = () => {
         isOpen={isOpenModal}
         onClosed={handleClosedModal}
       >
-        <ModalHeader>{isUpdate ? "Update Budget" : "Add Budget"}</ModalHeader>
+        <ModalHeader>
+          {isUpdate ? "Update Category" : "Add Category"}
+        </ModalHeader>
         <form onSubmit={handleSubmit} className="d-flex flex-column">
           <ModalBody className="gap-3 d-flex flex-column">
-            {budgetInputs?.map((input) => {
+            {categoryInputs?.map((input) => {
               return (
                 <Input
                   key={input?.id}
@@ -204,6 +206,18 @@ const Budget = () => {
                   value={values[input.name] || ""}
                   onChange={onChange}
                   errors={errors[input.name]}
+                />
+              );
+            })}
+            {categorySelects?.map((select) => {
+              return (
+                <Select
+                  key={select?.id}
+                  {...select}
+                  value={values[select?.name] || ""}
+                  errors={errors[select?.name]}
+                  options={select?.options}
+                  onChange={onChange}
                 />
               );
             })}
@@ -233,4 +247,4 @@ const Budget = () => {
   );
 };
 
-export default Budget;
+export default Category;
