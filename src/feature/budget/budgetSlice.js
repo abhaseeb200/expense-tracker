@@ -18,7 +18,7 @@ export const budgetSlice = createSlice({
     },
     editBudgetReducer: (state, action) => {
       let currentIndex = state.budgetData.findIndex(
-        (item) => item.docID == action.payload.docID
+        (item) => item.docId == action.payload.docId
       );
 
       if (currentIndex !== -1) {
@@ -30,7 +30,7 @@ export const budgetSlice = createSlice({
       return {
         ...state,
         budgetData: state.budgetData.filter(
-          (item) => item.docID != action.payload
+          (item) => item.docId != action.payload
         ),
       };
     },
@@ -43,7 +43,12 @@ export const budgetSlice = createSlice({
   },
 });
 
-export const { getBudgetReducer, addBudgetReducer, editBudgetReducer, deleteBudgetReducer, clearBudget } =
-  budgetSlice.actions;
+export const {
+  getBudgetReducer,
+  addBudgetReducer,
+  editBudgetReducer,
+  deleteBudgetReducer,
+  clearBudget,
+} = budgetSlice.actions;
 
 export default budgetSlice.reducer;

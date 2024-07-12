@@ -18,7 +18,7 @@ export const categorySlice = createSlice({
     },
     updateCategoryReducer: (state, action) => {
       let currentIndex = state.categoryData.findIndex(
-        (item) => item.docID == action.payload.docID
+        (item) => item.docId == action.payload.docId
       );
 
       if (currentIndex !== -1) {
@@ -30,7 +30,7 @@ export const categorySlice = createSlice({
       return {
         ...state,
         categoryData: state.categoryData.filter(
-          (item) => item.docID != action.payload
+          (item) => item.docId != action.payload
         ),
       };
     },

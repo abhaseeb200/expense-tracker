@@ -28,7 +28,7 @@ const useCategory = () => {
       let response = await getCategoryAPI(userId);
       response.forEach((element) => {
         category.push({
-          docID: element.id,
+          docId: element.id,
           ...element.data(),
         });
       });
@@ -44,7 +44,7 @@ const useCategory = () => {
     try {
       setLoading(true);
       let response = await addCategoryAPI(body);
-      dispatch(addCategoryReducer({ ...body, docID: response?.id }));
+      dispatch(addCategoryReducer({ ...body, docId: response?.id }));
       toast.success("Create successfully!");
     } catch (error) {
       toast.error(error?.message);

@@ -24,15 +24,27 @@ const CustomInput = ({ className, isError, messageError, ...props }) => {
 
 const Input = (props) => {
   const { isDarkMode } = useSelector((state) => state?.themeMode);
-  const { label, errors, errorMessage, onChange, ...inputProps } = props;
+  const {
+    label,
+    errors,
+    errorMessage,
+    onChange,
+    className,
+    inputClassName,
+    ...inputProps
+  } = props;
 
   return (
     <div
-      className="d-flex flex-column"
+      className={`d-flex flex-column ${className}`}
       data-bs-theme={isDarkMode ? "dark" : "light"}
     >
       {label && <Label>{label}</Label>}
-      <ReactStrapInput {...inputProps} onChange={onChange} />
+      <ReactStrapInput
+        {...inputProps}
+        onChange={onChange}
+        className={inputClassName}
+      />
       {inputProps?.value && (
         <small className="text-danger d-none">{errorMessage}</small>
       )}

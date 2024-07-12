@@ -5,7 +5,7 @@ import "./style.css";
 import { useSelector } from "react-redux";
 
 const Search = (props) => {
-  const { onClick, isOpenModal } = props;
+  const { onClick, isOpenModal, value, onChange } = props;
 
   const { isDarkMode } = useSelector((state) => state?.themeMode);
 
@@ -20,7 +20,12 @@ const Search = (props) => {
             size="20px"
           ></box-icon>
         </span>
-        <Input placeholder="Search content..." className="ps-40 w-100" />
+        <Input
+          placeholder="Search content..."
+          inputClassName="ps-40 w-100"
+          onChange={onChange}
+          value={value}
+        />
       </div>
 
       {/* ===================== MODAL OPEN - BUTTON ===================== */}

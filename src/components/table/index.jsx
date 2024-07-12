@@ -23,9 +23,8 @@ const Pagination = ({ totalPages, onPageChange, currentPage }) => {
         </li>
         {pages.map((page, index) => {
           return (
-            <li>
+            <li key={index}>
               <Button
-                key={index}
                 color={currentPage === page ? "primary" : "secondary"}
                 className="text-white page-item"
                 onClick={() => onPageChange(page)}
@@ -50,7 +49,7 @@ const Pagination = ({ totalPages, onPageChange, currentPage }) => {
 };
 
 const Actions = ({ onDelete, onUpdate, data, iconLoading, docId }) => {
-  const isLoading = iconLoading && docId === data?.docID;
+  const isLoading = iconLoading && docId === data?.docId;
   return (
     <div className="d-flex gap-2 justify-content-end align-items-center h-full">
       <div

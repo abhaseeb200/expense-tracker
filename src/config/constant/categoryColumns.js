@@ -1,7 +1,7 @@
 const categoryColumns = [
   { title: "Name", key: "name" },
   { title: "Type", key: "category" },
-  { title: "Action", key: "action" },
+  { title: "Actions", key: "action" },
 ];
 
 export default categoryColumns;

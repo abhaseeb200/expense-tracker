@@ -28,7 +28,7 @@ const useBudget = () => {
       let response = await getBudgetAPI(userId);
       response.forEach((element) => {
         budgets.push({
-          docID: element.id,
+          docId: element.id,
           ...element.data(),
         });
       });
@@ -44,7 +44,7 @@ const useBudget = () => {
     try {
       setLoading(true);
       let response = await addBudgetAPI(body, userId);
-      dispatch(addBudgetReducer({ ...body, docID: response?.id }));
+      dispatch(addBudgetReducer({ ...body, docId: response?.id }));
       toast.success("Create successfully!");
     } catch (error) {
       toast.error(error?.message);
@@ -57,7 +57,7 @@ const useBudget = () => {
     try {
       setLoading(true);
       await updateBudgetAPI(body, docId);
-      dispatch(editBudgetReducer({ ...body, docID: docId }));
+      dispatch(editBudgetReducer({ ...body, docId: docId }));
       toast.success("Update successfully!");
     } catch (error) {
       toast.error(error?.message);

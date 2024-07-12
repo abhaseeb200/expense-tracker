@@ -10,6 +10,7 @@ import themeSlice from "../feature/themeMode/themeSlice";
 const persistConfig = {
   key: "root",
   storage,
+  // blacklist: ['transaction']
 };
 
 const reducers = combineReducers({

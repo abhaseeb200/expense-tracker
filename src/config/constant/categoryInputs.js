@@ -12,10 +12,10 @@ const categorySelects = [
   {
     id: 2,
     name: "category",
-    type: "select",
+    // type: "select",
     label: "Transaction Type",
+    placeholder: "Select Transaction",
     options: [
-      { value: "", name: "Select Transaction" },
       { value: "expense", name: "Expense" },
       { value: "income", name: "Income" },
     ],

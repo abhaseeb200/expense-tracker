@@ -4,21 +4,21 @@ export const transactionSlice = createSlice({
   name: "transaction",
   initialState: { transactionData: [] },
   reducers: {
-    getTransaction: (state, action) => {
+    getTransactionReducer: (state, action) => {
       return {
         ...state,
         transactionData: [...action.payload],
       };
     },
-    addTransaction: (state, action) => {
+    addTransactionReducer: (state, action) => {
       return {
         ...state,
-        transactionData: [action.payload,...state.transactionData],
+        transactionData: [action.payload, ...state.transactionData],
       };
     },
-    editTransaction: (state, action) => {
+    updateTransactionReducer: (state, action) => {
       let currentIndex = state.transactionData.findIndex(
-        (item) => item.docID == action.payload.docID
+        (item) => item.docId == action.payload.docId
       );
 
       if (currentIndex !== -1) {
@@ -26,15 +26,15 @@ export const transactionSlice = createSlice({
       }
       return state;
     },
-    deleteTransaction: (state, action) => {
+    deleteTransactionReducer: (state, action) => {
       return {
         ...state,
         transactionData: state.transactionData.filter(
-          (item) => item.docID != action.payload
+          (item) => item.docId != action.payload
         ),
       };
     },
-    clearTransactions: (state) => {
+    clearTransactionsReducer: (state) => {
       return {
         ...state,
         transactionData: [],
@@ -44,11 +44,11 @@ export const transactionSlice = createSlice({
 });
 
 export const {
-  getTransaction,
-  addTransaction,
-  editTransaction,
-  deleteTransaction,
-  clearTransactions,
+  getTransactionReducer,
+  addTransactionReducer,
+  updateTransactionReducer,
+  deleteTransactionReducer,
+  clearTransactionsReducer,
 } = transactionSlice.actions;
 
 export default transactionSlice.reducer;

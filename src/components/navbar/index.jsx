@@ -21,7 +21,7 @@ import avatarImg from "../../assets/1.png";
 import { toast } from "react-toastify";
 import { clearUserProfile } from "../../feature/auth/userSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { clearTransactions } from "../../feature/transaction/transactionSlice";
+import { clearTransactionsReducer } from "../../feature/transaction/transactionSlice";
 import { clearCategoryReducer } from "../../feature/category/categorySlice";
 import { clearBudget } from "../../feature/budget/budgetSlice";
 import SwitchTheme from "../switchTheme";
@@ -45,7 +45,7 @@ const CustomNavbar = ({ setSideBarToggle, direction, ...args }) => {
       .then(() => {
         localStorage.clear();
         dispatch(clearUserProfile());
-        dispatch(clearTransactions());
+        dispatch(clearCategoryReducer());
         dispatch(clearCategory());
         dispatch(clearBudget());
         navigate("/login", { replace: true });

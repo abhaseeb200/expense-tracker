@@ -6,6 +6,23 @@ thead tr {
   background-color: transparent !important;
 }
 
+table th:not(:last-child) {
+  width: 141px;
+}
+
+table th:last-child {
+  width: 100px;
+}
+
 .table > :not(caption) > * > * {
-  padding: 1rem 1.25rem !important;
+  padding: 1.1rem 1.25rem !important;
+}
+
+table {
+  white-space: nowrap;
+  table-layout: fixed;
+  /* word-wrap: break-word; */
+}
+.table-responsive {
+  position: relative;
 }

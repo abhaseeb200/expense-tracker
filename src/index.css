@@ -161,7 +161,7 @@ input:-webkit-autofill:active {
 }
 
 .ps-40 {
-  padding-left: 40px;
+  padding-left: 40px !important;
 }
 
 .cursor-pointer {
@@ -180,7 +180,6 @@ input:-webkit-autofill:active {
   height: 100px;
   line-height: 100px;
 }
-
 
 span.badge {
   text-transform: uppercase;
@@ -202,4 +201,35 @@ input[type="number"] {
 .card-title {
   font-size: 18px;
   font-weight: 600;
+}
+
+.dropdown-toggle::after {
+  position: absolute;
+  right: 15px;
+  top: 17px;
+  font-size: 18px;
+}
+.dropdown-menu {
+  font-size: 14px;
+  max-height: 190px;
+  overflow: auto;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #0e0e0e;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #4b4b4b !important;
+  border-radius: 10px;
+}
+
+.text-primary {
+  color: #696cff !important;
 }

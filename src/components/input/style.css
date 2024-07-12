@@ -1,5 +1,5 @@
 .form-control {
-  padding: 0.4375rem 0.875rem;
+  padding: 0.4375rem 0.875rem !important;
   font-size: 0.9375rem;
   color: #697a8d;
   background-clip: padding-box;
