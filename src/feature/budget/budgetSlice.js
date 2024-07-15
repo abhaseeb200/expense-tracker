@@ -34,12 +34,6 @@ export const budgetSlice = createSlice({
         ),
       };
     },
-    clearBudget: (state) => {
-      return {
-        ...state,
-        budgetData: [],
-      };
-    },
   },
 });
 

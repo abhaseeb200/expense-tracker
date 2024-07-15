@@ -34,12 +34,6 @@ export const categorySlice = createSlice({
         ),
       };
     },
-    clearCategoryReducer: (state) => {
-      return {
-        ...state,
-        categoryData: [],
-      };
-    },
   },
 });
 

@@ -34,12 +34,6 @@ export const transactionSlice = createSlice({
         ),
       };
     },
-    clearTransactionsReducer: (state) => {
-      return {
-        ...state,
-        transactionData: [],
-      };
-    },
   },
 });
 

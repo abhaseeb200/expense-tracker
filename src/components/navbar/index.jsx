@@ -19,12 +19,9 @@ import { authLogout } from "../../config/service/firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import avatarImg from "../../assets/1.png";
 import { toast } from "react-toastify";
-import { clearUserProfile } from "../../feature/auth/userSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { clearTransactionsReducer } from "../../feature/transaction/transactionSlice";
-import { clearCategoryReducer } from "../../feature/category/categorySlice";
-import { clearBudget } from "../../feature/budget/budgetSlice";
 import SwitchTheme from "../switchTheme";
+import { logoutReducer } from "../../feature/auth/userSlice";
 
 const CustomNavbar = ({ setSideBarToggle, direction, ...args }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -40,21 +37,15 @@ const CustomNavbar = ({ setSideBarToggle, direction, ...args }) => {
     setScreenWidth(window.innerWidth);
   });
 
-  const logoutHanlder = () => {
-    authLogout()
-      .then(() => {
-        localStorage.clear();
-        dispatch(clearUserProfile());
-        dispatch(clearCategoryReducer());
-        dispatch(clearCategory());
-        dispatch(clearBudget());
-        navigate("/login", { replace: true });
-      })
-      .catch((err) => {
-        toast.error(err, {
-          autoClose: 1500,
-        });
-      });
+  const handleLogout = async () => {
+    try {
+      await authLogout();
+      await localStorage.clear();
+      await dispatch(logoutReducer());
+      navigate("/login", { replace: true });
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -101,7 +92,7 @@ const CustomNavbar = ({ setSideBarToggle, direction, ...args }) => {
                     <span className="ms-2">{userData?.username}</span>
                   </DropdownItem>
                 </Link>
-                <DropdownItem className="logout-btn" onClick={logoutHanlder}>
+                <DropdownItem className="logout-btn" onClick={handleLogout}>
                   <box-icon name="power-off" color="#697a8d"></box-icon>
                   <span className="ms-2">Log Out</span>
                 </DropdownItem>

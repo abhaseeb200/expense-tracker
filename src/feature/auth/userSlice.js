@@ -16,17 +16,19 @@ export const userSlice = createSlice({
     editUserProfile: (state, action) => {
       state.userData = action?.payload;
     },
-    clearUserProfile: (state) => {
+    logoutReducer: (state) => {
       return {
         ...state,
-        userData: {},
-        isLogin: false,
       };
     },
   },
 });
 
-export const { getUserProfile, editUserProfile, clearUserProfile } =
-  userSlice.actions;
+export const {
+  getUserProfile,
+  editUserProfile,
+  clearUserProfile,
+  logoutReducer,
+} = userSlice.actions;
 
 export default userSlice.reducer;
