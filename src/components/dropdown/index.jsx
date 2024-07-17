@@ -31,7 +31,7 @@ const Dropdown = (props) => {
   const toggle = () => setDropdownOpen((prevState) => !prevState);
 
   return (
-    <div className={className}>
+    <div className={`position-relative ${className}`}>
       <input type="hidden" {...inputProps} onChange={onChange} />
       <div className="d-flex justify-content-between">
         {label && <Label>{label}</Label>}

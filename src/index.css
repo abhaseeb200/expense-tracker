@@ -247,11 +247,16 @@ input[type="number"] {
   max-width: 160px;
 }
 .fill-available.card-body {
-  padding-left:35px !important;
-  padding-right:35px !important;
+  padding-left: 35px !important;
+  padding-right: 35px !important;
   padding-bottom: 25px !important;
 }
-
+.w-48 {
+  width: 48.5%;
+}
+.w-31 {
+  width: 23%;
+}
 @media (max-width: 576px) {
   .min-h-screen {
     min-height: 80vh !important;
@@ -272,4 +277,3 @@ input[type="number"] {
     max-width: 120px;
   }
 }
-

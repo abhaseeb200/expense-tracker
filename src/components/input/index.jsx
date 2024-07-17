@@ -29,14 +29,14 @@ const Input = (props) => {
     errors,
     errorMessage,
     onChange,
-    className,
+    className = "",
     inputClassName,
     ...inputProps
   } = props;
 
   return (
     <div
-      className={`d-flex flex-column ${className}`}
+      className={`d-flex flex-column position-relative ${className}`}
       data-bs-theme={isDarkMode ? "dark" : "light"}
     >
       {label && <Label>{label}</Label>}
@@ -46,10 +46,12 @@ const Input = (props) => {
         className={inputClassName}
       />
       {inputProps?.value && (
-        <small className="text-danger d-none">{errorMessage}</small>
+        <small className="text-danger d-none mt-1">{errorMessage}</small>
       )}
       {errors && (
-        <small className="text-danger mt-1">{`Please provide ${inputProps?.name}`}</small>
+        <small className="text-danger mt-1">{`Please provide ${inputProps?.name
+          .split("-")
+          .join(" ")}`}</small>
       )}
     </div>
   );
