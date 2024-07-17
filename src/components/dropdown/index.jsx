@@ -21,7 +21,7 @@ const Dropdown = (props) => {
     options,
     placeholder,
     onAddCategory,
-    onselect,
+    onSelect,
     loading,
     allValues,
     className,
@@ -64,8 +64,8 @@ const Dropdown = (props) => {
               <DropdownItem
                 key={index}
                 className="py-2"
-                onClick={(e) => {
-                  onselect(inputProps?.name, i?.name);
+                onClick={() => {
+                  onSelect(inputProps?.name, i?.name);
                 }}
               >
                 {i.name}

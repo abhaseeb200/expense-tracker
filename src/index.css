@@ -183,7 +183,7 @@ input:-webkit-autofill:active {
 
 span.badge {
   text-transform: uppercase;
-  line-height: 0.75;
+  line-height: 10px;
   padding: 0.52em 0.593em;
 }
 
@@ -217,6 +217,7 @@ input[type="number"] {
 
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 /* Track */
@@ -233,3 +234,42 @@ input[type="number"] {
 .text-primary {
   color: #696cff !important;
 }
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+:focus-visible {
+  outline: -webkit-focus-ring-color auto 0px;
+}
+
+.max-w-160px {
+  max-width: 160px;
+}
+.fill-available.card-body {
+  padding-left:35px !important;
+  padding-right:35px !important;
+  padding-bottom: 25px !important;
+}
+
+@media (max-width: 576px) {
+  .min-h-screen {
+    min-height: 80vh !important;
+  }
+  .w-18 {
+    width: 180px;
+  }
+  .w-44 {
+    width: 185px;
+  }
+  table th:last-child {
+    width: 120px !important;
+  }
+  .w-200px {
+    width: auto !important;
+  }
+  .max-w-160px {
+    max-width: 120px;
+  }
+}
+

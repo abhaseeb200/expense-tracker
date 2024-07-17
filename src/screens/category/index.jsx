@@ -2,28 +2,29 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Card, CardBody, CardTitle } from "reactstrap";
 import Search from "../../components/Search";
-import categoryColumns from "../../config/constant/categoryColumns";
-import useCategory from "../../hooks/useCategory";
 import Table from "../../components/table";
 import CategoryFrom from "../../components/categoryFrom";
+import categoryColumns from "../../config/constant/categoryColumns";
+import useCategory from "../../hooks/useCategory";
 
 const Category = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [currentDocID, setCurrentDocID] = useState("");
+  const [search, setSearch] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
   const [backUp, setBackUp] = useState([]);
   const [currentData, setCurrentData] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { categoryData } = useSelector((state) => state.category);
-  const { userData } = useSelector((state) => state?.auth);
 
   const { useGetCategory, useDeleteCategory, initLoading, loading } =
     useCategory();
 
   const handleDelete = async (data) => {
-    setCurrentDocID(data?.docID);
-    await useDeleteCategory(data?.docID);
+    setCurrentDocID(data?.docId);
+    await useDeleteCategory(data?.docId);
   };
 
   const handleUpdate = (data) => {
@@ -32,7 +33,7 @@ const Category = () => {
     setCurrentData(data);
   };
 
-  const handleOnSort = (columnKey, objectKey) => {
+  const handleOnSort = (columnKey) => {
     let newDirection = "asc";
     if (sortConfig?.direction === "desc" && sortConfig?.key === columnKey) {
       newDirection = "asc";
@@ -43,7 +44,6 @@ const Category = () => {
     setSortConfig({
       key: columnKey,
       direction: newDirection,
-      objectKey: objectKey,
     });
   };
 
@@ -55,7 +55,19 @@ const Category = () => {
   useEffect(() => {
     let updatedData = [...categoryData];
 
-    if (sortConfig.key && sortConfig.direction) {
+    if (search?.trim()) {
+      setCurrentPage(1);
+      updatedData = updatedData.filter((item) =>
+        Object.keys(item).some((k) =>
+          item[k]
+            ?.toLocaleString()
+            .toLowerCase()
+            .includes(search.toLowerCase().trim())
+        )
+      );
+    }
+
+    if (sortConfig?.key && sortConfig?.direction) {
       updatedData.sort((a, b) => {
         let valueA = a[sortConfig?.key];
         let valueB = b[sortConfig?.key];
@@ -65,10 +77,10 @@ const Category = () => {
           valueB = valueB.toLowerCase();
         }
 
-        if (sortConfig.direction === "asc") {
+        if (sortConfig?.direction === "asc") {
           if (valueA < valueB) return -1;
           if (valueA > valueB) return 1;
-        } else if (sortConfig.direction === "desc") {
+        } else if (sortConfig?.direction === "desc") {
           if (valueA > valueB) return -1;
           if (valueA < valueB) return 1;
         }
@@ -77,30 +89,37 @@ const Category = () => {
     }
 
     setBackUp(updatedData);
-  }, [sortConfig]);
+  }, [sortConfig, search]);
 
   useEffect(() => {
     setSortConfig({ key: "", direction: "" });
+    setSearch("");
     setBackUp(categoryData);
+    setCurrentPage(1);
   }, [categoryData]);
 
   useEffect(() => {
     if (!categoryData?.length) {
       useGetCategory();
     }
-  }, [userData]);
+  }, []);
 
   return (
     <>
       <Card className="my-3 h-100">
         {/* ================================ SCREEN TITLE ================================ */}
-        <CardBody className="pb-3 d-flex justify-content-between gap-3 flex-column">
+        <CardBody className="pb-0 d-flex justify-content-between gap-3 flex-column">
           <CardTitle className="text-uppercase">Add Category</CardTitle>
-          <Search onClick={handleAddCategory} isOpenModal={isOpenModal} />
+          <Search
+            onClick={handleAddCategory}
+            onChange={(e) => setSearch(e.target.value)}
+            isOpenModal={isOpenModal}
+            value={search}
+          />
         </CardBody>
 
         {/* ================================ TABLE ================================ */}
-        <CardBody className="pt-3 row fill-available flex-column">
+        <CardBody className="row fill-available flex-column min-h-screen justify-content-between gap-4">
           <Table
             onDelete={handleDelete}
             onUpdate={handleUpdate}
@@ -111,16 +130,21 @@ const Category = () => {
             docId={currentDocID}
             iconLoading={loading}
             loading={initLoading}
+            colWidth="w-44"
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
           />
         </CardBody>
       </Card>
 
+      {/* ================================ SUBMIT FORM ================================ */}
       <CategoryFrom
         isUpdate={isUpdate}
         isOpenModal={isOpenModal}
         setIsOpenModal={setIsOpenModal}
         setIsUpdate={setIsUpdate}
         currentData={currentData}
+        setCurrentData={setCurrentData}
       />
     </>
   );

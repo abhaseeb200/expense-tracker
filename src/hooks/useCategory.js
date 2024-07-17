@@ -57,7 +57,7 @@ const useCategory = () => {
     try {
       setLoading(true);
       await updateCategoryAPI(body, docId);
-      dispatch(updateCategoryReducer({ ...body, docID: docId }));
+      dispatch(updateCategoryReducer({ ...body, docId: docId }));
       toast.success("Update successfully!");
     } catch (error) {
       toast.error(error?.message);

@@ -10,7 +10,7 @@ const Search = (props) => {
   const { isDarkMode } = useSelector((state) => state?.themeMode);
 
   return (
-    <div className="d-flex gap-2">
+    <div className="d-flex gap-2 flex-sm-row flex-column">
       {/* ===================== SEARCH - INPUT ===================== */}
       <div className="position-relative w-100">
         <span className="position-absolute lh-0 top-9px left-14px">

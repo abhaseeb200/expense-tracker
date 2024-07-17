@@ -12,7 +12,6 @@ const categorySelects = [
   {
     id: 2,
     name: "category",
-    // type: "select",
     label: "Transaction Type",
     placeholder: "Select Transaction",
     options: [

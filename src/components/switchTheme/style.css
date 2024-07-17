@@ -21,7 +21,7 @@ body.dark-theme {
 }
 
 .dark-theme span.badge {
-  color: #fbfbfb;
+  /* color: #fbfbfb; */
 }
 
 .dark-theme .dropdown-menu {

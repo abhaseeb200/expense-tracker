@@ -1,7 +1,4 @@
 import { db } from "../../firebaseConfig";
-import { store } from "../../store";
-
-// console.log(store.getState(),"++++++");
 
 const addBudgetAPI = (body, userId) => {
   return db.collection("budget").add({ ...body, userId: userId });

@@ -6,12 +6,22 @@ thead tr {
   background-color: transparent !important;
 }
 
-table th:not(:last-child) {
-  width: 141px;
+.w-18 {
+  width: 18%;
 }
 
+.w-44 {
+  width: 44%;
+}
+/* table th {
+  width: 18%;
+} */
+/* table th:not(:last-child) {
+  width: 18%;
+} */
+
 table th:last-child {
-  width: 100px;
+  width: 12% !important;
 }
 
 .table > :not(caption) > * > * {
@@ -21,8 +31,45 @@ table th:last-child {
 table {
   white-space: nowrap;
   table-layout: fixed;
+  margin-bottom: 0 !important;
+  /* padding: 0 12px !important; */
   /* word-wrap: break-word; */
 }
 .table-responsive {
   position: relative;
+  padding: 0;
+}
+
+.transform-rotate {
+  transform: rotate(180deg);
+}
+
+.page-item {
+  cursor: pointer;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  border-radius: 8px;
+  font-size: 12px;
+  justify-content: center;
+  align-items: center;
+  background: #121212;
+  border: 1px solid transparent;
+  line-height: 0;
+}
+
+.border-primary {
+  border-color: #696cff;
+}
+
+.pointer-event-none {
+  pointer-events: none;
+}
+
+.opacity-6 {
+  opacity: 0.6;
+}
+
+nav[aria-label="Page navigation"] {
+  padding: 0 !important;
 }

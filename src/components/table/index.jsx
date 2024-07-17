@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Table as BootstrapTable, Button, CardText, Spinner } from "reactstrap";
-import { CaretIcon, EditIcon, TrashIcon } from "../Icons";
+import { ChevronIcon, CaretIcon, EditIcon, TrashIcon } from "../icons";
 import "./style.css";
 
 const Pagination = ({ totalPages, onPageChange, currentPage }) => {
@@ -11,45 +11,60 @@ const Pagination = ({ totalPages, onPageChange, currentPage }) => {
   }
   return (
     <nav aria-label="Page navigation">
-      <ul className="pagination d-flex gap-2">
+      <ul className="pagination d-flex gap-2 m-0">
         <li>
-          <Button
-            className="text-white page-item"
+          <ChevronIcon
+            width="20"
+            height="20"
+            fill="#fff"
+            role="button"
+            className={`transform-rotate page-item ${
+              currentPage === 1 && "pointer-event-none opacity-6"
+            }`}
             onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Prev
-          </Button>
+          />
         </li>
         {pages.map((page, index) => {
           return (
             <li key={index}>
-              <Button
-                color={currentPage === page ? "primary" : "secondary"}
-                className="text-white page-item"
+              <div
+                className={`text-white page-item ${
+                  currentPage === page && "border-primary text-primary"
+                }`}
                 onClick={() => onPageChange(page)}
               >
                 {page}
-              </Button>
+              </div>
             </li>
           );
         })}
         <li>
-          <Button
-            className="text-white page-item"
+          <ChevronIcon
+            width="20"
+            height="20"
+            fill="#fff"
+            role="button"
+            className={`page-item ${
+              currentPage === totalPages && "pointer-event-none opacity-6"
+            }`}
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-          >
-            Next
-          </Button>
+          />
         </li>
       </ul>
     </nav>
   );
 };
 
-const Actions = ({ onDelete, onUpdate, data, iconLoading, docId }) => {
-  const isLoading = iconLoading && docId === data?.docId;
+const Actions = ({
+  isUpdate,
+  onDelete,
+  onUpdate,
+  data,
+  iconLoading,
+  docId,
+}) => {
+  const isLoading = iconLoading && !isUpdate && docId === data?.docId;
   return (
     <div className="d-flex gap-2 justify-content-end align-items-center h-full">
       <div
@@ -80,8 +95,11 @@ const Table = ({
   loading,
   iconLoading,
   docId,
+  isUpdate = false,
+  colWidth = "w-18",
+  currentPage = 1,
+  setCurrentPage,
 }) => {
-  const [currentPage, setCurrentPage] = useState(1);
 
   const rowsPerPage = 10;
 
@@ -107,7 +125,8 @@ const Table = ({
                 <th
                   scope="row"
                   key={index}
-                  role={isNotAction ? "button" : ""}
+                  role={isNotAction ? "button" : null}
+                  className={colWidth}
                   onClick={() =>
                     isNotAction ? onSort(column?.key, column?.objectKey) : null
                   }
@@ -161,8 +180,6 @@ const Table = ({
                     {column?.key !== "action" ? (
                       column?.function ? (
                         column.function(row[column?.key])
-                      ) : typeof row[column?.objectKey] === "object" ? (
-                        row[column?.objectKey][column?.key]
                       ) : (
                         row[column?.key]
                       )
@@ -173,6 +190,7 @@ const Table = ({
                         onUpdate={onUpdate}
                         data={row}
                         docId={docId}
+                        isUpdate={isUpdate}
                       />
                     )}
                   </td>

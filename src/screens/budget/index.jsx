@@ -26,6 +26,8 @@ const Budget = () => {
   const [backUp, setBackUp] = useState([]);
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
 
   const {
     useGetBudget,
@@ -45,7 +47,6 @@ const Budget = () => {
   };
 
   const handleUpdate = (data) => {
-    console.log(data);
     setIsUpdate(true);
     setIsOpenModal(true);
     setValues(data);
@@ -124,6 +125,18 @@ const Budget = () => {
   useEffect(() => {
     let updatedData = [...budgetData];
 
+    if (search?.trim()) {
+      setCurrentPage(1);
+      updatedData = updatedData.filter((item) =>
+        Object.keys(item).some((k) =>
+          item[k]
+            ?.toLocaleString()
+            .toLowerCase()
+            .includes(search.toLowerCase().trim())
+        )
+      );
+    }
+
     if (sortConfig.key && sortConfig.direction) {
       updatedData.sort((a, b) => {
         let valueA = a[sortConfig?.key];
@@ -146,11 +159,12 @@ const Budget = () => {
     }
 
     setBackUp(updatedData);
-  }, [sortConfig]);
+  }, [sortConfig, search]);
 
   useEffect(() => {
     setSortConfig({ key: "", direction: "" });
     setBackUp(budgetData);
+    setCurrentPage(1);
   }, [budgetData]);
 
   useEffect(() => {
@@ -163,16 +177,18 @@ const Budget = () => {
     <>
       <Card className="my-3 h-100">
         {/* ================================ SCREEN TITLE ================================ */}
-        <CardBody className="pb-3 d-flex justify-content-between gap-3 flex-column">
+        <CardBody className="pb-0 d-flex justify-content-between gap-3 flex-column">
           <CardTitle className="text-uppercase">Add Budget Goals</CardTitle>
           <Search
             onClick={() => setIsOpenModal(true)}
+            onChange={(e) => setSearch(e.target.value)}
+            value={search}
             isOpenModal={isOpenModal}
           />
         </CardBody>
 
         {/* ================================ TABLE ================================ */}
-        <CardBody className="pt-3 row fill-available flex-column">
+        <CardBody className="row fill-available flex-column min-h-screen justify-content-between gap-4">
           <Table
             onDelete={handleDelete}
             onUpdate={handleUpdate}
@@ -183,6 +199,8 @@ const Budget = () => {
             loading={initLoading}
             iconLoading={loading}
             docId={currentDocID}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
           />
         </CardBody>
       </Card>
@@ -195,7 +213,7 @@ const Budget = () => {
       >
         <ModalHeader>{isUpdate ? "Update Budget" : "Add Budget"}</ModalHeader>
         <form onSubmit={handleSubmit} className="d-flex flex-column">
-          <ModalBody className="gap-3 d-flex flex-column">
+          <ModalBody className="gap-4 d-flex flex-column">
             {budgetInputs?.map((input) => {
               return (
                 <Input

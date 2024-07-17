@@ -8,7 +8,6 @@ import {
   ModalHeader,
   Spinner,
 } from "reactstrap";
-import Select from "../selectInput";
 import { Input } from "../input";
 import {
   categoryInputs,
@@ -16,10 +15,13 @@ import {
 } from "../../config/constant/categoryInputs";
 import useCategory from "../../hooks/useCategory";
 import Dropdown from "../dropdown";
+import { toast } from "react-toastify";
 
 const CategoryFrom = (props) => {
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
+
+  const { categoryData } = useSelector((state) => state.category);
 
   const {
     isOpenModal,
@@ -27,6 +29,7 @@ const CategoryFrom = (props) => {
     setIsUpdate,
     setIsOpenModal,
     currentData = {},
+    setCurrentData,
   } = props;
 
   const { useUpdateCategory, useAddCategory, loading } = useCategory();
@@ -35,11 +38,9 @@ const CategoryFrom = (props) => {
   const handleClosedModal = () => {
     setValues({});
     setErrors({});
-  };
-
-  const handleModalCancel = () => {
     setIsOpenModal(false);
     setIsUpdate(false);
+    setCurrentData && setCurrentData({});
   };
 
   const onChange = (e) => {
@@ -49,6 +50,16 @@ const CategoryFrom = (props) => {
       setErrors({ ...errors, [e.target.name]: true });
     } else {
       setErrors({ ...errors, [e.target.name]: false });
+    }
+  };
+
+  const handleSelect = (name, value) => {
+    setValues({ ...values, [name]: value });
+
+    if (!value?.trim()) {
+      setErrors({ ...errors, [name]: true });
+    } else {
+      setErrors({ ...errors, [name]: false });
     }
   };
 
@@ -66,19 +77,46 @@ const CategoryFrom = (props) => {
       }
     });
     setErrors(error);
-
+    
+    //SUBMIT THE FORM BY USING `DATA`
     if (!Object.values(error).includes(true)) {
       let body = {
         userId: userData?.userId,
         ...data,
+        name: data?.name?.trim(),
       };
+
+      let isExists = categoryData.find(
+        (i) =>
+          i?.name?.toLowerCase().trim() === data?.name?.toLowerCase().trim() &&
+          i?.category?.toLowerCase() === data?.category?.toLowerCase()
+      );
+      if (isExists) {
+        return toast.error("Category already exists");
+      }
+
       if (isUpdate) {
-        await useUpdateCategory(body, currentData?.docID);
+        await useUpdateCategory(body, currentData?.docId);
       } else {
         await useAddCategory(body);
       }
     }
   };
+
+  useEffect(() => {
+    if (Object.keys(currentData)?.length) {
+      setValues(currentData);
+    }
+  }, [currentData]);
+
+  // RESET FORM WHEN NEW CATEGORY IS ADDED
+  useEffect(() => {
+    return () => {
+      if (!isUpdate) {
+        setValues({});
+      }
+    };
+  }, [categoryData]);
 
   return (
     <Modal
@@ -89,13 +127,13 @@ const CategoryFrom = (props) => {
       <ModalHeader>{isUpdate ? "Update Category" : "Add Category"}</ModalHeader>
       <form onSubmit={handleSubmit} className="d-flex flex-column">
         {isOpenModal && (
-          <ModalBody className="gap-3 d-flex flex-column">
+          <ModalBody className="gap-4 d-flex flex-column">
             {categoryInputs?.map((input) => {
               return (
                 <Input
                   key={input?.id}
                   {...input}
-                  value={values[input.name] || currentData[input.name] || ""}
+                  value={values[input.name] || ""}
                   errors={errors[input.name] || ""}
                   onChange={onChange}
                 />
@@ -106,10 +144,10 @@ const CategoryFrom = (props) => {
                 <Dropdown
                   key={select?.id}
                   {...select}
-                  value={values[select?.name] || currentData[select.name] || ""}
+                  value={values[select?.name] || ""}
                   errors={errors[select?.name] || ""}
                   options={select?.options}
-                  onChange={onChange}
+                  onSelect={(name, value) => handleSelect(name, value)}
                 />
               );
             })}
@@ -121,7 +159,7 @@ const CategoryFrom = (props) => {
             color="secondary"
             outline
             type="button"
-            onClick={handleModalCancel}
+            onClick={handleClosedModal}
           >
             Cancel
           </Button>

@@ -30,6 +30,7 @@ const useTransaction = () => {
         transaction.push({
           docId: element.id,
           ...element.data(),
+          amount: +element.data()?.amount,
         });
       });
       dispatch(getTransactionReducer(transaction));

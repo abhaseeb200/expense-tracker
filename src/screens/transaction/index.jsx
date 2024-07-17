@@ -12,20 +12,17 @@ import {
   Spinner,
 } from "reactstrap";
 import { Input } from "../../components/input";
-import Select from "../../components/selectInput/index";
 import Table from "../../components/table";
 import Search from "../../components/Search";
-import Category from "../category";
+import CategoryFrom from "../../components/categoryFrom";
+import Dropdown from "../../components/dropdown";
 import transitionColumns from "../../config/constant/transitionColumns";
 import {
   transactionInputs,
   transactionSelects,
 } from "../../config/constant/transactionInput";
 import useTransaction from "../../hooks/useTransaction";
-import "boxicons";
-import CategoryFrom from "../../components/categoryFrom";
 import useCategory from "../../hooks/useCategory";
-import Dropdown from "../../components/dropdown";
 
 const Transaction = () => {
   const [isUpdate, setIsUpdate] = useState(false);
@@ -39,6 +36,7 @@ const Transaction = () => {
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
   const [currentDocId, setCurrentDocId] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const {
     initLoading,
@@ -84,7 +82,7 @@ const Transaction = () => {
     await useDeleteTransaction(data?.docId);
   };
 
-  const handleOnSort = (columnKey, objectKey) => {
+  const handleOnSort = (columnKey) => {
     let newDirection = "asc";
     if (sortConfig?.direction === "desc" && sortConfig?.key === columnKey) {
       newDirection = "asc";
@@ -94,7 +92,6 @@ const Transaction = () => {
     setSortConfig({
       key: columnKey,
       direction: newDirection,
-      objectKey: objectKey,
     });
   };
 
@@ -150,18 +147,37 @@ const Transaction = () => {
     setSearch(e.target.value);
   };
 
+  const handleSelect = (name, value) => {
+    // RESET `CATEGORY` FIELD WHEN CHANGE IN `TYPE` FIELD
+    if (value === "Expense" || value === "Income") {
+      setValues({ ...values, [name]: value, category: "" });
+    } else {
+      setValues({ ...values, [name]: value });
+    }
+
+    if (!value?.trim()) {
+      setErrors({ ...errors, [name]: true });
+    } else {
+      setErrors({ ...errors, [name]: false });
+    }
+  };
+
   useEffect(() => {
     let updatedData = [...transactionData];
 
-    if (search) {
+    if (search?.trim()) {
+      setCurrentPage(1);
       updatedData = updatedData.filter((item) =>
         Object.keys(item).some((k) =>
-          item[k]?.toLocaleString().toLowerCase().includes(search.toLowerCase())
+          item[k]
+            ?.toLocaleString()
+            .toLowerCase()
+            .includes(search.toLowerCase().trim())
         )
       );
     }
 
-    if (sortConfig.key && sortConfig.direction) {
+    if (sortConfig?.key && sortConfig?.direction) {
       updatedData.sort((a, b) => {
         let valueA = a[sortConfig?.key];
         let valueB = b[sortConfig?.key];
@@ -170,11 +186,10 @@ const Transaction = () => {
           valueA = valueA.toLowerCase();
           valueB = valueB.toLowerCase();
         }
-
-        if (sortConfig.direction === "asc") {
+        if (sortConfig?.direction === "asc") {
           if (valueA < valueB) return -1;
           if (valueA > valueB) return 1;
-        } else if (sortConfig.direction === "desc") {
+        } else if (sortConfig?.direction === "desc") {
           if (valueA > valueB) return -1;
           if (valueA < valueB) return 1;
         }
@@ -187,7 +202,9 @@ const Transaction = () => {
 
   useEffect(() => {
     setSortConfig({ key: "", direction: "" });
+    setSearch("");
     setBackUp(transactionData);
+    setCurrentPage(1);
   }, [transactionData]);
 
   useEffect(() => {
@@ -195,7 +212,7 @@ const Transaction = () => {
     let income = [];
 
     categoryData?.map((i) =>
-      i?.category === "expense"
+      i?.category.toLowerCase() === "expense"
         ? expense.push({ value: i?.name, name: i?.name })
         : income.push({ value: i?.name, name: i?.name })
     );
@@ -221,18 +238,18 @@ const Transaction = () => {
     <>
       <Card className="my-3 h-100">
         {/* ================================ SCREEN TITLE ================================ */}
-        <CardBody className="pb-3 d-flex justify-content-between gap-3 flex-column">
+        <CardBody className="pb-0 d-flex justify-content-between gap-3 flex-column">
           <CardTitle className="text-uppercase">Add Transaction</CardTitle>
           <Search
             onClick={() => setIsTransitionModal(true)}
-            isOpenModal={isTransitionModal}
             onChange={(e) => handleSearch(e)}
+            isOpenModal={isTransitionModal}
             value={search}
           />
         </CardBody>
 
         {/* ================================ TABLE ================================ */}
-        <CardBody className="pt-3 row fill-available flex-column card-body">
+        <CardBody className="gap-4 row fill-available flex-column min-h-screen justify-content-between card-body">
           <Table
             onDelete={handleDelete}
             onUpdate={handleUpdate}
@@ -243,6 +260,9 @@ const Transaction = () => {
             loading={initLoading}
             iconLoading={loading}
             docId={currentDocId}
+            isUpdate={isUpdate}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
           />
         </CardBody>
       </Card>
@@ -285,15 +305,7 @@ const Transaction = () => {
                   onAddCategory={
                     select?.name === "category" && handleAddCategory
                   }
-                  onselect={(name, value) => {
-                    setValues({ ...values, [name]: value });
-
-                    if (!value?.trim()) {
-                      setErrors({ ...errors, [name]: true });
-                    } else {
-                      setErrors({ ...errors, [name]: false });
-                    }
-                  }}
+                  onSelect={(name, value) => handleSelect(name, value)}
                 />
               );
             })}
