@@ -21,7 +21,6 @@ const transactionInputs = [
     type: "number",
     placeholder: "200...",
     label: "amount",
-    required: true,
     min: 1,
     pattern: "/^[1-9]d*$/",
     errorMessage: "Amount must be greater than 01",
