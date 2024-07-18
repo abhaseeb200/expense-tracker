@@ -85,7 +85,6 @@ const Report = () => {
       //FILTER WITH SELECT CATEGORY
       if (category !== "All" && category) {
         filtered = filtered.filter((item) => {
-          console.log(item);
           return item.category === category;
         });
       }
@@ -152,11 +151,11 @@ const Report = () => {
             <Input
               {...input}
               max={
-                input.name === "start-date"
-                  ? values["end-date"] || today
+                input.name === "start_date"
+                  ? values["end_date"] || today
                   : today
               }
-              min={input.name === "start-date" ? null : values["start-date"]}
+              min={input.name === "start_date" ? null : values["start_date"]}
               key={input?.id}
               value={values[input.name] || ""}
               errors={errors[input.name] || ""}
