@@ -236,7 +236,7 @@ input[type="number"] {
 }
 
 .min-h-screen {
-  min-height: 100vh;
+  min-height: 69vh;
 }
 
 :focus-visible {
@@ -257,9 +257,14 @@ input[type="number"] {
 .w-31 {
   width: 23%;
 }
+@media (max-width: 767px) {
+  .w-31 {
+    width: 47.5%;
+  }
+}
 @media (max-width: 576px) {
   .min-h-screen {
-    min-height: 80vh !important;
+    min-height: 65vh !important;
   }
   .w-18 {
     width: 180px;
@@ -272,6 +277,9 @@ input[type="number"] {
   }
   .w-200px {
     width: auto !important;
+  }
+  .w-31 {
+    width: 100%;
   }
   .max-w-160px {
     max-width: 120px;

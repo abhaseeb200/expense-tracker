@@ -15,6 +15,7 @@ import "./style.css";
 
 const Report = () => {
   const [values, setValues] = useState("");
+  const [errors, setErrors] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
   const [backUp, setBackUp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -50,14 +51,47 @@ const Report = () => {
     e.preventDefault();
 
     let data = {};
+    let error = {};
     let formData = new FormData(e.target);
 
     formData.forEach((value, key) => {
       data[key] = value;
     });
 
-    //SUBMIT THE FORM BY USING 'DATA'
-    console.log(data);
+    const { start_date, end_date, category } = data;
+
+    if (start_date && !end_date) {
+      error["end_date"] = true;
+    }
+    if (!start_date && end_date) {
+      error["start_date"] = true;
+    }
+    setErrors(error);
+
+    if (!Object.values(error).includes(true)) {
+      let filtered = [...transactionData];
+
+      //FILTER WITH START DATE & END DATE
+      if (start_date && end_date) {
+        let start = new Date(start_date);
+        let end = new Date(end_date);
+
+        filtered = filtered.filter((item) => {
+          const itemDate = new Date(item.date);
+          return itemDate >= start && itemDate <= end;
+        });
+      }
+
+      //FILTER WITH SELECT CATEGORY
+      if (category !== "All" && category) {
+        filtered = filtered.filter((item) => {
+          console.log(item);
+          return item.category === category;
+        });
+      }
+
+      setBackUp(filtered);
+    }
   };
 
   useEffect(() => {
@@ -87,6 +121,11 @@ const Report = () => {
   }, [sortConfig]);
 
   useEffect(() => {
+    setBackUp(transactionData);
+    setCurrentPage(1);
+  }, [transactionData]);
+
+  useEffect(() => {
     if (!transactionData?.length) {
       useGetTransaction();
     }
@@ -107,7 +146,7 @@ const Report = () => {
         {/* ========================== FILTER FORM ========================== */}
         <form
           onSubmit={handleSubmit}
-          className="d-flex flex-wrap justify-content-between align-items-end mb-5"
+          className="d-flex flex-wrap justify-content-between align-items-end mb-5 gap-md-0 gap-4"
         >
           {reportInputs?.map((input) => (
             <Input
@@ -120,6 +159,7 @@ const Report = () => {
               min={input.name === "start-date" ? null : values["start-date"]}
               key={input?.id}
               value={values[input.name] || ""}
+              errors={errors[input.name] || ""}
               onChange={handleChange}
             />
           ))}
@@ -128,7 +168,7 @@ const Report = () => {
               {...select}
               key={select?.id}
               value={values[select?.name] || ""}
-              options={categoryData}
+              options={[{ value: "", name: "All" }, ...categoryData]}
               onChange={handleChange}
               onSelect={(name, value) => handleSelect(name, value)}
             />

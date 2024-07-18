@@ -50,7 +50,7 @@ const Input = (props) => {
       )}
       {errors && (
         <small className="text-danger mt-1">{`Please provide ${inputProps?.name
-          .split("-")
+          .split("_")
           .join(" ")}`}</small>
       )}
     </div>

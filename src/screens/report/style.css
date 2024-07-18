@@ -6,3 +6,9 @@
 .report table th:last-child {
   display: none;
 }
+
+@media (max-width: 767px) {
+  .report table th {
+    width: 180px !important;
+  }
+}
