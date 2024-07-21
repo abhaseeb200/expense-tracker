@@ -6,8 +6,12 @@ body.dark-theme {
   background-color: #282828;
 }
 .dark-theme span,
-.dark-theme p {
+.dark-theme p,
+small {
   color: #afb4b9;
+}
+h4 {
+  color: #afb4b9 !important;
 }
 .dark-theme .card-title {
   color: #afb4b9;
@@ -88,5 +92,5 @@ body.dark-theme {
 }
 
 .dark-theme .modal-backdrop.show {
-  opacity: .8;
+  opacity: 0.8;
 }

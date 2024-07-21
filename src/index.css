@@ -263,7 +263,29 @@ input[type="number"] {
 .w-37 {
   width: 37%;
 }
+.text-xs {
+  font-size: 14px;
+}
+.icon-with-bg {
+  display: flex;
+  width: 57px;
+  height: auto;
+  padding: 10px;
+  border-radius: 100%;
+  background-color: #37374a;
+  margin-bottom: 18px;
+}
+.recent-expenses {
+  background: #37374a;
+  padding: 10px 15px;
+  border-radius: 8px;
+}
 
+.recent-expenses p {
+  font-size: 18px;
+  font-weight: 600;
+  color: #dddddd;
+}
 @media (max-width: 992px) {
   .w-lg-50 {
     width: 48.9% !important;
@@ -275,7 +297,19 @@ input[type="number"] {
   }
 } */
 
+@media (max-width: 767px) {
+  .w-lg-50 {
+    width: 48.5% !important;
+  }
+  .w-63,
+  .w-37 {
+    width: 100%;
+  }
+}
 @media (max-width: 576px) {
+  .w-lg-50 {
+    width: 100% !important;
+  }
   .min-h-screen {
     min-height: 65vh !important;
   }
