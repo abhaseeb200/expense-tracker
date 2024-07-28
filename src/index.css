@@ -263,6 +263,9 @@ input[type="number"] {
 .w-37 {
   width: 37%;
 }
+.w-30 {
+  width: 30%;
+}
 .text-xs {
   font-size: 14px;
 }

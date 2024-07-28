@@ -1,23 +1,36 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { authSignUp } from "../config/service/firebase/auth";
+import { getUserProfile } from "../feature/auth/userSlice";
+import { authSignIn, authSignUp } from "../config/service/firebase/auth";
+import getUserById from "../config/service/firebase/getUserByID";
 
 const useAuth = () => {
   const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const useSignIn = async (email, password) => {
     try {
       setLoading(true);
-      let response = await authSignUp(email, password);
+      let response = await authSignIn(email, password);
       console.log(response);
-      //   let user = auth.currentUser;
-      //   userData = {
-      //     userId: user.uid,
-      //   };
-      //   dispatch(getUserProfile(userData));
+      let data = {  
+        userId: response.user.uid,
+        ...response?.user?.providerData[0],
+      };
+      let user = await getUserById(response?.user?.uid);
+      user.forEach((element) => {
+        data = {
+          ...element.data(),
+          docId: element.id,
+        };
+      });
+      dispatch(getUserProfile(data));
+      navigate("/", { replace: true });
+      dispatch(getUserProfile(data));
       toast.success("Login successfully!");
     } catch (error) {
       toast.error(error?.message);

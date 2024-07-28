@@ -1,6 +1,6 @@
-import { auth, db } from "../../firebaseConfig"
+import { db } from "../../firebaseConfig";
 
-const getUserByID = (currentUserID) => {
-    return db.collection("users").where("userId","==",currentUserID).get()
-}
-export default getUserByID
+const getUserById = (id) => {
+  return db.collection("users").where("userId", "==", id).get();
+};
+export default getUserById;

@@ -201,6 +201,7 @@ const Budget = () => {
             docId={currentDocID}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
+            colWidth="w-30"
           />
         </CardBody>
       </Card>

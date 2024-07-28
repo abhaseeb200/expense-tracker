@@ -22,25 +22,25 @@ const ProtectRoute = ({ user }) => {
     auth.onAuthStateChanged(async (currentUser) => {
       if (currentUser) {
         setCurrentUserID(currentUser.uid);
-        await getUserByIDHanlder(currentUser.uid);
+        // await getUserByIDHanlder(currentUser.uid);
       }
     });
   };
 
-  //for account setting page real time
+  // for account setting page real time
   const getUserByIDHanlder = (currentUser) => {
-    if (!userData?.email) {
-      let data = {};
-      getUserByID(currentUser).then((res) => {
-        res.forEach((element) => {
-          data = {
-            ...element.data(),
-            docID: element.id,
-          };
-          dispatch(getUserProfile(data));
-        });
-      });
-    }
+    // if (!userData?.email) {
+    //   let data = {};
+    //   getUserByID(currentUser).then((res) => {
+    //     res.forEach((element) => {
+    //       data = {
+    //         ...element.data(),
+    //         docID: element.id,
+    //       };
+    //       dispatch(getUserProfile(data));
+    //     });
+    //   });
+    // }
   };
 
   if (!user) {
