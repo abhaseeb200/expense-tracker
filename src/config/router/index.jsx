@@ -11,6 +11,7 @@ import Account from "../../screens/account-setting";
 import Category from "../../screens/category";
 import ProtectRoute from "../protectedRoute";
 import { auth } from "../firebaseConfig";
+import SignUp from "../../screens/sign-up";
 
 const Main = () => {
   let getLocalUser = localStorage.getItem("currentUser");
@@ -44,7 +45,7 @@ const Main = () => {
         />
         <Route
           path="/register"
-          element={<Register user={user} setUser={setUser} />}
+          element={<SignUp user={user} setUser={setUser} />}
         />
       </Routes>
     </Router>
