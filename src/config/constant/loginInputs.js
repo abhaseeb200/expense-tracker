@@ -16,7 +16,7 @@ const loginInputs = [
     autoComplete: "current-password",
     pattern: "(?=.*\\d)(?=.*[a-z])(?=.*[!@#$%^&*]).{8,}",
     errorMessage:
-      "Password length > 6, include alphanumeric, and special character",
+      "Password character > 6, include alphanumeric, and special character",
   },
 ];
 

@@ -19,6 +19,7 @@ export const userSlice = createSlice({
     logoutReducer: (state) => {
       return {
         ...state,
+        isLogin: false,
       };
     },
   },
@@ -27,7 +28,6 @@ export const userSlice = createSlice({
 export const {
   getUserProfile,
   editUserProfile,
-  clearUserProfile,
   logoutReducer,
 } = userSlice.actions;
 

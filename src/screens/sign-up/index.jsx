@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Card, CardBody, Form, Row, Spinner } from "reactstrap";
 import useAuth from "../../hooks/useAuth";
@@ -6,15 +6,19 @@ import signUpInputs from "../../config/constant/signUpInputs";
 import { Input } from "../../components/input";
 import logo from "../../assets/logo.svg";
 import "./style.css";
+import { useSelector } from "react-redux";
+import useUser from "../../hooks/useUser";
 
 const SignUp = () => {
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
-  const confirmPasswordRef = useRef(null);
 
-  const { loading } = useAuth();
+  const { useSignUp, loading } = useAuth();
+  const { useAddUser } = useUser();
 
-  let pwd = document.getElementsByName("confirm_password");
+  const { userData, isLogin } = useSelector((state) => state?.auth);
+
+  const confirmPwd = document.getElementsByName("confirm_password");
 
   const handleOnChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
@@ -28,16 +32,16 @@ const SignUp = () => {
     // CONFIRM PASSWORD VALIDATION
     if (e.target.name === "confirm_password") {
       if (e.target.value !== values.password) {
-        pwd[0].setCustomValidity("Password Must be Matching.");
+        confirmPwd[0].setCustomValidity("Password Must be Matching.");
       } else {
-        pwd[0].setCustomValidity("");
+        confirmPwd[0].setCustomValidity("");
       }
     }
     if (e.target.name === "password") {
       if (e.target.value !== values.confirm_password) {
-        pwd[0].setCustomValidity("Password Must be Matching.");
+        confirmPwd[0].setCustomValidity("Password Must be Matching.");
       } else {
-        pwd[0].setCustomValidity("");
+        confirmPwd[0].setCustomValidity("");
       }
     }
   };
@@ -60,8 +64,30 @@ const SignUp = () => {
 
     //SUBMIT THE FORM BY USING 'DATA'
     if (!Object.values(error).includes(true)) {
+      await useSignUp(data);
     }
   };
+
+  const addUser = async () => {
+    const body = {
+      username: userData?.username,
+      email: userData?.email,
+      userId: userData?.userId,
+      fname: "",
+      lname: "",
+      phone: "",
+      profileURL: "",
+      address: "",
+    };
+    await useAddUser(body);
+  };
+
+  useEffect(() => {
+    if (isLogin) {
+      addUser();
+    }
+  }, [isLogin]);
+
   return (
     <div className="container-lg">
       <div className="authentication-wrapper authentication-basic py-3">
@@ -84,9 +110,8 @@ const SignUp = () => {
                     <Input
                       {...input}
                       key={input?.id}
-                      value={values[input.name] || ""}
-                      errors={errors[input.name] || ""}
-                      ref={confirmPasswordRef}
+                      value={values[input?.name] || ""}
+                      errors={errors[input?.name] || ""}
                       onChange={handleOnChange}
                     />
                   );

@@ -16,8 +16,7 @@ const useAuth = () => {
     try {
       setLoading(true);
       let response = await authSignIn(email, password);
-      console.log(response);
-      let data = {  
+      let data = {
         userId: response.user.uid,
         ...response?.user?.providerData[0],
       };
@@ -39,8 +38,25 @@ const useAuth = () => {
     }
   };
 
+  const useSignUp = async (data) => {
+    try {
+      setLoading(true);
+      let response = await authSignUp(data?.email, data?.password);
+      let modified = {
+        userId: response.user.uid,
+        username: data?.username,
+        ...response?.user?.providerData[0],
+      };
+      dispatch(getUserProfile(modified));
+    } catch (error) {
+      setLoading(false);
+      toast.error(error?.message);
+    }
+  };
+
   return {
     useSignIn,
+    useSignUp,
     loading,
   };
 };
