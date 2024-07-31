@@ -2,8 +2,6 @@ import { Label, Input as ReactStrapInput } from "reactstrap";
 import { useSelector } from "react-redux";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
-import { useState } from "react";
-import { useEffect } from "react";
 
 const CustomInput = ({ className, isError, messageError, ...props }) => {
   const { isDarkMode } = useSelector((state) => state?.themeMode);
@@ -30,6 +28,8 @@ const Input = (props) => {
     errorMessage,
     onChange,
     className = "",
+    isIcon,
+    icon,
     inputClassName,
     ...inputProps
   } = props;
@@ -45,6 +45,7 @@ const Input = (props) => {
         onChange={onChange}
         className={inputClassName}
       />
+      {isIcon && icon}
       {inputProps?.value && (
         <small className="text-danger d-none mt-1">{errorMessage}</small>
       )}

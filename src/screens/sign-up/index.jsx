@@ -1,17 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Button, Card, CardBody, Form, Row, Spinner } from "reactstrap";
-import useAuth from "../../hooks/useAuth";
-import signUpInputs from "../../config/constant/signUpInputs";
 import { Input } from "../../components/input";
+import { EyeIcon, EyeOffIcon } from "../../components/icons";
+import signUpInputs from "../../config/constant/signUpInputs";
+import useAuth from "../../hooks/useAuth";
+import useUser from "../../hooks/useUser";
 import logo from "../../assets/logo.svg";
 import "./style.css";
-import { useSelector } from "react-redux";
-import useUser from "../../hooks/useUser";
 
 const SignUp = () => {
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
+  const [isVisible, setVisible] = useState(false);
+  const [isConformVisible, setIsConformVisible] = useState(false);
 
   const { useSignUp, loading } = useAuth();
   const { useAddUser } = useUser();
@@ -43,6 +46,49 @@ const SignUp = () => {
       } else {
         confirmPwd[0].setCustomValidity("");
       }
+    }
+  };
+
+  const handleVisible = (inputName) => {
+    if (inputName === "password") {
+      setVisible((prev) => !prev);
+    } else {
+      setIsConformVisible((prev) => !prev);
+    }
+  };
+
+  const getInputType = (inputName, isVisible, isConformVisible) => {
+    switch (inputName) {
+      case "password":
+        return isVisible ? "text" : "password";
+      case "confirm_password":
+        return isConformVisible ? "text" : "password";
+      default:
+        return null;
+    }
+  };
+
+  const getIcon = (
+    inputName,
+    isVisible,
+    isConformVisible,
+    handleVisible,
+  ) => {
+    switch (inputName) {
+      case "password":
+        return isVisible ? (
+          <EyeOffIcon fill="#afb4b9" onClick={() => handleVisible(inputName)} />
+        ) : (
+          <EyeIcon fill="#afb4b9" onClick={() => handleVisible(inputName)} />
+        );
+      case "confirm_password":
+        return isConformVisible ? (
+          <EyeOffIcon fill="#afb4b9" onClick={() => handleVisible(inputName)} />
+        ) : (
+          <EyeIcon fill="#afb4b9" onClick={() => handleVisible(inputName)} />
+        );
+      default:
+        return null;
     }
   };
 
@@ -113,6 +159,17 @@ const SignUp = () => {
                       value={values[input?.name] || ""}
                       errors={errors[input?.name] || ""}
                       onChange={handleOnChange}
+                      type={getInputType(
+                        input?.name,
+                        isVisible,
+                        isConformVisible
+                      )}
+                      icon={getIcon(
+                        input?.name,
+                        isVisible,
+                        isConformVisible,
+                        handleVisible
+                      )}
                     />
                   );
                 })}

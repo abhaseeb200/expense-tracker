@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Card, CardBody, Row, Button, Form, Spinner } from "reactstrap";
 import { Input } from "../../components/input";
+import { EyeIcon, EyeOffIcon } from "../../components/icons";
 import loginInputs from "../../config/constant/loginInputs";
 import useAuth from "../../hooks/useAuth";
 import useUser from "../../hooks/useUser";
@@ -12,6 +13,7 @@ import "./style.css";
 const Login = () => {
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
+  const [isVisible, setVisible] = useState(false);
 
   const { useSignIn, loading } = useAuth();
   const { useGetUser } = useUser();
@@ -26,6 +28,10 @@ const Login = () => {
     } else {
       setErrors({ ...errors, [e.target.name]: false });
     }
+  };
+
+  const handleVisible = () => {
+    setVisible((prev) => !prev);
   };
 
   const handleSubmit = async (e) => {
@@ -49,8 +55,6 @@ const Login = () => {
       await useSignIn(data?.email, data?.password);
     }
   };
-
-  console.log(userData);
 
   return (
     <div className="container-lg">
@@ -78,6 +82,14 @@ const Login = () => {
                       value={values[input.name] || ""}
                       errors={errors[input.name] || ""}
                       onChange={handleOnChange}
+                      type={isVisible ? "text" : "password"}
+                      icon={
+                        isVisible ? (
+                          <EyeOffIcon fill="#afb4b9" onClick={handleVisible} />
+                        ) : (
+                          <EyeIcon fill="#afb4b9" onClick={handleVisible} />
+                        )
+                      }
                     />
                   );
                 })}

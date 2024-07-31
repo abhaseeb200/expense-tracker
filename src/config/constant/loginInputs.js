@@ -10,10 +10,10 @@ const loginInputs = [
   {
     id: "2",
     label: "password",
-    type: "password",
     name: "password",
-    placeholder:"Enter your password",
+    placeholder: "Enter your password",
     autoComplete: "current-password",
+    isIcon: true,
     pattern: "(?=.*\\d)(?=.*[a-z])(?=.*[!@#$%^&*]).{8,}",
     errorMessage:
       "Password character > 6, include alphanumeric, and special character",

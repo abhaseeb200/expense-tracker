@@ -6,7 +6,7 @@
 }
 
 .logo-row {
-    margin-bottom: 2.5rem
+  margin-bottom: 2.5rem;
 }
 
 .app-brand-text {
@@ -99,6 +99,9 @@
   padding-left: 0.4rem;
   padding-right: 0.4rem;
   font-size: 150%;
+}
+.pr-36px {
+  padding-right: 36px !important;
 }
 
 @media (max-width: 575.98px) {

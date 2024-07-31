@@ -19,10 +19,11 @@ const signUpInputs = [
   {
     id: 3,
     label: "password",
-    type: "text",
     name: "password",
     placeholder: "Enter your password",
     autoComplete: "current-password",
+    isIcon: true,
+    inputClassName: "pr-36px",
     pattern: "(?=.*\\d)(?=.*[a-z])(?=.*[!@#$%^&*]).{8,}",
     errorMessage:
       "Password character > 6, include alphanumeric, and special character",
@@ -30,8 +31,9 @@ const signUpInputs = [
   {
     id: 4,
     label: "confirm password",
-    type: "text",
     name: "confirm_password",
+    isIcon: true,
+    inputClassName: "pr-36px",
     placeholder: "Enter your password",
     autoComplete: "current-password",
     errorMessage: "Passwords do not match.",
