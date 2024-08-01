@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "../../screens/login";
-import Register from "../../screens/register";
 import Dashboard from "../../screens/dashboard";
 import Transaction from "../../screens/transaction";
 import Budget from "../../screens/budget";
