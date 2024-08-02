@@ -11,7 +11,6 @@ import {
 } from "reactstrap";
 import { useEffect, useState } from "react";
 import {CustomInput} from "../../components/input";
-import getUserByID from "../../config/service/firebase/getUserByID";
 import {
   updateUser,
   updateUserWithImage,
@@ -21,7 +20,7 @@ import avatarImg from "../../assets/1.png";
 import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { editUserProfile } from "../../feature/auth/userSlice";
+import { editUserReducer } from "../../feature/auth/userSlice";
 
 const Account = () => {
   const [firstName, setFirstName] = useState("");
@@ -157,7 +156,7 @@ const Account = () => {
             address: address,
             docID: docID,
           };
-          dispatch(editUserProfile(data));
+          dispatch(editUserReducer(data));
           setLoader(false);
           toast.success("Profile update successfully!", {
             autoClose: 1500,
@@ -189,7 +188,7 @@ const Account = () => {
             docID: docID,
           };
           setLoader(false);
-          dispatch(editUserProfile(data));
+          dispatch(editUserReducer(data));
           toast.success("Profile update successfully!", {
             autoClose: 1500,
           });

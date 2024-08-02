@@ -1,14 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { getUserProfile } from "../feature/auth/userSlice";
-import getUserById from "../config/service/firebase/getUserByID";
-import { addUserAPI } from "../config/service/firebase/user";
-import { useNavigate } from "react-router-dom";
-
-// THIS HOOK IS USED FOR USER DETAILS.
-// SEPARATE COLLECTION FOR USER DETAILS.
-// AFTER THE SIGN-IN OR SIGN-UP GET, EDIT OR ADD USER DETAILS.
+import { getUserReducer } from "../feature/auth/userSlice";
+import { addUserAPI, getUserById } from "../config/service/firebase/user";
 
 const useUser = () => {
   const [loading, setLoading] = useState(false);
@@ -20,12 +15,17 @@ const useUser = () => {
     try {
       setLoading(true);
       let response = await getUserById(id);
-      console.log({ response });
-    //   let data = {
-    //     userId: response.user.uid,
-    //     ...response?.user?.providerData[0],
-    //   };
-    //   dispatch(getUserProfile(data));
+      let data = {};
+      response.forEach((element) => {
+        console.log(element);
+        data = {
+          ...element.data(),
+          docId: element.id,
+        };
+      });
+      dispatch(getUserReducer(data));
+      toast.success("Login successfully!");
+      navigate("/", { replace: true });
     } catch (error) {
       toast.error(error?.message);
     } finally {
@@ -36,10 +36,8 @@ const useUser = () => {
   const useAddUser = async (body) => {
     try {
       setLoading(true);
-      let response = await addUserAPI(body);
-      console.log({ response });
-      console.log({ body });
-      dispatch(getUserProfile(body));
+      await addUserAPI(body);
+      dispatch(getUserReducer(body));
       toast.success("Signup successfully!");
       navigate("/", { replace: true });
     } catch (error) {

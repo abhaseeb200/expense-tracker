@@ -77,15 +77,15 @@ const SignUp = () => {
     switch (inputName) {
       case "password":
         return isVisible ? (
-          <EyeOffIcon fill="#afb4b9" onClick={() => handleVisible(inputName)} />
-        ) : (
           <EyeIcon fill="#afb4b9" onClick={() => handleVisible(inputName)} />
+        ) : (
+          <EyeOffIcon fill="#afb4b9" onClick={() => handleVisible(inputName)} />
         );
       case "confirm_password":
         return isConformVisible ? (
-          <EyeOffIcon fill="#afb4b9" onClick={() => handleVisible(inputName)} />
-        ) : (
           <EyeIcon fill="#afb4b9" onClick={() => handleVisible(inputName)} />
+        ) : (
+          <EyeOffIcon fill="#afb4b9" onClick={() => handleVisible(inputName)} />
         );
       default:
         return null;

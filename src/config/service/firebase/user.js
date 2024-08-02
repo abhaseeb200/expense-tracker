@@ -4,4 +4,8 @@ const addUserAPI = (body) => {
   return db.collection("users").add(body);
 };
 
-export { addUserAPI };
+const getUserById = (id) => {
+  return db.collection("users").where("userId", "==", id).get();
+};
+
+export { addUserAPI, getUserById };

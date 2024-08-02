@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Card, CardBody, Row, Button, Form, Spinner } from "reactstrap";
 import { Input } from "../../components/input";
 import { EyeIcon, EyeOffIcon } from "../../components/icons";
@@ -20,6 +20,8 @@ const Login = () => {
 
   const { userData, isLogin } = useSelector((state) => state?.auth);
 
+  console.log(userData);
+
   const handleOnChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
 
@@ -32,6 +34,15 @@ const Login = () => {
 
   const handleVisible = () => {
     setVisible((prev) => !prev);
+  };
+
+  const getInputType = (inputName, isVisible) => {
+    switch (inputName) {
+      case "password":
+        return isVisible ? "text" : "password";
+      default:
+        return null;
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -55,6 +66,12 @@ const Login = () => {
       await useSignIn(data?.email, data?.password);
     }
   };
+
+  useEffect(() => {
+    if (isLogin) {
+      useGetUser(userData?.userId);
+    }
+  }, [isLogin]);
 
   return (
     <div className="container-lg">
@@ -82,12 +99,12 @@ const Login = () => {
                       value={values[input.name] || ""}
                       errors={errors[input.name] || ""}
                       onChange={handleOnChange}
-                      type={isVisible ? "text" : "password"}
+                      type={getInputType(input?.name, isVisible)}
                       icon={
                         isVisible ? (
-                          <EyeOffIcon fill="#afb4b9" onClick={handleVisible} />
-                        ) : (
                           <EyeIcon fill="#afb4b9" onClick={handleVisible} />
+                        ) : (
+                          <EyeOffIcon fill="#afb4b9" onClick={handleVisible} />
                         )
                       }
                     />

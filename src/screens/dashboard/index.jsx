@@ -32,6 +32,11 @@ const Dashboard = () => {
   const { transactionData } = useSelector((state) => state.transaction);
   const { budgetData } = useSelector((state) => state.budget);
   const { isDarkMode } = useSelector((state) => state?.themeMode);
+  const { userData, isLogin } = useSelector((state) => state?.auth);
+
+  console.log(userData);
+
+
 
   //vertical line Chart
   // const dataVertical = {

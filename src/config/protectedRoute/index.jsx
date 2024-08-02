@@ -3,9 +3,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import SideNavbar from "../../components/sideNavbar";
 import CustomNavbar from "../../components/navbar";
-import getUserByID from "../service/firebase/getUserByID";
 import { auth } from "../firebaseConfig";
-import { getUserProfile } from "../../feature/auth/userSlice";
 
 const ProtectRoute = ({ user }) => {
   const [sideBarToggle, setSideBarToggle] = useState(false);
@@ -37,7 +35,7 @@ const ProtectRoute = ({ user }) => {
     //         ...element.data(),
     //         docID: element.id,
     //       };
-    //       dispatch(getUserProfile(data));
+    //       dispatch(getUserReducer(data));
     //     });
     //   });
     // }
