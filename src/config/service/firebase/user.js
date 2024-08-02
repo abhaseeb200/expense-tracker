@@ -8,4 +8,8 @@ const getUserById = (id) => {
   return db.collection("users").where("userId", "==", id).get();
 };
 
-export { addUserAPI, getUserById };
+const updateUserAPI = (body, docId) => {
+  return db.collection("users").doc(docId).update(body);
+};
+
+export { addUserAPI, getUserById, updateUserAPI };

@@ -5,43 +5,20 @@ import SideNavbar from "../../components/sideNavbar";
 import CustomNavbar from "../../components/navbar";
 import { auth } from "../firebaseConfig";
 
-const ProtectRoute = ({ user }) => {
+const ProtectRoute = () => {
   const [sideBarToggle, setSideBarToggle] = useState(false);
-  const [currentUserID, setCurrentUserID] = useState("");
 
   const dispatch = useDispatch();
-  const { userData } = useSelector((state) => state.auth);
+  const { userData, isLogin } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    authChangeHanlder();
-  }, []);
+  // const authChangeHanlder = () => {
+  //   auth.onAuthStateChanged(async (currentUser) => {
+  //     if (currentUser) {
+  //     }
+  //   });
+  // };
 
-  const authChangeHanlder = () => {
-    auth.onAuthStateChanged(async (currentUser) => {
-      if (currentUser) {
-        setCurrentUserID(currentUser.uid);
-        // await getUserByIDHanlder(currentUser.uid);
-      }
-    });
-  };
-
-  // for account setting page real time
-  const getUserByIDHanlder = (currentUser) => {
-    // if (!userData?.email) {
-    //   let data = {};
-    //   getUserByID(currentUser).then((res) => {
-    //     res.forEach((element) => {
-    //       data = {
-    //         ...element.data(),
-    //         docID: element.id,
-    //       };
-    //       dispatch(getUserReducer(data));
-    //     });
-    //   });
-    // }
-  };
-
-  if (!user) {
+  if (!isLogin) {
     return <Navigate to="/login" replace />;
   }
 
@@ -54,7 +31,7 @@ const ProtectRoute = ({ user }) => {
         />
         <div className="layout-page">
           <CustomNavbar setSideBarToggle={setSideBarToggle} />
-          <Outlet context={[currentUserID, getUserByIDHanlder]} />
+          <Outlet />
         </div>
       </div>
     </>

@@ -20,8 +20,6 @@ const Login = () => {
 
   const { userData, isLogin } = useSelector((state) => state?.auth);
 
-  console.log(userData);
-
   const handleOnChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
 
