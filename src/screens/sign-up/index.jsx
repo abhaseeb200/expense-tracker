@@ -8,7 +8,6 @@ import signUpInputs from "../../config/constant/signUpInputs";
 import useAuth from "../../hooks/useAuth";
 import useUser from "../../hooks/useUser";
 import logo from "../../assets/logo.svg";
-import "./style.css";
 
 const SignUp = () => {
   const [values, setValues] = useState({});
@@ -68,12 +67,7 @@ const SignUp = () => {
     }
   };
 
-  const getIcon = (
-    inputName,
-    isVisible,
-    isConformVisible,
-    handleVisible,
-  ) => {
+  const getIcon = (inputName, isVisible, isConformVisible, handleVisible) => {
     switch (inputName) {
       case "password":
         return isVisible ? (
@@ -135,63 +129,50 @@ const SignUp = () => {
   }, [isLogin]);
 
   return (
-    <div className="container-lg">
-      <div className="authentication-wrapper authentication-basic py-3">
-        <div className="authentication-inner">
-          <Card>
-            <CardBody>
-              <Row className="logo-row">
-                <span className="app-brand-text">
-                  <img src={logo} width="45px" /> xpensr
-                </span>
-              </Row>
-              <h4 className="mb-2">Adventure starts here 🚀</h4>
-              <p className="mb-4">Join us and embark on an exciting journey!</p>
-              <Form
-                className="mb-3 d-flex flex-column gap-3"
-                onSubmit={handleSubmit}
-              >
-                {signUpInputs?.map((input) => {
-                  return (
-                    <Input
-                      {...input}
-                      key={input?.id}
-                      value={values[input?.name] || ""}
-                      errors={errors[input?.name] || ""}
-                      onChange={handleOnChange}
-                      type={getInputType(
-                        input?.name,
-                        isVisible,
-                        isConformVisible
-                      )}
-                      icon={getIcon(
-                        input?.name,
-                        isVisible,
-                        isConformVisible,
-                        handleVisible
-                      )}
-                    />
-                  );
-                })}
-                <Button
-                  color="primary"
-                  className={loading ? "btn-disabled w-100" : "w-100"}
-                  type="submit"
-                >
-                  {loading ? <Spinner size="sm" /> : "Sign up"}
-                </Button>
-              </Form>
-              <p className="text-center">
-                <span className="me-1">Already have an account?</span>
-                <Link to="/login" replace>
-                  Sign in instead
-                </Link>
-              </p>
-            </CardBody>
-          </Card>
-        </div>
-      </div>
-    </div>
+    <Card>
+      <CardBody>
+        <Row className="logo-row">
+          <span className="app-brand-text">
+            <img src={logo} width="45px" /> xpensr
+          </span>
+        </Row>
+        <h4 className="mb-2">Adventure starts here 🚀</h4>
+        <p className="mb-4">Join us and embark on an exciting journey!</p>
+        <Form className="mb-3 d-flex flex-column gap-3" onSubmit={handleSubmit}>
+          {signUpInputs?.map((input) => {
+            return (
+              <Input
+                {...input}
+                key={input?.id}
+                value={values[input?.name] || ""}
+                errors={errors[input?.name] || ""}
+                onChange={handleOnChange}
+                type={getInputType(input?.name, isVisible, isConformVisible)}
+                icon={getIcon(
+                  input?.name,
+                  isVisible,
+                  isConformVisible,
+                  handleVisible
+                )}
+              />
+            );
+          })}
+          <Button
+            color="primary"
+            className={loading ? "btn-disabled w-100" : "w-100"}
+            type="submit"
+          >
+            {loading ? <Spinner size="sm" /> : "Sign up"}
+          </Button>
+        </Form>
+        <p className="text-center">
+          <span className="me-1">Already have an account?</span>
+          <Link to="/login" replace>
+            Sign in instead
+          </Link>
+        </p>
+      </CardBody>
+    </Card>
   );
 };
 

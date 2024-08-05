@@ -8,7 +8,6 @@ import loginInputs from "../../config/constant/loginInputs";
 import useAuth from "../../hooks/useAuth";
 import useUser from "../../hooks/useUser";
 import logo from "../../assets/logo.svg";
-import "./style.css";
 
 const Login = () => {
   const [values, setValues] = useState({});
@@ -72,63 +71,54 @@ const Login = () => {
   }, [isLogin]);
 
   return (
-    <div className="container-lg">
-      <div className="authentication-wrapper authentication-basic py-3">
-        <div className="authentication-inner">
-          <Card>
-            <CardBody>
-              <Row className="logo-row">
-                <span className="app-brand-text">
-                  <img src={logo} width="45px" /> xpensr
-                </span>
-              </Row>
-              <h4 className="mb-2">Adventure starts here 🚀</h4>
-              <p className="mb-4">Join us and embark on an exciting journey!</p>
+    <Card>
+      <CardBody>
+        <Row className="logo-row">
+          <span className="app-brand-text">
+            <img src={logo} width="45px" /> xpensr
+          </span>
+        </Row>
+        <h4 className="mb-2">Adventure starts here 🚀</h4>
+        <p className="mb-4">Join us and embark on an exciting journey!</p>
 
-              <Form
-                className="mb-3 flex-column d-flex gap-3"
-                onSubmit={handleSubmit}
-              >
-                {loginInputs?.map((input) => {
-                  return (
-                    <Input
-                      {...input}
-                      key={input?.id}
-                      value={values[input.name] || ""}
-                      errors={errors[input.name] || ""}
-                      onChange={handleOnChange}
-                      type={getInputType(input?.name, isVisible)}
-                      icon={
-                        isVisible ? (
-                          <EyeIcon fill="#afb4b9" onClick={handleVisible} />
-                        ) : (
-                          <EyeOffIcon fill="#afb4b9" onClick={handleVisible} />
-                        )
-                      }
-                    />
-                  );
-                })}
-                <Button
-                  color="primary"
-                  className="w-100"
-                  type="submit"
-                  disabled={loading}
-                >
-                  {loading ? <Spinner size="sm" /> : "Sign in"}
-                </Button>
-              </Form>
+        <Form className="mb-3 flex-column d-flex gap-3" onSubmit={handleSubmit}>
+          {loginInputs?.map((input) => {
+            return (
+              <Input
+                {...input}
+                key={input?.id}
+                value={values[input.name] || ""}
+                errors={errors[input.name] || ""}
+                onChange={handleOnChange}
+                type={getInputType(input?.name, isVisible)}
+                icon={
+                  isVisible ? (
+                    <EyeIcon fill="#afb4b9" onClick={handleVisible} />
+                  ) : (
+                    <EyeOffIcon fill="#afb4b9" onClick={handleVisible} />
+                  )
+                }
+              />
+            );
+          })}
+          <Button
+            color="primary"
+            className="w-100"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? <Spinner size="sm" /> : "Sign in"}
+          </Button>
+        </Form>
 
-              <div className="text-center">
-                <span className="me-1">New on our platform?</span>
-                <Link to="/register" replace>
-                  Create an account
-                </Link>
-              </div>
-            </CardBody>
-          </Card>
+        <div className="text-center">
+          <span className="me-1">New on our platform?</span>
+          <Link to="/register" replace>
+            Create an account
+          </Link>
         </div>
-      </div>
-    </div>
+      </CardBody>
+    </Card>
   );
 };
 

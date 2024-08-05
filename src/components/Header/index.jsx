@@ -1,29 +1,23 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  Button,
   Card,
   CardBody,
-  CardText,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
-  Nav,
-  NavItem,
-  NavLink,
-  UncontrolledDropdown,
 } from "reactstrap";
-import "./style.css";
-import { useState } from "react";
-import "boxicons";
-import { authLogout } from "../../config/service/firebase/auth";
-import { Link, useNavigate } from "react-router-dom";
-import avatarImg from "../../assets/1.png";
-import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
 import SwitchTheme from "../switchTheme";
+import { authLogout } from "../../config/service/firebase/auth";
 import { logoutReducer } from "../../feature/auth/userSlice";
+import avatarImg from "../../assets/1.png";
+import "boxicons";
+import "./style.css";
 
-const CustomNavbar = ({ setSideBarToggle, direction, ...args }) => {
+const Header = ({ setSideBarToggle }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const navigate = useNavigate();
@@ -53,7 +47,7 @@ const CustomNavbar = ({ setSideBarToggle, direction, ...args }) => {
       <CardBody className="p-3">
         <div className="d-flex justify-content-between align-items-center">
           <div className="d-inline-flex">
-            {screenWidth <= "1200" ? (
+            {screenWidth <= "1200" && (
               <box-icon
                 name="menu"
                 color="#697a8d"
@@ -64,25 +58,19 @@ const CustomNavbar = ({ setSideBarToggle, direction, ...args }) => {
                   marginRight: "15px",
                 }}
               ></box-icon>
-            ) : (
-              ""
             )}
             <span>Welcome {userData?.username}</span>
           </div>
           <span className="d-flex gap-3 align-items-center">
             <SwitchTheme />
-            <Dropdown
-              isOpen={dropdownOpen}
-              toggle={toggle}
-              direction={direction}
-            >
+            <Dropdown isOpen={dropdownOpen} toggle={toggle}>
               <DropdownToggle className="rounded-circle p-0 border-0">
                 <img
                   src={userData?.profileURL || avatarImg}
                   className="w-px-40 rounded-circle object-fit-cover"
                 />
               </DropdownToggle>
-              <DropdownMenu {...args}>
+              <DropdownMenu>
                 <Link to="/account">
                   <DropdownItem className="user-navbar">
                     <img
@@ -105,4 +93,4 @@ const CustomNavbar = ({ setSideBarToggle, direction, ...args }) => {
   );
 };
 
-export default CustomNavbar;
+export default Header;

@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import SideNavbar from "../../components/sideNavbar";
-import CustomNavbar from "../../components/navbar";
 import { auth } from "../firebaseConfig";
+import Header from "../../components/Header";
 
 const ProtectRoute = () => {
   const [sideBarToggle, setSideBarToggle] = useState(false);
@@ -30,7 +30,7 @@ const ProtectRoute = () => {
           setSideBarToggle={setSideBarToggle}
         />
         <div className="layout-page">
-          <CustomNavbar setSideBarToggle={setSideBarToggle} />
+          <Header setSideBarToggle={setSideBarToggle} />
           <Outlet />
         </div>
       </div>

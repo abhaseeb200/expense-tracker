@@ -8,9 +8,11 @@ import Budget from "../../screens/budget";
 import Report from "../../screens/report";
 import Account from "../../screens/account-setting";
 import Category from "../../screens/category";
-import ProtectRoute from "../protectedRoute";
-import { auth } from "../firebaseConfig";
+import NoMatch from "../../screens/no-match";
 import SignUp from "../../screens/sign-up";
+import PrivateRoute from "./priveteRoute";
+import PublicRoute from "./publicRoute";
+import { auth } from "../firebaseConfig";
 
 const Main = () => {
   let getLocalUser = localStorage.getItem("currentUser");
@@ -30,7 +32,8 @@ const Main = () => {
     <Router>
       <ToastContainer />
       <Routes>
-        <Route element={<ProtectRoute user={user} setUser={setUser} />}>
+        {/* ======================= PRIVATE ROUTES ======================= */}
+        <Route element={<PrivateRoute />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/transaction" element={<Transaction />} />
           <Route path="/transactionCategories" element={<Category />} />
@@ -38,14 +41,15 @@ const Main = () => {
           <Route path="/report" element={<Report />} />
           <Route path="/account" element={<Account />} />
         </Route>
-        <Route
-          path="/login"
-          element={<Login user={user} setUser={setUser} />}
-        />
-        <Route
-          path="/register"
-          element={<SignUp user={user} setUser={setUser} />}
-        />
+
+        {/* ======================= PUBLIC ROUTES ======================= */}
+        <Route element={<PublicRoute />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<SignUp />} />
+        </Route>
+
+        {/* ======================= PAGE NOT FOUND - 404 ======================= */}
+        <Route path="*" element={<NoMatch />}></Route>
       </Routes>
     </Router>
   );
