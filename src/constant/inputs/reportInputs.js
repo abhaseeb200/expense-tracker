@@ -15,15 +15,4 @@ const reportInputs = [
   },
 ];
 
-const reportSelects = [
-  {
-    id: 1,
-    name: "category",
-    placeholder: "All",
-    label: "Select Category",
-    className: "w-31",
-    options: [],
-  },
-];
-
-export { reportInputs, reportSelects };
+export default reportInputs;

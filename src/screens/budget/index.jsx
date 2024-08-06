@@ -15,8 +15,8 @@ import Input from "../../components/Input";
 import Table from "../../components/Table";
 import Search from "../../components/Search";
 import useBudget from "../../hooks/useBudget";
-import budgetInputs from "../../config/constant/budgetInputs";
-import budgetColumns from "../../config/constant/budgetColumns";
+import budgetColumns from "../../constant/columns/budgetColumns";
+import budgetInputs from "../../constant/inputs/budgetInputs";
 
 const Budget = () => {
   const [currentDocID, setCurrentDocID] = useState("");

@@ -1,4 +1,4 @@
-import { formatTransactionType } from "./helper";
+import { formatTransactionType } from "../helper";
 
 const categoryColumns = [
   { title: "Name", key: "name" },

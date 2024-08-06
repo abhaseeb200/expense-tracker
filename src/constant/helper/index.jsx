@@ -28,4 +28,5 @@ const formatDate = (dateString) => {
   });
   return formatter.format(date);
 };
+
 export { formatTransactionType, formatAmount, formatDate };

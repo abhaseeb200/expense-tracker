@@ -4,8 +4,8 @@ import { Card, CardBody, CardTitle } from "reactstrap";
 import Search from "../../components/Search";
 import Table from "../../components/Table";
 import CategoryForm from "../../components/CategoryForm";
-import categoryColumns from "../../config/constant/categoryColumns";
 import useCategory from "../../hooks/useCategory";
+import categoryColumns from "../../constant/columns/categoryColumns";
 
 const Category = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);

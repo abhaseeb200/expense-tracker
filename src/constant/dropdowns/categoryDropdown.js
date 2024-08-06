@@ -1,14 +1,4 @@
-const categoryInputs = [
-  {
-    id: 1,
-    name: "name",
-    type: "text",
-    placeholder: "Bills.",
-    label: "name",
-  },
-];
-
-const categorySelects = [
+const categoryDropdowns = [
   {
     id: 2,
     name: "category",
@@ -21,4 +11,4 @@ const categorySelects = [
   },
 ];
 
-export { categoryInputs, categorySelects };
+export default categoryDropdowns;

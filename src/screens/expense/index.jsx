@@ -18,8 +18,9 @@ import CategoryForm from "../../components/CategoryForm";
 import Dropdown from "../../components/Dropdown";
 import useCategory from "../../hooks/useCategory";
 import useExpense from "../../hooks/useExpense";
-import expenseColumns from "../../config/constant/expenseColumns";
-import { expenseInputs, expenseSelects } from "../../config/constant/expenseInput";
+import expenseColumns from "../../constant/columns/expenseColumns";
+import expenseInputs from "../../constant/inputs/expenseInput";
+import expenseDropdown from "../../constant/dropdowns/expenseDropdown";
 
 const Expense = () => {
   const [isUpdate, setIsUpdate] = useState(false);
@@ -284,7 +285,7 @@ const Expense = () => {
                 />
               );
             })}
-            {expenseSelects?.map((select) => {
+            {expenseDropdown?.map((select) => {
               return (
                 <Dropdown
                   key={select?.id}

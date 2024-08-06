@@ -11,11 +11,9 @@ import {
 } from "reactstrap";
 import Input from "../Input";
 import Dropdown from "../Dropdown";
-import {
-  categoryInputs,
-  categorySelects,
-} from "../../config/constant/categoryInputs";
 import useCategory from "../../hooks/useCategory";
+import categoryInputs from "../../constant/inputs/categoryInputs";
+import categoryDropdowns from "../../constant/dropdowns/categoryDropdown";
 
 const CategoryForm = (props) => {
   const [values, setValues] = useState({});
@@ -139,7 +137,7 @@ const CategoryForm = (props) => {
                 />
               );
             })}
-            {categorySelects?.map((select) => {
+            {categoryDropdowns?.map((select) => {
               return (
                 <Dropdown
                   key={select?.id}

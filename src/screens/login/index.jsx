@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { Card, CardBody, Row, Button, Form, Spinner } from "reactstrap";
 import Input from "../../components/Input";
 import { EyeIcon, EyeOffIcon } from "../../components/Icons";
-import loginInputs from "../../config/constant/loginInputs";
+import loginInputs from "../../constant/inputs/loginInputs";
 import useAuth from "../../hooks/useAuth";
 import useUser from "../../hooks/useUser";
 import logo from "../../assets/logo.svg";

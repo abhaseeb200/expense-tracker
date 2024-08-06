@@ -14,8 +14,8 @@ import {
 import Input from "../../components/Input";
 import Table from "../../components/Table";
 import Search from "../../components/Search";
-import transactionInputs from "../../config/constant/transactionInputs";
-import transactionColumns from "../../config/constant/transactionColumns";
+import transactionColumns from "../../constant/columns/transactionColumns";
+import transactionInputs from "../../constant/inputs/transactionInputs";
 
 const Transaction = () => {
   const [currentDocID, setCurrentDocID] = useState("");

@@ -4,9 +4,9 @@ import { useSelector } from "react-redux";
 import { Button, Card, CardBody, Form, Row, Spinner } from "reactstrap";
 import Input from "../../components/Input";
 import { EyeIcon, EyeOffIcon } from "../../components/Icons";
-import signUpInputs from "../../config/constant/signUpInputs";
 import useAuth from "../../hooks/useAuth";
 import useUser from "../../hooks/useUser";
+import signUpInputs from "../../constant/inputs/signUpInputs";
 import logo from "../../assets/logo.svg";
 
 const SignUp = () => {

@@ -4,14 +4,12 @@ import { Button, Card, CardBody, CardTitle } from "reactstrap";
 import Input from "../../components/Input";
 import Dropdown from "../../components/Dropdown";
 import Table from "../../components/Table";
-import {
-  reportInputs,
-  reportSelects,
-} from "../../config/constant/reportInputs";
-import reportColumns from "../../config/constant/reportColumns";
+import reportColumns from "../../constant/columns/reportColumns";
 import useCategory from "../../hooks/useCategory";
 import useExpense from "../../hooks/useExpense";
 import "./style.css";
+import reportInputs from "../../constant/inputs/reportInputs";
+import reportDropdown from "../../constant/dropdowns/reportDropdown";
 
 const Report = () => {
   const [values, setValues] = useState("");
@@ -162,7 +160,7 @@ const Report = () => {
               onChange={handleChange}
             />
           ))}
-          {reportSelects?.map((select) => (
+          {reportDropdown?.map((select) => (
             <Dropdown
               {...select}
               key={select?.id}
