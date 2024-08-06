@@ -16,15 +16,10 @@ import Transaction from "../../screens/transaction";
 import { auth } from "../firebaseConfig";
 
 const Main = () => {
-  let getLocalUser = localStorage.getItem("currentUser");
-  const [user, setUser] = useState(getLocalUser);
   useEffect(() => {
-    auth.onAuthStateChanged((currentUser) => {
-      if (currentUser) {
-        localStorage.setItem("currentUser", currentUser.uid);
-        setUser(currentUser.uid);
-      } else {
-        setUser(null);
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        console.log(user);
       }
     });
   }, []);
