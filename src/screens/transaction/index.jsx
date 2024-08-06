@@ -37,7 +37,7 @@ const Transaction = () => {
     loading,
   } = useTransition();
 
-  const { transactionData } = useSelector((state) => state?.transition);
+  // const { transactionData } = useSelector((state) => state?.transition);
   const { userData } = useSelector((state) => state?.auth);
 
   const handleDelete = async (data) => {
@@ -115,7 +115,7 @@ const Transaction = () => {
   };
 
   useEffect(() => {
-    let updatedData = [...transactionData];
+    let updatedData = [];
 
     if (search?.trim()) {
       setCurrentPage(1);
@@ -155,9 +155,9 @@ const Transaction = () => {
 
   useEffect(() => {
     setSortConfig({ key: "", direction: "" });
-    setBackUp(transactionData);
+    setBackUp([]);
     setCurrentPage(1);
-  }, [transactionData]);
+  }, []);
 
   useEffect(() => {
     // if (!transactionData?.length) {

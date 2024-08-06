@@ -22,13 +22,13 @@ const useUser = () => {
       setLoading(true);
       let response = await getUserById(id);
       let data = {};
-      response.forEach((element) => {
+      await response.forEach((element) => {
         data = {
           ...element.data(),
           docId: element.id,
         };
       });
-      dispatch(getUserReducer(data));
+      await dispatch(getUserReducer(data));
       toast.success("Login successfully!");
       navigate("/", { replace: true });
     } catch (error) {
