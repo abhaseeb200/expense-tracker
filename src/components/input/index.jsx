@@ -3,23 +3,6 @@ import { useSelector } from "react-redux";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
 
-const CustomInput = ({ className, isError, messageError, ...props }) => {
-  const { isDarkMode } = useSelector((state) => state?.themeMode);
-  return (
-    <div className="w-100" data-bs-theme={isDarkMode ? "dark" : "light"}>
-      <ReactStrapInput
-        {...props}
-        className={`${className} ${isError && "validationError"}`}
-      />
-      {messageError !== "" ? (
-        <small className="d-block text-errors">{messageError}</small>
-      ) : (
-        ""
-      )}
-    </div>
-  );
-};
-
 const Input = (props) => {
   const { isDarkMode } = useSelector((state) => state?.themeMode);
   const {
@@ -58,4 +41,4 @@ const Input = (props) => {
   );
 };
 
-export { Input, CustomInput };
+export { Input };
