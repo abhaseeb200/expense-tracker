@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
-import SideNavbar from "../../../components/sideNavbar";
+import SideNavbar from "../../../components/SideNavbar";
 import Header from "../../../components/Header";
 
 const PrivateRoute = () => {
