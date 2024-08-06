@@ -19,11 +19,10 @@ import {
   TrendingDownIcon,
   TrendingUpIcon,
   WalletIcon,
-} from "../../components/icons";
-import LineChart from "../../components/lineChart";
-import PieChart from "../../components/donutChart";
-import DonutChart from "../../components/donutChart";
-import BarChart from "../../components/barChart";
+} from "../../components/Icons";
+import LineChart from "../../components/LineChart";
+import DonutChart from "../../components/DonutChart";
+import BarChart from "../../components/BarChart";
 
 Chart.register(CategoryScale);
 

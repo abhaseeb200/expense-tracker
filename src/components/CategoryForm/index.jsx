@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import {
   Button,
@@ -8,16 +9,15 @@ import {
   ModalHeader,
   Spinner,
 } from "reactstrap";
-import { Input } from "../input";
+import Input from "../Input";
+import Dropdown from "../Dropdown";
 import {
   categoryInputs,
   categorySelects,
 } from "../../config/constant/categoryInputs";
 import useCategory from "../../hooks/useCategory";
-import Dropdown from "../dropdown";
-import { toast } from "react-toastify";
 
-const CategoryFrom = (props) => {
+const CategoryForm = (props) => {
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
 
@@ -177,4 +177,4 @@ const CategoryFrom = (props) => {
   );
 };
 
-export default CategoryFrom;
+export default CategoryForm;

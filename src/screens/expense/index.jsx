@@ -11,11 +11,11 @@ import {
   ModalHeader,
   Spinner,
 } from "reactstrap";
-import { Input } from "../../components/input";
-import Table from "../../components/table";
+import Input from "../../components/Input";
+import Table from "../../components/Table";
 import Search from "../../components/Search";
-import CategoryFrom from "../../components/categoryFrom";
-import Dropdown from "../../components/dropdown";
+import CategoryForm from "../../components/CategoryForm";
+import Dropdown from "../../components/Dropdown";
 import useCategory from "../../hooks/useCategory";
 import useExpense from "../../hooks/useExpense";
 import expenseColumns from "../../config/constant/expenseColumns";
@@ -330,7 +330,7 @@ const Expense = () => {
 
       {/* ========================= TRANSITION CATEGORY - MODAL ========================= */}
       {isCategoryModal && (
-        <CategoryFrom
+        <CategoryForm
           isOpenModal={isCategoryModal}
           isUpdate={isUpdate}
           setIsUpdate={setIsUpdate}

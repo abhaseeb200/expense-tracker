@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Button, Card, CardBody, CardTitle } from "reactstrap";
-import { Input } from "../../components/input";
-import Dropdown from "../../components/dropdown";
-import Table from "../../components/table";
+import Input from "../../components/Input";
+import Dropdown from "../../components/Dropdown";
+import Table from "../../components/Table";
 import {
   reportInputs,
   reportSelects,

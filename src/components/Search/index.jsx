@@ -1,5 +1,5 @@
 import React from "react";
-import { Input } from "../input";
+import Input from "../Input";
 import { Button } from "reactstrap";
 import "./style.css";
 import { useSelector } from "react-redux";

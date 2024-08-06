@@ -41,4 +41,4 @@ const Input = (props) => {
   );
 };
 
-export { Input };
+export default Input;

@@ -11,8 +11,8 @@ import {
   ModalHeader,
   Spinner,
 } from "reactstrap";
-import { Input } from "../../components/input";
-import Table from "../../components/table";
+import Input from "../../components/Input";
+import Table from "../../components/Table";
 import Search from "../../components/Search";
 import transactionInputs from "../../config/constant/transactionInputs";
 import transactionColumns from "../../config/constant/transactionColumns";

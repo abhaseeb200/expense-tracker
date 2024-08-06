@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Card, CardBody, CardTitle } from "reactstrap";
 import Search from "../../components/Search";
-import Table from "../../components/table";
-import CategoryFrom from "../../components/categoryFrom";
+import Table from "../../components/Table";
+import CategoryForm from "../../components/CategoryForm";
 import categoryColumns from "../../config/constant/categoryColumns";
 import useCategory from "../../hooks/useCategory";
 
@@ -138,7 +138,7 @@ const Category = () => {
       </Card>
 
       {/* ================================ SUBMIT FORM ================================ */}
-      <CategoryFrom
+      <CategoryForm
         isUpdate={isUpdate}
         isOpenModal={isOpenModal}
         setIsOpenModal={setIsOpenModal}

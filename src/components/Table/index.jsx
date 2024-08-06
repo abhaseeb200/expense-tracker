@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Table as BootstrapTable, Button, CardText, Spinner } from "reactstrap";
-import { ChevronIcon, CaretIcon, EditIcon, TrashIcon } from "../icons";
+import { ChevronIcon, CaretIcon, EditIcon, TrashIcon } from "../Icons";
 import "./style.css";
 
 const Pagination = ({ totalPages, onPageChange, currentPage }) => {

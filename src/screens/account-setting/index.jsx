@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, Card, CardBody, CardTitle, Form, Spinner } from "reactstrap";
 import { toast } from "react-toastify";
-import { Input } from "../../components/input";
+import Input from "../../components/Input";
 import { useDispatch, useSelector } from "react-redux";
 import { editUserReducer } from "../../feature/auth/userSlice";
 import { storage } from "../../config/firebaseConfig";
