@@ -139,7 +139,6 @@ const Account = () => {
         error[key] = true;
       }
     });
-    console.log(data);
     setErrors(error);
 
     if (!Object.values(error).includes(true)) {

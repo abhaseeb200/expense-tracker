@@ -23,7 +23,6 @@ const useUser = () => {
       let response = await getUserById(id);
       let data = {};
       response.forEach((element) => {
-        console.log(element);
         data = {
           ...element.data(),
           docId: element.id,

@@ -1,4 +1,4 @@
-const transactionInputs = [
+const expenseInputs = [
   {
     id: 1,
     name: "name",
@@ -28,7 +28,7 @@ const transactionInputs = [
   },
 ];
 
-const transactionSelects = [
+const expenseSelects = [
   {
     id: 1,
     name: "type",
@@ -50,4 +50,4 @@ const transactionSelects = [
   },
 ];
 
-export { transactionInputs, transactionSelects };
+export { expenseInputs, expenseSelects };

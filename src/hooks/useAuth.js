@@ -13,7 +13,6 @@ const useAuth = () => {
     try {
       setLoading(true);
       let response = await authSignIn(email, password);
-      console.log({ response });
       let data = {
         userId: response.user.uid,
         ...response?.user?.providerData[0],

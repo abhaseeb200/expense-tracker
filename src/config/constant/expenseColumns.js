@@ -1,6 +1,6 @@
 import { formatAmount, formatDate, formatTransactionType } from "./helper";
 
-const transitionColumns = [
+const expenseColumns = [
   { title: "Name", key: "name" },
   { title: "Category", key: "category" },
   { title: "Date", key: "date", function: formatDate },
@@ -9,4 +9,4 @@ const transitionColumns = [
   { title: "Actions", key: "action" },
 ];
 
-export default transitionColumns;
+export default expenseColumns;

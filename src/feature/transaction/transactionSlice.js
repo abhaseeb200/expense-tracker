@@ -42,7 +42,6 @@ export const {
   addTransactionReducer,
   updateTransactionReducer,
   deleteTransactionReducer,
-  clearTransactionsReducer,
 } = transactionSlice.actions;
 
 export default transactionSlice.reducer;
