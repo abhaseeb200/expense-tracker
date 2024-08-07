@@ -13,17 +13,8 @@ import Expense from "../../screens/expense";
 import PrivateRoute from "./privateRoute";
 import PublicRoute from "./publicRoute";
 import Transaction from "../../screens/transaction";
-import { auth } from "../firebaseConfig";
 
 const Main = () => {
-  useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        console.log(user);
-      }
-    });
-  }, []);
-
   return (
     <Router>
       <ToastContainer />

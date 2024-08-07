@@ -9,9 +9,9 @@ const PrivateRoute = () => {
 
   const { isLogin } = useSelector((state) => state.auth);
 
-  // if (!isLogin) {
-  //   return <Navigate to="/login" replace />;
-  // }
+  if (!isLogin) {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <>

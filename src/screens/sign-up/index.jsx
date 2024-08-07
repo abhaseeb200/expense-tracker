@@ -5,7 +5,6 @@ import { Button, Card, CardBody, Form, Row, Spinner } from "reactstrap";
 import Input from "../../components/Input";
 import { EyeIcon, EyeOffIcon } from "../../components/Icons";
 import useAuth from "../../hooks/useAuth";
-import useUser from "../../hooks/useUser";
 import signUpInputs from "../../constant/inputs/signUpInputs";
 import logo from "../../assets/logo.svg";
 
@@ -16,7 +15,6 @@ const SignUp = () => {
   const [isConformVisible, setIsConformVisible] = useState(false);
 
   const { useSignUp, loading } = useAuth();
-  const { useAddUser } = useUser();
 
   const { userData, isLogin } = useSelector((state) => state?.auth);
 
@@ -107,26 +105,6 @@ const SignUp = () => {
       await useSignUp(data);
     }
   };
-
-  const addUser = async () => {
-    const body = {
-      username: userData?.username,
-      email: userData?.email,
-      userId: userData?.userId,
-      fname: "",
-      lname: "",
-      phone: "",
-      profileURL: "",
-      address: "",
-    };
-    await useAddUser(body);
-  };
-
-  useEffect(() => {
-    if (isLogin) {
-      addUser();
-    }
-  }, [isLogin]);
 
   return (
     <Card>

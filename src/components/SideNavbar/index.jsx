@@ -1,12 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import navbarData from "../../constant/navbar";
+import { authLogout } from "../../config/service/firebase/auth";
+import { logoutReducer } from "../../feature/auth/userSlice";
 import logo from "../../assets/logo.svg";
-import "boxicons";
 import "./style.css";
 
 const SideNavbar = ({ sideBarToggle, setSideBarToggle }) => {
   const containerRef = useRef(null);
+
+  const dispatch = useDispatch();
 
   const handleCancelOffCanvas = () => {
     setSideBarToggle(false);
@@ -18,12 +22,15 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle }) => {
     }
   };
 
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const handleLogout = async () => {
+    try {
+      await authLogout();
+      await dispatch(logoutReducer());
+      navigate("/login", { replace: true });
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   useEffect(() => {
     if (sideBarToggle) {
@@ -36,6 +43,13 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle }) => {
       document.body.style.overflow = "auto";
     };
   }, [sideBarToggle]);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
@@ -72,8 +86,17 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle }) => {
                       <NavLink
                         to={navbar?.to}
                         className={navbar?.className}
-                        onClick={handleCancelOffCanvas}
+                        onClick={
+                          navbar?.title === "Logout"
+                            ? handleLogout
+                            : handleCancelOffCanvas
+                        }
                       >
+                        <box-icon
+                          name={navbar?.icon}
+                          color="#697a8d"
+                          role="button"
+                        ></box-icon>
                         <div className="ms-2">{navbar?.title}</div>
                       </NavLink>
                     </li>

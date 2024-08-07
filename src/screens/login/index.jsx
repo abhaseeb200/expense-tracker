@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { Card, CardBody, Row, Button, Form, Spinner } from "reactstrap";
 import Input from "../../components/Input";
 import { EyeIcon, EyeOffIcon } from "../../components/Icons";
 import loginInputs from "../../constant/inputs/loginInputs";
 import useAuth from "../../hooks/useAuth";
-import useUser from "../../hooks/useUser";
 import logo from "../../assets/logo.svg";
 
 const Login = () => {
@@ -15,9 +13,6 @@ const Login = () => {
   const [isVisible, setVisible] = useState(false);
 
   const { useSignIn, loading } = useAuth();
-  const { useGetUser } = useUser();
-
-  const { userData, isLogin } = useSelector((state) => state?.auth);
 
   const handleOnChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
@@ -63,12 +58,6 @@ const Login = () => {
       await useSignIn(data?.email, data?.password);
     }
   };
-
-  useEffect(() => {
-    if (isLogin) {
-      useGetUser(userData?.userId);
-    }
-  }, [isLogin]);
 
   return (
     <Card>

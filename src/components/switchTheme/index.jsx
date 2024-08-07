@@ -21,8 +21,13 @@ function SwitchTheme() {
         dispatch(isDark(!isDarkMode));
       }}
       role="button"
+      className="lh-0"
     >
-      {isDarkMode ? "Light" : "Dark"}
+      {isDarkMode ? (
+        <box-icon name="moon" color="#fff" role="button"></box-icon>
+      ) : (
+        <box-icon name="sun" color="#000" role="button"></box-icon>
+      )}
     </div>
   );
 }

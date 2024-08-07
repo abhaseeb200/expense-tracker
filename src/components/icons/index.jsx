@@ -165,8 +165,8 @@ export const EyeIcon = (props) => {
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="22"
-        height="22"
+        width="17"
+        height="17"
         viewBox="0 0 24 24"
         fill="none"
       >
@@ -206,8 +206,8 @@ export const EyeOffIcon = (props) => {
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="22"
-        height="22"
+        width="17"
+        height="17"
         viewBox="0 0 24 24"
         fill="none"
       >

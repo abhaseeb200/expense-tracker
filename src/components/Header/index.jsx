@@ -14,7 +14,6 @@ import SwitchTheme from "../switchTheme";
 import { authLogout } from "../../config/service/firebase/auth";
 import { logoutReducer } from "../../feature/auth/userSlice";
 import avatarImg from "../../assets/1.png";
-import "boxicons";
 import "./style.css";
 
 const Header = ({ setSideBarToggle }) => {
@@ -34,7 +33,6 @@ const Header = ({ setSideBarToggle }) => {
   const handleLogout = async () => {
     try {
       await authLogout();
-      await localStorage.clear();
       await dispatch(logoutReducer());
       navigate("/login", { replace: true });
     } catch (error) {
@@ -46,23 +44,7 @@ const Header = ({ setSideBarToggle }) => {
     <Card className="w-100 mt-3">
       <CardBody className="p-3">
         <div className="d-flex justify-content-between align-items-center">
-          <div className="d-inline-flex">
-            {screenWidth <= "1200" && (
-              <box-icon
-                name="menu"
-                color="#697a8d"
-                onClick={() => setSideBarToggle(true)}
-                style={{
-                  width: "26px",
-                  cursor: "pointer",
-                  marginRight: "15px",
-                }}
-              ></box-icon>
-            )}
-            <span>Welcome {userData?.username}</span>
-          </div>
-          <span className="d-flex gap-3 align-items-center">
-            <SwitchTheme />
+          <div className="d-inline-flex align-items-center gap-3">
             <Dropdown isOpen={dropdownOpen} toggle={toggle}>
               <DropdownToggle className="rounded-circle p-0 border-0">
                 <img
@@ -86,7 +68,20 @@ const Header = ({ setSideBarToggle }) => {
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
-          </span>
+            <span>Welcome {userData?.username}</span>
+          </div>
+
+          <div className="d-flex align-items-center gap-2">
+            <SwitchTheme />
+            {screenWidth <= "1200" && (
+              <box-icon
+                name="menu"
+                color="#697a8d"
+                role="button"
+                onClick={() => setSideBarToggle(true)}
+              ></box-icon>
+            )}
+          </div>
         </div>
       </CardBody>
     </Card>

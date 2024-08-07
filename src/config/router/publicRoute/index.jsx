@@ -5,9 +5,9 @@ import './style.css'
 const PublicRoute = () => {
   const { isLogin } = useSelector((state) => state.auth);
 
-  // if (isLogin) {
-  //   return <Navigate to="/" replace />;
-  // }
+  if (isLogin) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="container-lg">

@@ -92,6 +92,15 @@ const navbarData = [
     className: "menu-link nav-link",
     isLine: false,
   },
+  {
+    id: 11,
+    to: "/login",
+    title: "Logout",
+    icon: "power-off",
+    isActive: false,
+    className: "menu-link nav-link",
+    isLine: false,
+  },
 ];
 
 export default navbarData;
