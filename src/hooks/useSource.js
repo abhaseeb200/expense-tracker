@@ -38,14 +38,13 @@ const useSource = () => {
 
       //MODIFIED OBJECT
       delete body.uploadSource;
-      
+
       //ADD TO DATABASE
       let response = await addSourceAPI({ ...body, sourceURL: URL });
-      // dispatch(addSourceReducer({ ...body, docId: response?.id }));
-
-      // setValues({});
-      // setPreview("");
-      // toast.success("Create successfully!");
+      dispatch(addSourceReducer({ ...body , sourceURL: URL, docId: response?.id }));
+      setValues({});
+      setPreview("");
+      toast.success("Create successfully!");
     } catch (error) {
       console.log(error);
       toast.error(error?.message);

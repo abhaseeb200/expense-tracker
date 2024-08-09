@@ -82,16 +82,21 @@ const SourcesTransaction = () => {
 
   const handleUpload = (event) => {
     const file = event.target.files[0];
-    if (file?.type.includes("image")) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result);
-        setErrors({ ...errors, [event.target.name]: false });
-      };
-      reader.readAsDataURL(file);
-    } else {
-      toast?.error("File type not accepted");
-    }
+
+    if (!file?.type.includes("image"))
+      return toast?.error("File type not accepted");
+
+    if (file.size > 500 * 1024) return toast?.error("File type not accepted");
+
+    // if (file?.type.includes("image")) {
+    //   const reader = new FileReader();
+    //   reader.onloadend = () => {
+    //     setPreview(reader.result);
+    //     setErrors({ ...errors, [event.target.name]: false });
+    //   };
+    //   reader.readAsDataURL(file);
+    // } else {
+    // }
   };
 
   const onChange = (e) => {
