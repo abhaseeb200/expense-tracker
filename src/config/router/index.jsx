@@ -9,10 +9,10 @@ import Account from "../../screens/account-setting";
 import Category from "../../screens/category";
 import NoMatch from "../../screens/no-match";
 import SignUp from "../../screens/sign-up";
-import Expense from "../../screens/expense";
 import PrivateRoute from "./privateRoute";
 import PublicRoute from "./publicRoute";
 import Transaction from "../../screens/transaction";
+import SourcesTransaction from "../../screens/sources-transaction";
 
 const Main = () => {
   return (
@@ -23,7 +23,7 @@ const Main = () => {
         <Route element={<PrivateRoute />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/transaction" element={<Transaction />} />
-          <Route path="/expense" element={<Expense />} />
+          <Route path="/source" element={<SourcesTransaction />} />
           <Route path="/category" element={<Category />} />
           <Route path="/budget" element={<Budget />} />
           <Route path="/report" element={<Report />} />

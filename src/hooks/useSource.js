@@ -1,31 +1,20 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import {
-  addExpenseAPI,
-  deleteExpenseAPI,
-  getExpenseAPI,
-  updateExpenseAPI,
-} from "../config/service/firebase/transaction";
-import {
-  addExpenseReducer,
-  deleteExpenseReducer,
-  getExpenseReducer,
-  updateExpenseReducer,
-} from "../feature/expense/expenseSlice";
+import getDownloadURL from "../config/service/firebase/getDownloadURL";
 
-const useExpense = () => {
+const useSource = () => {
   const [initLoading, setInitLoading] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
   const { userId } = useSelector((state) => state?.auth?.userData);
 
-  const useGetExpense = async () => {
+  const useGetSource = async () => {
     try {
       setInitLoading(true);
       let transaction = [];
-      let response = await getExpenseAPI(userId);
+      let response = await getTransactionAPI(userId);
       response.forEach((element) => {
         transaction.push({
           docId: element.id,
@@ -33,7 +22,7 @@ const useExpense = () => {
           amount: +element.data()?.amount,
         });
       });
-      dispatch(getExpenseReducer(transaction));
+      dispatch(getTransactionReducer(transaction));
     } catch (error) {
       toast.error(error?.message);
     } finally {
@@ -41,25 +30,35 @@ const useExpense = () => {
     }
   };
 
-  const useAddExpense = async (body, setValues) => {
+  const useAddSource = async (body, setValues, setPreview) => {
     try {
       setLoading(true);
-      let response = await addExpenseAPI(body);
-      dispatch(addExpenseReducer({ ...body, docId: response?.id }));
-      setValues({});
-      toast.success("Create successfully!");
+      // CREATE IMAGE URL
+      let URL = await getDownloadURL("source", body?.uploadSource);
+
+      //MODIFIED OBJECT
+      delete body.uploadSource;
+      
+      //ADD TO DATABASE
+      let response = await addSourceAPI({ ...body, sourceURL: URL });
+      // dispatch(addSourceReducer({ ...body, docId: response?.id }));
+
+      // setValues({});
+      // setPreview("");
+      // toast.success("Create successfully!");
     } catch (error) {
+      console.log(error);
       toast.error(error?.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const useUpdateExpense = async (body, docId) => {
+  const useUpdateSource = async (body, docId) => {
     try {
       setLoading(true);
-      await updateExpenseAPI(body, docId);
-      dispatch(updateExpenseReducer({ ...body, docId: docId }));
+      await updateTransactionAPI(body, docId);
+      dispatch(updateTransactionReducer({ ...body, docId: docId }));
       toast.success("Update successfully!");
     } catch (error) {
       toast.error(error?.message);
@@ -67,11 +66,11 @@ const useExpense = () => {
       setLoading(false);
     }
   };
-  const useDeleteExpense = async (docId) => {
+  const useDeleteSource = async (docId) => {
     try {
       setLoading(true);
-      await deleteExpenseAPI(docId);
-      dispatch(deleteExpenseReducer(docId));
+      await deleteTransactionAPI(docId);
+      dispatch(deleteTransactionReducer(docId));
       toast.success("Delete successfully!");
     } catch (error) {
       toast.error(error?.message);
@@ -81,13 +80,13 @@ const useExpense = () => {
   };
 
   return {
-    useGetExpense,
-    useAddExpense,
-    useUpdateExpense,
-    useDeleteExpense,
+    useGetSource,
+    useAddSource,
+    useUpdateSource,
+    useDeleteSource,
     initLoading,
     loading,
   };
 };
 
-export default useExpense;
+export default useSource;

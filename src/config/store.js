@@ -5,8 +5,8 @@ import userSlice, { logoutReducer } from "../feature/auth/userSlice";
 import categorySlice from "../feature/category/categorySlice";
 import budgetSlice from "../feature/budget/budgetSlice";
 import themeSlice from "../feature/themeMode/themeSlice";
-import expenseSlice from "../feature/expense/expenseSlice";
 import transactionSlice from "../feature/transaction/transactionSlice";
+import sourceSlice from "../feature/source-transaction/sourceSlice";
 
 const persistConfig = {
   key: "root",
@@ -15,10 +15,10 @@ const persistConfig = {
 
 const reducers = combineReducers({
   auth: userSlice,
-  expense: expenseSlice,
   category: categorySlice,
   budget: budgetSlice,
   transaction: transactionSlice,
+  source: sourceSlice,
   themeMode: themeSlice,
 });
 

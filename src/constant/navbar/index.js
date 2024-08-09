@@ -16,8 +16,8 @@ const navbarData = [
   },
   {
     id: 3,
-    to: "/transaction",
-    title: "Transaction",
+    to: "/source",
+    title: "Source",
     icon: "book-add",
     isActive: false,
     className: "menu-link nav-link",
@@ -31,8 +31,8 @@ const navbarData = [
   },
   {
     id: 33,
-    to: "/expense",
-    title: "Expense",
+    to: "/transaction",
+    title: "Transaction",
     icon: "book-add",
     isActive: false,
     className: "menu-link nav-link",

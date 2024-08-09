@@ -1,10 +1,10 @@
 import { db } from "../../firebaseConfig";
 
-const addExpenseAPI = (body) => {
+const addTransactionAPI = (body) => {
   return db.collection("transaction").add(body);
 };
 
-const getExpenseAPI = (userId) => {
+const getTransactionAPI = (userId) => {
   return db
     .collection("transaction")
     .where("userId", "==", userId)
@@ -12,17 +12,12 @@ const getExpenseAPI = (userId) => {
     .get();
 };
 
-const deleteExpenseAPI = (docId) => {
+const deleteTransactionAPI = (docId) => {
   return db.collection("transaction").doc(docId).delete();
 };
 
-const updateExpenseAPI = (body, docId) => {
+const updateTransactionAPI = (body, docId) => {
   return db.collection("transaction").doc(docId).update(body);
 };
 
-export {
-  addExpenseAPI,
-  getExpenseAPI,
-  deleteExpenseAPI,
-  updateExpenseAPI,
-};
+export { addTransactionAPI, getTransactionAPI, deleteTransactionAPI, updateTransactionAPI };

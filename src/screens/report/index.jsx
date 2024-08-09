@@ -6,7 +6,7 @@ import Dropdown from "../../components/Dropdown";
 import Table from "../../components/Table";
 import reportColumns from "../../constant/columns/reportColumns";
 import useCategory from "../../hooks/useCategory";
-import useExpense from "../../hooks/useExpense";
+import useTransaction from "../../hooks/useTransaction";
 import "./style.css";
 import reportInputs from "../../constant/inputs/reportInputs";
 import reportDropdown from "../../constant/dropdowns/reportDropdown";
@@ -18,10 +18,10 @@ const Report = () => {
   const [backUp, setBackUp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { initLoading, useGetExpense } = useExpense();
+  const { initLoading, useGetTransaction } = useTransaction();
   const { initLoading: categoryLoading, useGetCategory } = useCategory();
 
-  const { expenseData } = useSelector((state) => state.expense);
+  const { transactionData } = useSelector((state) => state.transaction);
   const { categoryData } = useSelector((state) => state.category);
 
   const handleChange = (e) => {
@@ -67,7 +67,7 @@ const Report = () => {
     setErrors(error);
 
     if (!Object.values(error).includes(true)) {
-      let filtered = [...expenseData];
+      let filtered = [...transactionData];
 
       //FILTER WITH START DATE & END DATE
       if (start_date && end_date) {
@@ -92,7 +92,7 @@ const Report = () => {
   };
 
   useEffect(() => {
-    let updatedData = [...expenseData];
+    let updatedData = [...transactionData];
 
     if (sortConfig?.key && sortConfig?.direction) {
       updatedData.sort((a, b) => {
@@ -118,13 +118,13 @@ const Report = () => {
   }, [sortConfig]);
 
   useEffect(() => {
-    setBackUp(expenseData);
+    setBackUp(transactionData);
     setCurrentPage(1);
-  }, [expenseData]);
+  }, [transactionData]);
 
   useEffect(() => {
-    if (!expenseData?.length) {
-      useGetExpense();
+    if (!transactionData?.length) {
+      useGetTransaction();
     }
 
     if (!categoryData?.length) {

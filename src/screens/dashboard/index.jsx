@@ -28,7 +28,7 @@ Chart.register(CategoryScale);
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-  const { expenseData } = useSelector((state) => state.expense);
+  const { transactionData } = useSelector((state) => state.transaction);
   const { budgetData } = useSelector((state) => state.budget);
   const { isDarkMode } = useSelector((state) => state?.themeMode);
   const { userData, isLogin } = useSelector((state) => state?.auth);

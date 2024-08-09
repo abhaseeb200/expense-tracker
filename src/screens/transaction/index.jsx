@@ -1,4 +1,4 @@
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   Button,
@@ -14,66 +14,48 @@ import {
 import Input from "../../components/Input";
 import Table from "../../components/Table";
 import Search from "../../components/Search";
+import CategoryForm from "../../components/CategoryForm";
+import Dropdown from "../../components/Dropdown";
+import useCategory from "../../hooks/useCategory";
+import useTransaction from "../../hooks/useTransaction";
 import transactionColumns from "../../constant/columns/transactionColumns";
+import expenseDropdown from "../../constant/dropdowns/expenseDropdown";
 import transactionInputs from "../../constant/inputs/transactionInputs";
 
 const Transaction = () => {
-  const [currentDocID, setCurrentDocID] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
-  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isCategoryModal, setIsCategoryModal] = useState(false);
+  const [isTransitionModal, setIsTransitionModal] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
+  const [search, setSearch] = useState("");
   const [backUp, setBackUp] = useState([]);
+  const [income, setIncome] = useState([]);
+  const [expense, setExpense] = useState([]);
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
+  const [currentDocId, setCurrentDocId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [search, setSearch] = useState("");
 
   const {
-    useGetTransaction,
-    useAddTransaction,
-    useUpdateTransaction,
-    useDeleteTransaction,
     initLoading,
     loading,
-  } = useTransition();
+    useGetTransaction,
+    useAddTransaction,
+    useDeleteTransaction,
+    useUpdateTransaction,
+  } = useTransaction();
 
-  // const { transactionData } = useSelector((state) => state?.transition);
+  const { useGetCategory, initLoading: categoryLoading } = useCategory();
+
+  const { transactionData } = useSelector((state) => state.transaction);
+  const { categoryData } = useSelector((state) => state.category);
   const { userData } = useSelector((state) => state?.auth);
 
-  const handleDelete = async (data) => {
-    setCurrentDocID(data?.docID);
-    // await useDeleteTransaction(data?.docID);
-  };
-
-  const handleUpdate = (data) => {
-    setIsUpdate(true);
-    setIsOpenModal(true);
-    setValues(data);
-    setCurrentDocID(data?.docID);
-  };
-
   const handleClosedModal = () => {
+    setIsUpdate(false);
+    setIsTransitionModal(false);
     setValues({});
     setErrors({});
-  };
-
-  const handleOnSort = (columnKey, objectKey) => {
-    let newDirection = "asc";
-    if (sortConfig?.direction === "desc" && sortConfig?.key === columnKey) {
-      newDirection = "asc";
-    } else {
-      newDirection = "desc";
-    }
-
-    setSortConfig({
-      key: columnKey,
-      direction: newDirection,
-    });
-  };
-
-  const handleModalCancel = () => {
-    setIsOpenModal(false);
-    setIsUpdate(false);
   };
 
   const onChange = (e) => {
@@ -86,10 +68,50 @@ const Transaction = () => {
     }
   };
 
+  const handleUpdate = (data) => {
+    setIsUpdate(true);
+    setIsTransitionModal(true);
+    setValues(data);
+    setCurrentDocId(data?.docId);
+  };
+
+  const handleDelete = async (data) => {
+    setCurrentDocId(data?.docId);
+    await useDeleteTransaction(data?.docId);
+  };
+
+  const handleOnSort = (columnKey) => {
+    let newDirection = "asc";
+    if (sortConfig?.direction === "desc" && sortConfig?.key === columnKey) {
+      newDirection = "asc";
+    } else {
+      newDirection = "desc";
+    }
+    setSortConfig({
+      key: columnKey,
+      direction: newDirection,
+    });
+  };
+
+  const handleAddCategory = () => {
+    setIsCategoryModal(true);
+  };
+
+  const getCategoryOptions = (values) => {
+    switch (values.type) {
+      case "Expense":
+        return expense;
+      case "Income":
+        return income;
+      default:
+        return [];
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const data = {};
+    let data = {};
     let error = {};
     let formData = new FormData(e.target);
 
@@ -104,18 +126,42 @@ const Transaction = () => {
 
     //SUBMIT THE FORM BY USING 'DATA'
     if (!Object.values(error).includes(true)) {
-      console.log("SUBMIT THE FORM", { data });
+      let body = {
+        userId: userData?.userId,
+        timeStamp: Date.now(),
+        amount: +data?.amount,
+        ...data,
+      };
 
       if (isUpdate) {
-        // await useUpdateTransaction(body, currentDocID);
+        await useUpdateTransaction(body, currentDocId);
       } else {
-        // await useAddTransaction(body);
+        await useAddTransaction(body, setValues);
       }
     }
   };
 
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+  };
+
+  const handleSelect = (name, value) => {
+    // RESET `CATEGORY` FIELD WHEN CHANGE IN `TYPE` FIELD
+    if (value === "Expense" || value === "Income") {
+      setValues({ ...values, [name]: value, category: "" });
+    } else {
+      setValues({ ...values, [name]: value });
+    }
+
+    if (!value?.trim()) {
+      setErrors({ ...errors, [name]: true });
+    } else {
+      setErrors({ ...errors, [name]: false });
+    }
+  };
+
   useEffect(() => {
-    let updatedData = [];
+    let updatedData = [...transactionData];
 
     if (search?.trim()) {
       setCurrentPage(1);
@@ -129,7 +175,7 @@ const Transaction = () => {
       );
     }
 
-    if (sortConfig.key && sortConfig.direction) {
+    if (sortConfig?.key && sortConfig?.direction) {
       updatedData.sort((a, b) => {
         let valueA = a[sortConfig?.key];
         let valueB = b[sortConfig?.key];
@@ -138,11 +184,10 @@ const Transaction = () => {
           valueA = valueA.toLowerCase();
           valueB = valueB.toLowerCase();
         }
-
-        if (sortConfig.direction === "asc") {
+        if (sortConfig?.direction === "asc") {
           if (valueA < valueB) return -1;
           if (valueA > valueB) return 1;
-        } else if (sortConfig.direction === "desc") {
+        } else if (sortConfig?.direction === "desc") {
           if (valueA > valueB) return -1;
           if (valueA < valueB) return 1;
         }
@@ -155,14 +200,36 @@ const Transaction = () => {
 
   useEffect(() => {
     setSortConfig({ key: "", direction: "" });
-    setBackUp([]);
+    setSearch("");
+    setBackUp(transactionData);
     setCurrentPage(1);
-  }, []);
+  }, [transactionData]);
 
   useEffect(() => {
-    // if (!transactionData?.length) {
-    //   useGetTransaction();
-    // }
+    let expense = [];
+    let income = [];
+
+    categoryData?.map((i) =>
+      i?.category.toLowerCase() === "expense"
+        ? expense.push({ value: i?.name, name: i?.name })
+        : income.push({ value: i?.name, name: i?.name })
+    );
+
+    setExpense(expense);
+    setIncome(income);
+  }, [categoryData]);
+
+  //CODE WILL EXECUTE WHEN CATEGORY MODEL IS OPEN
+  useEffect(() => {
+    if (!categoryData?.length) {
+      useGetCategory();
+    }
+  }, [isCategoryModal]);
+
+  useEffect(() => {
+    if (!transactionData?.length) {
+      useGetTransaction();
+    }
   }, []);
 
   return (
@@ -170,44 +237,42 @@ const Transaction = () => {
       <Card className="my-3 h-100">
         {/* ================================ SCREEN TITLE ================================ */}
         <CardBody className="pb-0 d-flex justify-content-between gap-3 flex-column">
-          <CardTitle className="text-uppercase">
-            Add Transactions Source
-          </CardTitle>
+          <CardTitle className="text-uppercase">Add Transaction</CardTitle>
           <Search
-            onClick={() => setIsOpenModal(true)}
-            onChange={(e) => setSearch(e.target.value)}
+            onClick={() => setIsTransitionModal(true)}
+            onChange={(e) => handleSearch(e)}
+            isOpenModal={isTransitionModal}
             value={search}
-            isOpenModal={isOpenModal}
           />
         </CardBody>
 
         {/* ================================ TABLE ================================ */}
-        <CardBody className="row fill-available flex-column min-h-screen justify-content-between gap-4">
+        <CardBody className="gap-4 row fill-available flex-column min-h-screen justify-content-between card-body">
           <Table
             onDelete={handleDelete}
             onUpdate={handleUpdate}
             onSort={handleOnSort}
             sortConfig={sortConfig}
             columns={transactionColumns}
-            rows={[]}
+            rows={backUp}
             loading={initLoading}
             iconLoading={loading}
-            docId={currentDocID}
+            docId={currentDocId}
+            isUpdate={isUpdate}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
-            colWidth="w-30"
           />
         </CardBody>
       </Card>
 
-      {/* ================================ FORM - MODAL ================================ */}
+      {/* ========================= CREATE TRANSITION - MODAL ========================= */}
       <Modal
         className="modal-dialog-centered"
-        isOpen={isOpenModal}
+        isOpen={isTransitionModal}
         onClosed={handleClosedModal}
       >
-        <ModalHeader>{isUpdate ? "Update Source" : "Add Source"}</ModalHeader>
-        <form onSubmit={handleSubmit} className="d-flex flex-column">
+        <ModalHeader>Add Transaction</ModalHeader>
+        <form onSubmit={handleSubmit}>
           <ModalBody className="gap-4 d-flex flex-column">
             {transactionInputs?.map((input) => {
               return (
@@ -215,19 +280,40 @@ const Transaction = () => {
                   key={input?.id}
                   {...input}
                   value={values[input.name] || ""}
-                  errors={errors[input.name] || ""}
                   onChange={onChange}
+                  errors={errors[input.name]}
+                />
+              );
+            })}
+            {expenseDropdown?.map((select) => {
+              return (
+                <Dropdown
+                  key={select?.id}
+                  {...select}
+                  value={values[select?.name] || ""}
+                  errors={errors[select?.name] || ""}
+                  onChange={onChange}
+                  allValues={values}
+                  loading={select?.name === "category" && categoryLoading}
+                  options={
+                    select?.name === "category"
+                      ? getCategoryOptions(values)
+                      : select?.options
+                  }
+                  onAddCategory={
+                    select?.name === "category" && handleAddCategory
+                  }
+                  onSelect={(name, value) => handleSelect(name, value)}
                 />
               );
             })}
           </ModalBody>
-
           <ModalFooter>
             <Button
               color="secondary"
               outline
               type="button"
-              onClick={handleModalCancel}
+              onClick={handleClosedModal}
             >
               Cancel
             </Button>
@@ -242,6 +328,16 @@ const Transaction = () => {
           </ModalFooter>
         </form>
       </Modal>
+
+      {/* ========================= TRANSITION CATEGORY - MODAL ========================= */}
+      {isCategoryModal && (
+        <CategoryForm
+          isOpenModal={isCategoryModal}
+          isUpdate={isUpdate}
+          setIsUpdate={setIsUpdate}
+          setIsOpenModal={setIsCategoryModal}
+        />
+      )}
     </>
   );
 };
