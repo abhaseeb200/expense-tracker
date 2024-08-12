@@ -92,10 +92,7 @@ const Actions = ({
       </div>
       {isView && (
         <Link to={data?.docId}>
-          <EyeIcon
-            fill="#afb4b9"
-            className="w-auto"
-          />
+          <EyeIcon fill="#afb4b9" className="w-auto" />
         </Link>
       )}
     </div>
@@ -117,6 +114,7 @@ const Table = ({
   currentPage = 1,
   setCurrentPage,
   isView,
+  referenceData = [],
 }) => {
   const rowsPerPage = 10;
 
@@ -196,7 +194,7 @@ const Table = ({
                   <td key={colIndex} className="align-middle">
                     {column?.key !== "action" ? (
                       column?.function ? (
-                        column.function(row, column?.key)
+                        column.function(row, column?.key, referenceData)
                       ) : (
                         row[column?.key]
                       )

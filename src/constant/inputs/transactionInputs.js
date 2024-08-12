@@ -26,6 +26,12 @@ const transactionInputs = [
     errorMessage: "Amount must be greater than 01",
     className: "order-last",
   },
+  {
+    id: 4,
+    name: "categoryId",
+    type: "hidden",
+    className: "d-none",
+  },
 ];
 
 export default transactionInputs;

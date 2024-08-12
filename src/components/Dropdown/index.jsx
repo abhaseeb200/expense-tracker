@@ -33,6 +33,7 @@ const Dropdown = (props) => {
   return (
     <div className={`position-relative ${className}`}>
       <input type="hidden" {...inputProps} onChange={onChange} />
+
       <div className="d-flex justify-content-between">
         {label && <Label>{label}</Label>}
         {onAddCategory && (
@@ -46,6 +47,7 @@ const Dropdown = (props) => {
           </div>
         )}
       </div>
+
       <DropdownReactStrap isOpen={dropdownOpen} toggle={toggle}>
         <DropdownToggle
           caret
@@ -65,7 +67,7 @@ const Dropdown = (props) => {
                 key={index}
                 className="py-2"
                 onClick={() => {
-                  onSelect(inputProps?.name, i?.name);
+                  onSelect(inputProps?.name, i?.name, i?.id);
                 }}
               >
                 {i.name}
@@ -81,6 +83,7 @@ const Dropdown = (props) => {
           )}
         </DropdownMenu>
       </DropdownReactStrap>
+
       {errors && (
         <small className="text-danger mt-1">{`Please provide ${inputProps?.name}`}</small>
       )}

@@ -19,7 +19,7 @@ import Dropdown from "../../components/Dropdown";
 import useCategory from "../../hooks/useCategory";
 import useTransaction from "../../hooks/useTransaction";
 import transactionColumns from "../../constant/columns/transactionColumns";
-import expenseDropdown from "../../constant/dropdowns/expenseDropdown";
+import transactionDropdown from "../../constant/dropdowns/transactionDropdown";
 import transactionInputs from "../../constant/inputs/transactionInputs";
 
 const Transaction = () => {
@@ -117,6 +117,8 @@ const Transaction = () => {
 
     formData.forEach((value, key) => {
       data[key] = value;
+      console.log(value);
+
       if (!value?.trim()) {
         error[key] = true;
       }
@@ -126,11 +128,12 @@ const Transaction = () => {
 
     //SUBMIT THE FORM BY USING 'DATA'
     if (!Object.values(error).includes(true)) {
+      const { category, ...rest } = data;
       let body = {
         userId: userData?.userId,
         timeStamp: Date.now(),
         amount: +data?.amount,
-        ...data,
+        ...rest,
       };
 
       if (isUpdate) {
@@ -145,12 +148,14 @@ const Transaction = () => {
     setSearch(e.target.value);
   };
 
-  const handleSelect = (name, value) => {
+  const handleSelect = (name, value, id) => {
+    console.log({ id });
+
     // RESET `CATEGORY` FIELD WHEN CHANGE IN `TYPE` FIELD
     if (value === "Expense" || value === "Income") {
-      setValues({ ...values, [name]: value, category: "" });
+      setValues({ ...values, [name]: value, categoryId: id, category: "" });
     } else {
-      setValues({ ...values, [name]: value });
+      setValues({ ...values, [name]: value, categoryId: id });
     }
 
     if (!value?.trim()) {
@@ -209,10 +214,10 @@ const Transaction = () => {
     let expense = [];
     let income = [];
 
-    categoryData?.map((i) =>
+    Object.values(categoryData)?.map((i) =>
       i?.category.toLowerCase() === "expense"
-        ? expense.push({ value: i?.name, name: i?.name })
-        : income.push({ value: i?.name, name: i?.name })
+        ? expense.push({ value: i?.name, name: i?.name, id: i?.docId })
+        : income.push({ value: i?.name, name: i?.name, id: i?.docId })
     );
 
     setExpense(expense);
@@ -221,7 +226,7 @@ const Transaction = () => {
 
   //CODE WILL EXECUTE WHEN CATEGORY MODEL IS OPEN
   useEffect(() => {
-    if (!categoryData?.length) {
+    if (!Object.values(categoryData)?.length) {
       useGetCategory();
     }
   }, [isCategoryModal]);
@@ -260,6 +265,7 @@ const Transaction = () => {
             docId={currentDocId}
             isUpdate={isUpdate}
             currentPage={currentPage}
+            referenceData={categoryData}
             setCurrentPage={setCurrentPage}
           />
         </CardBody>
@@ -285,7 +291,7 @@ const Transaction = () => {
                 />
               );
             })}
-            {expenseDropdown?.map((select) => {
+            {transactionDropdown?.map((select) => {
               return (
                 <Dropdown
                   key={select?.id}
@@ -303,7 +309,7 @@ const Transaction = () => {
                   onAddCategory={
                     select?.name === "category" && handleAddCategory
                   }
-                  onSelect={(name, value) => handleSelect(name, value)}
+                  onSelect={(name, value, id) => handleSelect(name, value, id)}
                 />
               );
             })}

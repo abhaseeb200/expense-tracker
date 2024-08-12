@@ -1,4 +1,4 @@
-import { formatDate, renderTitleWithImage } from "../helper";
+import { formatDate, renderTitleWithImage } from "../../lib/helper";
 
 const sourceColumns = [
   { title: "Ttile", key: "name", function: renderTitleWithImage },

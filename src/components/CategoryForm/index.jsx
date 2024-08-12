@@ -75,7 +75,7 @@ const CategoryForm = (props) => {
       }
     });
     setErrors(error);
-    
+
     //SUBMIT THE FORM BY USING `DATA`
     if (!Object.values(error).includes(true)) {
       let body = {
@@ -84,7 +84,7 @@ const CategoryForm = (props) => {
         name: data?.name?.trim(),
       };
 
-      let isExists = categoryData.find(
+      let isExists = Object.values(categoryData).find(
         (i) =>
           i?.name?.toLowerCase().trim() === data?.name?.toLowerCase().trim() &&
           i?.category?.toLowerCase() === data?.category?.toLowerCase()
@@ -109,11 +109,9 @@ const CategoryForm = (props) => {
 
   // RESET FORM WHEN NEW CATEGORY IS ADDED
   useEffect(() => {
-    return () => {
-      if (!isUpdate) {
-        setValues({});
-      }
-    };
+    if (!isUpdate) {
+      setValues({});
+    }
   }, [categoryData]);
 
   return (

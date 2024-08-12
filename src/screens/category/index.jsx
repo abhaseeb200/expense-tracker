@@ -53,7 +53,7 @@ const Category = () => {
   };
 
   useEffect(() => {
-    let updatedData = [...categoryData];
+    let updatedData = [...Object.values(categoryData)];
 
     if (search?.trim()) {
       setCurrentPage(1);
@@ -94,15 +94,17 @@ const Category = () => {
   useEffect(() => {
     setSortConfig({ key: "", direction: "" });
     setSearch("");
-    setBackUp(categoryData);
+    setBackUp(Object.values(categoryData));
     setCurrentPage(1);
   }, [categoryData]);
 
   useEffect(() => {
-    if (!categoryData?.length) {
+    if (!Object.values(categoryData)?.length) {
       useGetCategory();
     }
   }, []);
+
+  console.log(Object.values(categoryData));
 
   return (
     <>

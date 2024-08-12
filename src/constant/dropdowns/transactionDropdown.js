@@ -1,4 +1,4 @@
-const expenseDropdown = [
+const transactionDropdown = [
   {
     id: 1,
     name: "type",
@@ -20,4 +20,4 @@ const expenseDropdown = [
   },
 ];
 
-export default expenseDropdown;
+export default transactionDropdown;

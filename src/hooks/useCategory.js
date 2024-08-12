@@ -24,13 +24,20 @@ const useCategory = () => {
   const useGetCategory = async () => {
     try {
       setInitLoading(true);
-      let category = [];
+      // let category = [];
+      let category = {};
       let response = await getCategoryAPI(userId);
+      // response.forEach((element) => {
+      //   category.push({
+      //     docId: element.id,
+      //     ...element.data(),
+      //   });
+      // });
       response.forEach((element) => {
-        category.push({
-          docId: element.id,
+        category[element.id] = {
           ...element.data(),
-        });
+          docId: element.id,
+        };
       });
       dispatch(getCategoryReducer(category));
     } catch (error) {

@@ -2,36 +2,34 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const categorySlice = createSlice({
   name: "category",
-  initialState: { categoryData: [] },
+  initialState: { categoryData: {} },
   reducers: {
     getCategoryReducer: (state, action) => {
       return {
         ...state,
-        categoryData: [...action.payload],
+        categoryData: { ...action.payload },
       };
     },
     addCategoryReducer: (state, action) => {
       return {
         ...state,
-        categoryData: [action.payload, ...state.categoryData],
+        categoryData: {
+          [action.payload.docId]: action.payload,
+          ...state.categoryData,
+        },
       };
     },
     updateCategoryReducer: (state, action) => {
-      let currentIndex = state.categoryData.findIndex(
-        (item) => item.docId == action.payload.docId
-      );
-
-      if (currentIndex !== -1) {
-        state.categoryData[currentIndex] = action.payload;
+      if (state.categoryData[action.payload.docId]) {
+        state.categoryData[action.payload.docId] = action.payload;
       }
       return state;
     },
     deleteCategoryReducer: (state, action) => {
+      const { [action.payload]: _, ...rest } = state.categoryData;
       return {
         ...state,
-        categoryData: state.categoryData.filter(
-          (item) => item.docId != action.payload
-        ),
+        categoryData: rest,
       };
     },
   },
