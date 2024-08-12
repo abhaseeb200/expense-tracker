@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import getDownloadURL from "../config/service/firebase/getDownloadURL";
+import { addSourceAPI, deleteSourceAPI, getSourceAPI, updateSourceAPI } from "../config/service/firebase/source";
+import { addSourceReducer, deleteSourceReducer, getSourceReducer, updateSourceReducer } from "../feature/source-transaction/sourceSlice";
 
 const useSource = () => {
   const [initLoading, setInitLoading] = useState(false);
@@ -9,20 +11,20 @@ const useSource = () => {
 
   const dispatch = useDispatch();
   const { userId } = useSelector((state) => state?.auth?.userData);
+  const { userData } = useSelector((state) => state?.auth);
 
   const useGetSource = async () => {
     try {
       setInitLoading(true);
-      let transaction = [];
-      let response = await getTransactionAPI(userId);
+      let source = [];
+      let response = await getSourceAPI(userId);
       response.forEach((element) => {
-        transaction.push({
+        source.push({
           docId: element.id,
           ...element.data(),
-          amount: +element.data()?.amount,
         });
       });
-      dispatch(getTransactionReducer(transaction));
+      dispatch(getSourceReducer(source));
     } catch (error) {
       toast.error(error?.message);
     } finally {
@@ -34,7 +36,7 @@ const useSource = () => {
     try {
       setLoading(true);
       // CREATE IMAGE URL
-      let URL = await getDownloadURL("source", body?.uploadSource);
+      const URL = await getDownloadURL("source", body?.uploadSource);
 
       //MODIFIED OBJECT
       delete body.uploadSource;
@@ -56,8 +58,8 @@ const useSource = () => {
   const useUpdateSource = async (body, docId) => {
     try {
       setLoading(true);
-      await updateTransactionAPI(body, docId);
-      dispatch(updateTransactionReducer({ ...body, docId: docId }));
+      await updateSourceAPI(body, docId);
+      dispatch(updateSourceReducer({ ...body, docId: docId }));
       toast.success("Update successfully!");
     } catch (error) {
       toast.error(error?.message);
@@ -68,8 +70,8 @@ const useSource = () => {
   const useDeleteSource = async (docId) => {
     try {
       setLoading(true);
-      await deleteTransactionAPI(docId);
-      dispatch(deleteTransactionReducer(docId));
+      await deleteSourceAPI(docId);
+      dispatch(deleteSourceReducer(docId));
       toast.success("Delete successfully!");
     } catch (error) {
       toast.error(error?.message);

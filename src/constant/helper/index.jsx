@@ -1,26 +1,26 @@
-const formatTransactionType = (value) => {
+const formatTransactionType = (value, key) => {
   return (
     <span
       className={`${
-        value.toLowerCase() === "expense" ? "border-danger" : "border-success"
+        value[key].toLowerCase() === "expense" ? "border-danger" : "border-success"
       } badge rounded-pill border w-100 max-w-160px`}
     >
-      {value}
+      {value[key]}
     </span>
   );
 };
 
-const formatAmount = (amount) => {
+const formatAmount = (amount, key) => {
   const formatter = new Intl.NumberFormat("en-PK", {
     style: "currency",
     currency: "PKR",
     minimumFractionDigits: 0,
   });
-  return formatter.format(amount);
+  return formatter.format(amount[key]);
 };
 
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
+const formatDate = (dateString, key) => {
+  const date = new Date(dateString[key]);
   const formatter = new Intl.DateTimeFormat("en-PK", {
     day: "2-digit",
     month: "short",
@@ -29,4 +29,13 @@ const formatDate = (dateString) => {
   return formatter.format(date);
 };
 
-export { formatTransactionType, formatAmount, formatDate };
+const renderTitleWithImage = (url, key) => {
+  return (
+    <div className="d-flex gap-2 align-items-center" style={{ width: "40px", height: "40px" }}>
+      <img src={url?.sourceURL} alt="source-image" className="w-100 h-100 object-fit-cover" />
+      <span>{url[key]}</span>
+    </div>
+  );
+};
+
+export { formatTransactionType, formatAmount, formatDate, renderTitleWithImage };

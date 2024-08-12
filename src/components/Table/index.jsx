@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import { Table as BootstrapTable, Button, CardText, Spinner } from "reactstrap";
-import { ChevronIcon, CaretIcon, EditIcon, TrashIcon } from "../Icons";
+import {
+  ChevronIcon,
+  CaretIcon,
+  EditIcon,
+  TrashIcon,
+  EyeOffIcon,
+  EyeIcon,
+} from "../Icons";
 import "./style.css";
+import { Link } from "react-router-dom";
 
 const Pagination = ({ totalPages, onPageChange, currentPage }) => {
   const pages = [];
@@ -63,6 +71,7 @@ const Actions = ({
   data,
   iconLoading,
   docId,
+  isView,
 }) => {
   const isLoading = iconLoading && !isUpdate && docId === data?.docId;
   return (
@@ -81,6 +90,14 @@ const Actions = ({
       <div onClick={() => onUpdate(data)} role="button">
         <EditIcon fill="#afb4b9" size="18" />
       </div>
+      {isView && (
+        <Link to={data?.docId}>
+          <EyeIcon
+            fill="#afb4b9"
+            className="w-auto"
+          />
+        </Link>
+      )}
     </div>
   );
 };
@@ -99,8 +116,8 @@ const Table = ({
   colWidth = "w-18",
   currentPage = 1,
   setCurrentPage,
+  isView,
 }) => {
-
   const rowsPerPage = 10;
 
   const totalPages = Math.ceil(rows.length / rowsPerPage);
@@ -176,10 +193,10 @@ const Table = ({
             getCurrentPageRows()?.map((row, rowIndex) => (
               <tr key={rowIndex}>
                 {columns?.map((column, colIndex) => (
-                  <td key={colIndex}>
+                  <td key={colIndex} className="align-middle">
                     {column?.key !== "action" ? (
                       column?.function ? (
-                        column.function(row[column?.key])
+                        column.function(row, column?.key)
                       ) : (
                         row[column?.key]
                       )
@@ -191,6 +208,7 @@ const Table = ({
                         data={row}
                         docId={docId}
                         isUpdate={isUpdate}
+                        isView={isView}
                       />
                     )}
                   </td>

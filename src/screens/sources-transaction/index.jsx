@@ -21,7 +21,7 @@ import useSource from "../../hooks/useSource";
 import "./style.css";
 
 const SourcesTransaction = () => {
-  const [currentDocID, setCurrentDocID] = useState("");
+  const [currentDocId, setCurrentDocId] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
@@ -42,17 +42,20 @@ const SourcesTransaction = () => {
   } = useSource();
 
   const { userData } = useSelector((state) => state?.auth);
+  const { sourceData } = useSelector((state) => state?.source);
+
+  // console.log(sourceData);
 
   const handleDelete = async (data) => {
-    setCurrentDocID(data?.docID);
-    // await useDeleteSource(data?.docID);
+    await useDeleteSource(data?.docId);
   };
 
   const handleUpdate = (data) => {
+    setPreview(data?.sourceURL)
     setIsUpdate(true);
     setIsOpenModal(true);
     setValues(data);
-    setCurrentDocID(data?.docID);
+    setCurrentDocId(data?.docId);
   };
 
   const handleClosedModal = () => {
@@ -62,6 +65,9 @@ const SourcesTransaction = () => {
   };
 
   const handleOnSort = (columnKey) => {
+    console.log(columnKey);
+    
+
     let newDirection = "asc";
     if (sortConfig?.direction === "desc" && sortConfig?.key === columnKey) {
       newDirection = "asc";
@@ -86,17 +92,15 @@ const SourcesTransaction = () => {
     if (!file?.type.includes("image"))
       return toast?.error("File type not accepted");
 
-    if (file.size > 500 * 1024) return toast?.error("File type not accepted");
+    if (file.size > 500 * 1024)
+      return toast?.error("File size must be less than 500 KB");
 
-    // if (file?.type.includes("image")) {
-    //   const reader = new FileReader();
-    //   reader.onloadend = () => {
-    //     setPreview(reader.result);
-    //     setErrors({ ...errors, [event.target.name]: false });
-    //   };
-    //   reader.readAsDataURL(file);
-    // } else {
-    // }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreview(reader.result);
+      setErrors({ ...errors, [event.target.name]: false });
+    };
+    reader.readAsDataURL(file);
   };
 
   const onChange = (e) => {
@@ -137,18 +141,22 @@ const SourcesTransaction = () => {
 
     //SUBMIT THE FORM BY USING 'DATA'
     if (!Object.values(error).includes(true)) {
-      console.log(data);
+      let body = {
+        ...data,
+        userId: userData?.userId,
+        timeStamp: Date.now(),
+      };
 
       if (isUpdate) {
-        // await useUpdateSource(body, currentDocID);
+        await useUpdateSource(data, currentDocId);
       } else {
-        await useAddSource(data, setValues, setPreview);
+        await useAddSource(body, setValues, setPreview);
       }
     }
   };
 
   useEffect(() => {
-    let updatedData = [];
+    let updatedData = [...sourceData];
 
     if (search?.trim()) {
       setCurrentPage(1);
@@ -188,14 +196,14 @@ const SourcesTransaction = () => {
 
   useEffect(() => {
     setSortConfig({ key: "", direction: "" });
-    setBackUp([]);
+    setBackUp(sourceData);
     setCurrentPage(1);
-  }, []);
+  }, [sourceData]);
 
   useEffect(() => {
-    // if (!transactionData?.length) {
-    //   useGetSource();
-    // }
+    if (!sourceData?.length) {
+      useGetSource();
+    }
   }, []);
 
   return (
@@ -222,11 +230,12 @@ const SourcesTransaction = () => {
             onSort={handleOnSort}
             sortConfig={sortConfig}
             columns={sourceColumns}
-            rows={[]}
+            rows={backUp}
             loading={initLoading}
             iconLoading={loading}
-            docId={currentDocID}
+            docId={currentDocId}
             currentPage={currentPage}
+            isView={true}
             setCurrentPage={setCurrentPage}
             colWidth="w-30"
           />
