@@ -10,7 +10,7 @@ const PublicRoute = () => {
   }
 
   return (
-    <div className="container-lg">
+    <div className="container-fluid">
       <div className="authentication-wrapper authentication-basic py-3">
         <div className="authentication-inner">
           <Outlet />

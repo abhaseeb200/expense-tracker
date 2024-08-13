@@ -114,7 +114,8 @@ const Table = ({
   currentPage = 1,
   setCurrentPage,
   isView,
-  referenceData = [],
+  categoryData = [],
+  sourceData = [],
 }) => {
   const rowsPerPage = 10;
 
@@ -191,10 +192,10 @@ const Table = ({
             getCurrentPageRows()?.map((row, rowIndex) => (
               <tr key={rowIndex}>
                 {columns?.map((column, colIndex) => (
-                  <td key={colIndex} className="align-middle">
+                  <td key={colIndex} className="align-middle break-spaces">
                     {column?.key !== "action" ? (
                       column?.function ? (
-                        column.function(row, column?.key, referenceData)
+                        column.function(row, column?.key, categoryData)
                       ) : (
                         row[column?.key]
                       )

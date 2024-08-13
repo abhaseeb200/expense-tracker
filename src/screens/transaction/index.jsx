@@ -49,6 +49,7 @@ const Transaction = () => {
 
   const { transactionData } = useSelector((state) => state.transaction);
   const { categoryData } = useSelector((state) => state.category);
+  const { sourceData } = useSelector((state) => state.category);
   const { userData } = useSelector((state) => state?.auth);
 
   const handleClosedModal = () => {
@@ -265,7 +266,8 @@ const Transaction = () => {
             docId={currentDocId}
             isUpdate={isUpdate}
             currentPage={currentPage}
-            referenceData={categoryData}
+            categoryData={categoryData}
+            sourceData={sourceData}
             setCurrentPage={setCurrentPage}
           />
         </CardBody>

@@ -1,4 +1,10 @@
-import { formatAmount, formatCategory, formatDate, formatTransactionType } from "../../lib/helper";
+import {
+  formatAmount,
+  formatCategory,
+  formatDate,
+  formatSource,
+  formatTransactionType,
+} from "../../lib/helper";
 
 const transactionColumns = [
   { title: "Name", key: "name" },
@@ -6,6 +12,7 @@ const transactionColumns = [
   { title: "Date", key: "date", function: formatDate },
   { title: "Amount", key: "amount", function: formatAmount },
   { title: "Type", key: "type", function: formatTransactionType },
+  { title: "Source", key: "source", function: formatSource },
   { title: "Actions", key: "action" },
 ];
 

@@ -15,7 +15,7 @@ const PrivateRoute = () => {
 
   return (
     <>
-      <div className="container-lg">
+      <div className="container-xxl pe-3">
         <SideNavbar
           sideBarToggle={sideBarToggle}
           setSideBarToggle={setSideBarToggle}

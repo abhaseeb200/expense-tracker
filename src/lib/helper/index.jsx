@@ -1,5 +1,3 @@
-import { useSelector } from "react-redux";
-
 const formatTransactionType = (value, key) => {
   return (
     <span
@@ -35,22 +33,24 @@ const formatDate = (dateString, key) => {
 
 const renderTitleWithImage = (url, key) => {
   return (
-    <div
-      className="d-flex gap-2 align-items-center"
-      style={{ width: "40px", height: "40px" }}
-    >
+    <div className="d-flex gap-2 align-items-center">
       <img
         src={url?.sourceURL}
         alt="source-image"
-        className="w-100 h-100 object-fit-cover"
+        className="object-fit-cover"
+        style={{ width: "40px", height: "40px" }}
       />
       <span>{url[key]}</span>
     </div>
   );
 };
 
-const formatCategory = (data, key, referenceData) => {
-  return referenceData[data?.categoryId]?.name || data[key];
+const formatCategory = (data, key, categoryDate) => {
+  return categoryDate[data?.categoryId]?.name || data[key];
+};
+
+const formatSource = (data, key, sourceData) => {
+  return sourceData[data?.sourceId]?.name;
 };
 
 export {
@@ -59,4 +59,5 @@ export {
   formatDate,
   renderTitleWithImage,
   formatCategory,
+  formatSource,
 };
