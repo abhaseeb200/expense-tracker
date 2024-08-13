@@ -1,4 +1,4 @@
-const SourceInputs = [
+const sourceInputs = [
   {
     id: 1,
     name: "name",
@@ -22,4 +22,4 @@ const SourceInputs = [
   },
 ];
 
-export default SourceInputs;
+export default sourceInputs;

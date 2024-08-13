@@ -16,7 +16,7 @@ import Input from "../../components/Input";
 import Table from "../../components/Table";
 import Search from "../../components/Search";
 import sourceColumns from "../../constant/columns/sourceColumns";
-import SourceInputs from "../../constant/inputs/SourceInputs";
+import SourceInputs from "../../constant/inputs/sourceInputs";
 import useSource from "../../hooks/useSource";
 import "./style.css";
 
