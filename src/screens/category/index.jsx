@@ -104,8 +104,6 @@ const Category = () => {
     }
   }, []);
 
-  console.log(Object.values(categoryData));
-
   return (
     <>
       <Card className="my-3 h-100">

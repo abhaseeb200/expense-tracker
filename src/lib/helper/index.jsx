@@ -49,8 +49,7 @@ const renderTitleWithImage = (url, key) => {
 
 const formatCategory = (data, key) => {
   const { categoryData } = store.getState().category;
-  // return categoryData[data?.categoryId]?.name || data[key];
-  return categoryData[data?.categoryId]?.name;
+  return categoryData[data?.categoryId]?.name || data[key];
 };
 
 const formatSource = (data) => {

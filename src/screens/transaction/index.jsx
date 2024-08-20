@@ -21,6 +21,7 @@ import useTransaction from "../../hooks/useTransaction";
 import transactionColumns from "../../constant/columns/transactionColumns";
 import transactionDropdown from "../../constant/dropdowns/transactionDropdown";
 import transactionInputs from "../../constant/inputs/transactionInputs";
+import { formatCategory, formatSource } from "../../lib/helper";
 
 const Transaction = () => {
   const [isUpdate, setIsUpdate] = useState(false);
@@ -72,8 +73,13 @@ const Transaction = () => {
   const handleUpdate = (data) => {
     setIsUpdate(true);
     setIsTransitionModal(true);
-    setValues(data);
     setCurrentDocId(data?.docId);
+    const modified = {
+      ...data,
+      source: formatSource(data),
+      category: formatCategory(data) || data?.category
+    }
+    setValues(modified);
   };
 
   const handleDelete = async (data) => {
