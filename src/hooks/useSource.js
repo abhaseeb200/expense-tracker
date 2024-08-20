@@ -2,8 +2,18 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import getDownloadURL from "../config/service/firebase/getDownloadURL";
-import { addSourceAPI, deleteSourceAPI, getSourceAPI, updateSourceAPI } from "../config/service/firebase/source";
-import { addSourceReducer, deleteSourceReducer, getSourceReducer, updateSourceReducer } from "../feature/source-transaction/sourceSlice";
+import {
+  addSourceAPI,
+  deleteSourceAPI,
+  getSourceAPI,
+  updateSourceAPI,
+} from "../config/service/firebase/source";
+import {
+  addSourceReducer,
+  deleteSourceReducer,
+  getSourceReducer,
+  updateSourceReducer,
+} from "../feature/source-transaction/sourceSlice";
 
 const useSource = () => {
   const [initLoading, setInitLoading] = useState(false);
@@ -11,18 +21,17 @@ const useSource = () => {
 
   const dispatch = useDispatch();
   const { userId } = useSelector((state) => state?.auth?.userData);
-  const { userData } = useSelector((state) => state?.auth);
 
   const useGetSource = async () => {
     try {
       setInitLoading(true);
-      let source = [];
+      let source = {};
       let response = await getSourceAPI(userId);
       response.forEach((element) => {
-        source.push({
-          docId: element.id,
+        source[element.id] = {
           ...element.data(),
-        });
+          docId: element.id,
+        };
       });
       dispatch(getSourceReducer(source));
     } catch (error) {
@@ -43,7 +52,9 @@ const useSource = () => {
 
       //ADD TO DATABASE
       let response = await addSourceAPI({ ...body, sourceURL: URL });
-      dispatch(addSourceReducer({ ...body , sourceURL: URL, docId: response?.id }));
+      dispatch(
+        addSourceReducer({ ...body, sourceURL: URL, docId: response?.id })
+      );
       setValues({});
       setPreview("");
       toast.success("Create successfully!");

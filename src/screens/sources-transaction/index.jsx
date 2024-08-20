@@ -44,14 +44,12 @@ const SourcesTransaction = () => {
   const { userData } = useSelector((state) => state?.auth);
   const { sourceData } = useSelector((state) => state?.source);
 
-  // console.log(sourceData);
-
   const handleDelete = async (data) => {
     await useDeleteSource(data?.docId);
   };
 
   const handleUpdate = (data) => {
-    setPreview(data?.sourceURL)
+    setPreview(data?.sourceURL);
     setIsUpdate(true);
     setIsOpenModal(true);
     setValues(data);
@@ -66,7 +64,6 @@ const SourcesTransaction = () => {
 
   const handleOnSort = (columnKey) => {
     console.log(columnKey);
-    
 
     let newDirection = "asc";
     if (sortConfig?.direction === "desc" && sortConfig?.key === columnKey) {
@@ -156,7 +153,7 @@ const SourcesTransaction = () => {
   };
 
   useEffect(() => {
-    let updatedData = [...sourceData];
+    let updatedData = [...Object.values(sourceData)];
 
     if (search?.trim()) {
       setCurrentPage(1);
@@ -196,14 +193,14 @@ const SourcesTransaction = () => {
 
   useEffect(() => {
     setSortConfig({ key: "", direction: "" });
-    setBackUp(sourceData);
+    setBackUp(Object.values(sourceData));
     setCurrentPage(1);
   }, [sourceData]);
 
   useEffect(() => {
-    if (!sourceData?.length) {
-      useGetSource();
+    if (!Object.values(sourceData)?.length) {
     }
+    useGetSource();
   }, []);
 
   return (

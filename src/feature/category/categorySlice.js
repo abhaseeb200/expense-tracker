@@ -40,7 +40,6 @@ export const {
   addCategoryReducer,
   updateCategoryReducer,
   deleteCategoryReducer,
-  clearCategoryReducer,
 } = categorySlice.actions;
 
 export default categorySlice.reducer;

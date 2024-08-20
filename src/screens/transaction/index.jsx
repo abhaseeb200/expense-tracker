@@ -49,7 +49,7 @@ const Transaction = () => {
 
   const { transactionData } = useSelector((state) => state.transaction);
   const { categoryData } = useSelector((state) => state.category);
-  const { sourceData } = useSelector((state) => state.category);
+  const { sourceData } = useSelector((state) => state.source);
   const { userData } = useSelector((state) => state?.auth);
 
   const handleClosedModal = () => {
@@ -108,6 +108,8 @@ const Transaction = () => {
         return [];
     }
   };
+  
+  console.log(sourceData);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

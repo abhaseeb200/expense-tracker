@@ -1,37 +1,35 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export const sourceSlice = createSlice({
-  name: "transaction",
-  initialState: { sourceData: [] },
+  name: "source",
+  initialState: { sourceData: {} },
   reducers: {
     getSourceReducer: (state, action) => {
       return {
         ...state,
-        sourceData: [...action.payload],
+        sourceData: { ...action.payload },
       };
     },
     addSourceReducer: (state, action) => {
       return {
         ...state,
-        sourceData: [action.payload, ...state.sourceData],
+        sourceData: {
+          [action.payload.docId]: action.payload,
+          ...state.sourceData,
+        },
       };
     },
     updateSourceReducer: (state, action) => {
-      let currentIndex = state.sourceData.findIndex(
-        (item) => item.docId == action.payload.docId
-      );
-
-      if (currentIndex !== -1) {
-        state.sourceData[currentIndex] = action.payload;
+      if (state.sourceData[action.payload.docId]) {
+        state.sourceData[action.payload.docId] = action.payload;
       }
       return state;
     },
     deleteSourceReducer: (state, action) => {
+      const { [action.payload]: _, ...rest } = state.sourceData;
       return {
         ...state,
-        sourceData: state.sourceData.filter(
-          (item) => item.docId != action.payload
-        ),
+        sourceData: rest,
       };
     },
   },
