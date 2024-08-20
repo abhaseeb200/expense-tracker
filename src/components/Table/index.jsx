@@ -72,6 +72,7 @@ const Actions = ({
   iconLoading,
   docId,
   isView,
+  handleOpenImage,
 }) => {
   const isLoading = iconLoading && !isUpdate && docId === data?.docId;
   return (
@@ -91,9 +92,11 @@ const Actions = ({
         <EditIcon fill="#afb4b9" size="18" />
       </div>
       {isView && (
-        <Link to={data?.docId}>
-          <EyeIcon fill="#afb4b9" className="w-auto" />
-        </Link>
+        <EyeIcon
+          fill="#afb4b9"
+          className="w-auto"
+          onClick={() => handleOpenImage(data?.sourceURL)}
+        />
       )}
     </div>
   );
@@ -114,6 +117,7 @@ const Table = ({
   currentPage = 1,
   setCurrentPage,
   isView,
+  handleOpenImage,
 }) => {
   const rowsPerPage = 10;
 
@@ -193,7 +197,7 @@ const Table = ({
                   <td key={colIndex} className="align-middle break-spaces">
                     {column?.key !== "action" ? (
                       column?.function ? (
-                        column.function(row, column?.key)
+                        column.function(row, column?.key, handleOpenImage)
                       ) : (
                         row[column?.key]
                       )
@@ -206,6 +210,7 @@ const Table = ({
                         docId={docId}
                         isUpdate={isUpdate}
                         isView={isView}
+                        handleOpenImage={handleOpenImage}
                       />
                     )}
                   </td>

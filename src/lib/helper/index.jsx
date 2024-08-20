@@ -33,9 +33,12 @@ const formatDate = (dateString, key) => {
   return formatter.format(date);
 };
 
-const renderTitleWithImage = (url, key) => {
+const renderTitleWithImage = (url, key, handleOpenImage) => {
   return (
-    <div className="d-flex gap-2 align-items-center">
+    <div
+      className="d-flex gap-2 align-items-center cursor-pointer image-with-title-hover"
+      onClick={() => handleOpenImage(url?.sourceURL)}
+    >
       <img
         src={url?.sourceURL}
         alt="source-image"
@@ -52,9 +55,18 @@ const formatCategory = (data, key) => {
   return categoryData[data?.categoryId]?.name || data[key];
 };
 
-const formatSource = (data) => {
+const formatSource = (data, _, handleOpenImage) => {
   const { sourceData } = store.getState().source;
-  return sourceData[data?.sourceId]?.name;
+  console.log();
+
+  return (
+    <div
+      onClick={() => handleOpenImage(sourceData[data?.sourceId]?.sourceURL)}
+      className="cursor-pointer image-with-title-hover"
+    >
+      <span>{sourceData[data?.sourceId]?.name}</span>
+    </div>
+  );
 };
 
 export {

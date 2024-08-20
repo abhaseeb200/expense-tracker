@@ -19,6 +19,7 @@ import sourceColumns from "../../constant/columns/sourceColumns";
 import SourceInputs from "../../constant/inputs/sourceInputs";
 import useSource from "../../hooks/useSource";
 import "./style.css";
+import ImageModal from "../../components/ImageModal";
 
 const SourcesTransaction = () => {
   const [currentDocId, setCurrentDocId] = useState("");
@@ -31,6 +32,8 @@ const SourcesTransaction = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [preview, setPreview] = useState("");
+  const [isOpenImage, setIsOpenImage] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
 
   const {
     useGetSource,
@@ -111,6 +114,11 @@ const SourcesTransaction = () => {
     } else {
       setErrors({ ...errors, [e.target.name]: false });
     }
+  };
+
+  const handleOpenImage = (url) => {
+    setImageUrl(url);
+    setIsOpenImage(true);
   };
 
   const handleSubmit = async (e) => {
@@ -235,6 +243,7 @@ const SourcesTransaction = () => {
             isView={true}
             setCurrentPage={setCurrentPage}
             colWidth="w-30"
+            handleOpenImage={handleOpenImage}
           />
         </CardBody>
       </Card>
@@ -319,6 +328,12 @@ const SourcesTransaction = () => {
           </ModalFooter>
         </form>
       </Modal>
+
+      <ImageModal
+        imageUrl={imageUrl}
+        isOpen={isOpenImage}
+        onClose={() => setIsOpenImage(false)}
+      />
     </>
   );
 };

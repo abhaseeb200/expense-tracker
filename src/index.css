@@ -297,6 +297,11 @@ input[type="number"] {
   white-space: break-spaces;
 }
 
+.image-with-title-hover:hover span {
+  text-decoration:underline ;
+  text-underline-offset: 3px;
+}
+
 @media (max-width: 992px) {
   .w-lg-50 {
     width: 48.9% !important;

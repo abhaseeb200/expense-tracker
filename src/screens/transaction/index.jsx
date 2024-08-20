@@ -22,6 +22,7 @@ import transactionColumns from "../../constant/columns/transactionColumns";
 import transactionDropdown from "../../constant/dropdowns/transactionDropdown";
 import transactionInputs from "../../constant/inputs/transactionInputs";
 import { formatCategory, formatSource } from "../../lib/helper";
+import ImageModal from "../../components/ImageModal";
 
 const Transaction = () => {
   const [isUpdate, setIsUpdate] = useState(false);
@@ -36,6 +37,8 @@ const Transaction = () => {
   const [errors, setErrors] = useState({});
   const [currentDocId, setCurrentDocId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isOpenImage, setIsOpenImage] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
 
   const {
     initLoading,
@@ -77,8 +80,8 @@ const Transaction = () => {
     const modified = {
       ...data,
       source: formatSource(data),
-      category: formatCategory(data) || data?.category
-    }
+      category: formatCategory(data) || data?.category,
+    };
     setValues(modified);
   };
 
@@ -102,6 +105,11 @@ const Transaction = () => {
 
   const handleAddCategory = () => {
     setIsCategoryModal(true);
+  };
+
+  const handleOpenImage = (url) => {
+    setImageUrl(url);
+    setIsOpenImage(true);
   };
 
   const getCategoryOptions = (values) => {
@@ -282,6 +290,7 @@ const Transaction = () => {
             isUpdate={isUpdate}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
+            handleOpenImage={handleOpenImage}
           />
         </CardBody>
       </Card>
@@ -361,6 +370,12 @@ const Transaction = () => {
           setIsOpenModal={setIsCategoryModal}
         />
       )}
+
+      <ImageModal
+        imageUrl={imageUrl}
+        isOpen={isOpenImage}
+        onClose={() => setIsOpenImage(false)}
+      />
     </>
   );
 };

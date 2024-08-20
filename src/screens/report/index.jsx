@@ -10,6 +10,7 @@ import useTransaction from "../../hooks/useTransaction";
 import "./style.css";
 import reportInputs from "../../constant/inputs/reportInputs";
 import reportDropdown from "../../constant/dropdowns/reportDropdown";
+import ImageModal from "../../components/ImageModal";
 
 const Report = () => {
   const [values, setValues] = useState("");
@@ -17,6 +18,8 @@ const Report = () => {
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
   const [backUp, setBackUp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isOpenImage, setIsOpenImage] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
 
   const { initLoading, useGetTransaction } = useTransaction();
   const { initLoading: categoryLoading, useGetCategory } = useCategory();
@@ -46,6 +49,11 @@ const Report = () => {
     });
   };
 
+  const handleOpenImage = (url) => {
+    setImageUrl(url);
+    setIsOpenImage(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -57,7 +65,8 @@ const Report = () => {
       data[key] = value;
     });
 
-    const { start_date, end_date, category, sourceId,categoryId ,source } = data;
+    const { start_date, end_date, category, sourceId, categoryId, source } =
+      data;
 
     if (start_date && !end_date) {
       error["end_date"] = true;
@@ -143,69 +152,78 @@ const Report = () => {
   const today = new Date().toISOString().split("T")[0];
 
   return (
-    <Card className="my-3 report">
-      <CardBody className="pb-2">
-        <CardTitle className="text-uppercase">Report Generate</CardTitle>
-      </CardBody>
-      <CardBody className="pt-3">
-        {/* ========================== FILTER FORM ========================== */}
-        <form
-          onSubmit={handleSubmit}
-          className="d-flex flex-wrap justify-content-between align-items-end mb-5 gap-20px gap-md-0 gap-4"
-        >
-          {reportInputs?.map((input) => (
-            <Input
-              {...input}
-              max={
-                input.name === "start_date"
-                  ? values["end_date"] || today
-                  : today
-              }
-              min={input.name === "start_date" ? null : values["start_date"]}
-              key={input?.id}
-              value={values[input.name] || ""}
-              errors={errors[input.name] || ""}
-              onChange={handleChange}
-            />
-          ))}
-          {reportDropdown?.map((select) => (
-            <Dropdown
-              {...select}
-              key={select?.id}
-              value={values[select?.name] || ""}
-              options={[
-                { value: "", name: "All" },
-                ...Object.values(
-                  select.name === "category" ? categoryData : sourceData
-                ),
-              ]}
-              onChange={handleChange}
-              onSelect={(name, value, _, docId) =>
-                handleSelect(name, value, _, docId)
-              }
-            />
-          ))}
+    <>
+      <Card className="my-3 report">
+        <CardBody className="pb-2">
+          <CardTitle className="text-uppercase">Report Generate</CardTitle>
+        </CardBody>
+        <CardBody className="pt-3">
+          {/* ========================== FILTER FORM ========================== */}
+          <form
+            onSubmit={handleSubmit}
+            className="d-flex flex-wrap justify-content-between align-items-end mb-5 gap-20px gap-md-0 gap-4"
+          >
+            {reportInputs?.map((input) => (
+              <Input
+                {...input}
+                max={
+                  input.name === "start_date"
+                    ? values["end_date"] || today
+                    : today
+                }
+                min={input.name === "start_date" ? null : values["start_date"]}
+                key={input?.id}
+                value={values[input.name] || ""}
+                errors={errors[input.name] || ""}
+                onChange={handleChange}
+              />
+            ))}
+            {reportDropdown?.map((select) => (
+              <Dropdown
+                {...select}
+                key={select?.id}
+                value={values[select?.name] || ""}
+                options={[
+                  { value: "", name: "All" },
+                  ...Object.values(
+                    select.name === "category" ? categoryData : sourceData
+                  ),
+                ]}
+                onChange={handleChange}
+                onSelect={(name, value, _, docId) =>
+                  handleSelect(name, value, _, docId)
+                }
+              />
+            ))}
 
-          <Button color="primary" className="w-auto" type="submit">
-            Filter
-          </Button>
-        </form>
+            <Button color="primary" className="w-auto" type="submit">
+              Filter
+            </Button>
+          </form>
 
-        {/* =========================== TABLE =========================== */}
-        <div className="d-flex flex-column gap-4 h-100 justify-content-between min-h-screen">
-          <Table
-            onSort={handleOnSort}
-            sortConfig={sortConfig}
-            columns={reportColumns}
-            rows={backUp}
-            loading={initLoading}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            colWidth="w-100"
-          />
-        </div>
-      </CardBody>
-    </Card>
+          {/* =========================== TABLE =========================== */}
+          <div className="d-flex flex-column gap-4 h-100 justify-content-between min-h-screen">
+            <Table
+              onSort={handleOnSort}
+              sortConfig={sortConfig}
+              columns={reportColumns}
+              rows={backUp}
+              loading={initLoading}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              colWidth="w-100"
+              handleOpenImage={handleOpenImage}
+            />
+          </div>
+        </CardBody>
+      </Card>
+
+      <ImageModal
+        imageUrl={imageUrl}
+        isOpen={isOpenImage}
+        onClose={() => setIsOpenImage(false)}
+      />
+    </>
   );
 };
 
