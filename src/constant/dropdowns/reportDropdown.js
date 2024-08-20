@@ -4,7 +4,15 @@ const reportDropdown = [
     name: "category",
     placeholder: "All",
     label: "Select Category",
-    className: "w-31",
+    className: "w-21",
+    options: [],
+  },
+  {
+    id: 2,
+    name: "source",
+    placeholder: "All",
+    label: "Select Source",
+    className: "w-21",
     options: [],
   },
 ];

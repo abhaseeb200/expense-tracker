@@ -127,7 +127,7 @@ const Report = () => {
       useGetTransaction();
     }
 
-    if (!categoryData?.length) {
+    if (!Object.values(categoryData)?.length) {
       useGetCategory();
     }
   }, []);
@@ -143,7 +143,7 @@ const Report = () => {
         {/* ========================== FILTER FORM ========================== */}
         <form
           onSubmit={handleSubmit}
-          className="d-flex flex-wrap justify-content-between align-items-end mb-5 gap-md-0 gap-4"
+          className="d-flex flex-wrap justify-content-between align-items-end mb-5 gap-20px gap-md-0 gap-4"
         >
           {reportInputs?.map((input) => (
             <Input
@@ -165,13 +165,16 @@ const Report = () => {
               {...select}
               key={select?.id}
               value={values[select?.name] || ""}
-              options={[{ value: "", name: "All" }, ...categoryData]}
+              options={[
+                { value: "", name: "All" },
+                ...Object.values(categoryData),
+              ]}
               onChange={handleChange}
               onSelect={(name, value) => handleSelect(name, value)}
             />
           ))}
 
-          <Button color="primary" className="w-31" type="submit">
+          <Button color="primary" className="w-auto" type="submit">
             Filter
           </Button>
         </form>

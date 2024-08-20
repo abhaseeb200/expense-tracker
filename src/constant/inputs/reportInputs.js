@@ -4,14 +4,14 @@ const reportInputs = [
     name: "start_date",
     type: "date",
     label: "Start Date",
-    className: "w-31",
+    className: "w-21",
   },
   {
     id: 2,
     name: "end_date",
     type: "date",
     label: "End Date",
-    className: "w-31",
+    className: "w-21",
   },
 ];
 

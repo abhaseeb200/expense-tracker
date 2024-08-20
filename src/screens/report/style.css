@@ -11,4 +11,7 @@
   .report table th {
     width: 180px !important;
   }
+  .report button[type="submit"] {
+    width: 100% !important;
+  }
 }

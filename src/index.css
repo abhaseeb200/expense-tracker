@@ -257,6 +257,9 @@ input[type="number"] {
 .w-31 {
   width: 23%;
 }
+.w-21 {
+  width: 21%;
+}
 .w-63 {
   width: 63%;
 }
@@ -299,15 +302,16 @@ input[type="number"] {
     width: 48.9% !important;
   }
 }
-/* @media (max-width: 832px) {
-  .w-lg-50 {
-    width: 48.9% !important;
-  }
-} */
 
 @media (max-width: 767px) {
   .w-lg-50 {
     width: 48.5% !important;
+  }
+  .w-21 {
+    width: 47% !important;
+  }
+  .gap-20px {
+    gap: 20px !important;
   }
   .w-63,
   .w-37 {
@@ -335,6 +339,9 @@ input[type="number"] {
   }
   .w-31 {
     width: 100%;
+  }
+  .w-21 {
+    width: 100% !important;
   }
   .max-w-160px {
     max-width: 120px;
