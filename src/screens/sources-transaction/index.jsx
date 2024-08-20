@@ -199,8 +199,8 @@ const SourcesTransaction = () => {
 
   useEffect(() => {
     if (!Object.values(sourceData)?.length) {
+      useGetSource();
     }
-    useGetSource();
   }, []);
 
   return (

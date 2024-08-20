@@ -1,3 +1,5 @@
+import { store } from "../../config/store";
+
 const formatTransactionType = (value, key) => {
   return (
     <span
@@ -45,11 +47,14 @@ const renderTitleWithImage = (url, key) => {
   );
 };
 
-const formatCategory = (data, key, categoryDate) => {
-  return categoryDate[data?.categoryId]?.name || data[key];
+const formatCategory = (data, key) => {
+  const { categoryData } = store.getState().category;
+  // return categoryData[data?.categoryId]?.name || data[key];
+  return categoryData[data?.categoryId]?.name;
 };
 
-const formatSource = (data, key, sourceData) => {
+const formatSource = (data) => {
+  const { sourceData } = store.getState().source;
   return sourceData[data?.sourceId]?.name;
 };
 

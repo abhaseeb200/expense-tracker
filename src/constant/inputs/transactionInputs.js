@@ -13,7 +13,7 @@ const transactionInputs = [
     type: "date",
     label: "date",
     max: new Date().toISOString().split("T")[0],
-    className: "order-3",
+    className: "order-4",
   },
   {
     id: 3,
@@ -29,6 +29,12 @@ const transactionInputs = [
   {
     id: 4,
     name: "categoryId",
+    type: "hidden",
+    className: "d-none",
+  },
+  {
+    id: 5,
+    name: "sourceId",
     type: "hidden",
     className: "d-none",
   },

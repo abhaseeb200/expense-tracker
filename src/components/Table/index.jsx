@@ -114,8 +114,6 @@ const Table = ({
   currentPage = 1,
   setCurrentPage,
   isView,
-  categoryData = [],
-  sourceData = [],
 }) => {
   const rowsPerPage = 10;
 
@@ -195,7 +193,7 @@ const Table = ({
                   <td key={colIndex} className="align-middle break-spaces">
                     {column?.key !== "action" ? (
                       column?.function ? (
-                        column.function(row, column?.key, categoryData)
+                        column.function(row, column?.key)
                       ) : (
                         row[column?.key]
                       )

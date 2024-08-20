@@ -108,8 +108,14 @@ const Transaction = () => {
         return [];
     }
   };
-  
-  console.log(sourceData);
+
+  const getSourceOptions = () => {
+    let options = [];
+    Object.values(sourceData)?.map((i) =>
+      options.push({ value: i?.name, name: i?.name, id: i?.docId })
+    );
+    return options;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -120,8 +126,6 @@ const Transaction = () => {
 
     formData.forEach((value, key) => {
       data[key] = value;
-      console.log(value);
-
       if (!value?.trim()) {
         error[key] = true;
       }
@@ -152,13 +156,16 @@ const Transaction = () => {
   };
 
   const handleSelect = (name, value, id) => {
-    console.log({ id });
-
     // RESET `CATEGORY` FIELD WHEN CHANGE IN `TYPE` FIELD
     if (value === "Expense" || value === "Income") {
       setValues({ ...values, [name]: value, categoryId: id, category: "" });
     } else {
       setValues({ ...values, [name]: value, categoryId: id });
+    }
+
+    //SET THE VALUE OF SOURCE-ID
+    if (name === "source") {
+      setValues({ ...values, [name]: value, sourceId: id });
     }
 
     if (!value?.trim()) {
@@ -268,8 +275,6 @@ const Transaction = () => {
             docId={currentDocId}
             isUpdate={isUpdate}
             currentPage={currentPage}
-            categoryData={categoryData}
-            sourceData={sourceData}
             setCurrentPage={setCurrentPage}
           />
         </CardBody>
@@ -308,6 +313,8 @@ const Transaction = () => {
                   options={
                     select?.name === "category"
                       ? getCategoryOptions(values)
+                      : select?.name === "source"
+                      ? getSourceOptions()
                       : select?.options
                   }
                   onAddCategory={
