@@ -13,6 +13,18 @@ const reportInputs = [
     label: "End Date",
     className: "w-21",
   },
+  {
+    id: 3,
+    name: "sourceId",
+    type: "hidden",
+    className: "d-none",
+  },
+  {
+    id: 4,
+    name: "categoryId",
+    type: "hidden",
+    className: "d-none",
+  },
 ];
 
 export default reportInputs;

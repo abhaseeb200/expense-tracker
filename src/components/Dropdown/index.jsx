@@ -67,7 +67,7 @@ const Dropdown = (props) => {
                 key={index}
                 className="py-2"
                 onClick={() => {
-                  onSelect(inputProps?.name, i?.name, i?.id);
+                  onSelect(inputProps?.name, i?.name, i?.id, i?.docId);
                 }}
               >
                 {i.name}

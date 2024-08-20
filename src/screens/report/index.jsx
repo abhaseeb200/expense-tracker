@@ -23,13 +23,14 @@ const Report = () => {
 
   const { transactionData } = useSelector((state) => state.transaction);
   const { categoryData } = useSelector((state) => state.category);
+  const { sourceData } = useSelector((state) => state.source);
 
   const handleChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
-  const handleSelect = (name, value) => {
-    setValues({ ...values, [name]: value });
+  const handleSelect = (name, value, _, docId) => {
+    setValues({ ...values, [name]: value, [`${name}Id`]: docId });
   };
 
   const handleOnSort = (columnKey) => {
@@ -56,7 +57,7 @@ const Report = () => {
       data[key] = value;
     });
 
-    const { start_date, end_date, category } = data;
+    const { start_date, end_date, category, sourceId,categoryId ,source } = data;
 
     if (start_date && !end_date) {
       error["end_date"] = true;
@@ -81,9 +82,16 @@ const Report = () => {
       }
 
       //FILTER WITH SELECT CATEGORY
-      if (category !== "All" && category) {
+      if (category !== "All" && categoryId) {
         filtered = filtered.filter((item) => {
-          return item.category === category;
+          return item.category === category || item.categoryId === categoryId;
+        });
+      }
+
+      //FILTER WITH SELECT SOURCE
+      if (source !== "All" && sourceId) {
+        filtered = filtered.filter((item) => {
+          return item.sourceId === sourceId;
         });
       }
 
@@ -167,10 +175,14 @@ const Report = () => {
               value={values[select?.name] || ""}
               options={[
                 { value: "", name: "All" },
-                ...Object.values(categoryData),
+                ...Object.values(
+                  select.name === "category" ? categoryData : sourceData
+                ),
               ]}
               onChange={handleChange}
-              onSelect={(name, value) => handleSelect(name, value)}
+              onSelect={(name, value, _, docId) =>
+                handleSelect(name, value, _, docId)
+              }
             />
           ))}
 

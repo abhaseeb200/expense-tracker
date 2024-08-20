@@ -1,8 +1,14 @@
-import { formatAmount, formatDate, formatSource, formatTransactionType } from "../../lib/helper";
+import {
+  formatAmount,
+  formatCategory,
+  formatDate,
+  formatSource,
+  formatTransactionType,
+} from "../../lib/helper";
 
 const reportColumns = [
   { title: "Name", key: "name" },
-  { title: "Category", key: "category" },
+  { title: "Category", key: "category", function: formatCategory },
   { title: "Date", key: "date", function: formatDate },
   { title: "Type", key: "type", function: formatTransactionType },
   { title: "Source", key: "sourceId", function: formatSource },
