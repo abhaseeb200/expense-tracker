@@ -2,53 +2,44 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const categorySlice = createSlice({
   name: "category",
-  initialState: { categoryData: [] },
+  initialState: { categoryData: {} },
   reducers: {
-    getCategory: (state, action) => {
+    getCategoryReducer: (state, action) => {
       return {
         ...state,
-        categoryData: [...action.payload],
+        categoryData: { ...action.payload },
       };
     },
-    addCategory: (state, action) => {
+    addCategoryReducer: (state, action) => {
       return {
         ...state,
-        categoryData: [action.payload, ...state.categoryData],
+        categoryData: {
+          [action.payload.docId]: action.payload,
+          ...state.categoryData,
+        },
       };
     },
-    editCategory: (state, action) => {
-      let currentIndex = state.categoryData.findIndex(
-        (item) => item.docID == action.payload.docID
-      );
-
-      if (currentIndex !== -1) {
-        state.categoryData[currentIndex] = action.payload;
+    updateCategoryReducer: (state, action) => {
+      if (state.categoryData[action.payload.docId]) {
+        state.categoryData[action.payload.docId] = action.payload;
       }
       return state;
     },
-    deleteCategory: (state, action) => {
+    deleteCategoryReducer: (state, action) => {
+      const { [action.payload]: _, ...rest } = state.categoryData;
       return {
         ...state,
-        categoryData: state.categoryData.filter(
-          (item) => item.docID != action.payload
-        ),
-      };
-    },
-    clearCategory: (state) => {
-      return {
-        ...state,
-        categoryData: [],
+        categoryData: rest,
       };
     },
   },
 });
 
 export const {
-  getCategory,
-  addCategory,
-  editCategory,
-  deleteCategory,
-  clearCategory,
+  getCategoryReducer,
+  addCategoryReducer,
+  updateCategoryReducer,
+  deleteCategoryReducer,
 } = categorySlice.actions;
 
 export default categorySlice.reducer;

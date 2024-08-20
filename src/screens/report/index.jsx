@@ -1,336 +1,228 @@
-import {
-  Button,
-  Card,
-  CardBody,
-  CardText,
-  CardTitle,
-  Container,
-  Label,
-  Spinner,
-  Table,
-} from "reactstrap";
 import { useEffect, useState } from "react";
-import CustomInput from "../../components/input";
-import { getTransaction } from "../../config/service/firebase/transaction";
-import "./style.css";
-import { useOutletContext } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Button, Card, CardBody, CardTitle } from "reactstrap";
+import Input from "../../components/Input";
+import Dropdown from "../../components/Dropdown";
+import Table from "../../components/Table";
+import reportColumns from "../../constant/columns/reportColumns";
+import useCategory from "../../hooks/useCategory";
+import useTransaction from "../../hooks/useTransaction";
+import "./style.css";
+import reportInputs from "../../constant/inputs/reportInputs";
+import reportDropdown from "../../constant/dropdowns/reportDropdown";
+import ImageModal from "../../components/ImageModal";
 
 const Report = () => {
-  const [transactionData, setTransactionData] = useState({});
-  const [transactionDataBackUp, setTransactionDataBackUp] = useState({});
-  const [expenseaAmount, setExpenseAmount] = useState(0);
-  const [incomeAmount, setIncomeAmount] = useState(0);
-  const [tableLoader, setTableLoader] = useState(false);
+  const [values, setValues] = useState("");
+  const [errors, setErrors] = useState("");
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
+  const [backUp, setBackUp] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isOpenImage, setIsOpenImage] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
 
-  const [startDate, setStartDate] = useState({
-    value: "",
-    isError: false,
-    messageError: "",
-  });
-  const [endDate, setEndDate] = useState({
-    value: "",
-    isError: false,
-    messageError: "",
-  });
+  const { initLoading, useGetTransaction } = useTransaction();
+  const { initLoading: categoryLoading, useGetCategory } = useCategory();
 
-  const transactions = useSelector(
-    (state) => state.transaction.transactionData
-  );
+  const { transactionData } = useSelector((state) => state.transaction);
+  const { categoryData } = useSelector((state) => state.category);
+  const { sourceData } = useSelector((state) => state.source);
 
-  const [currentUserID] = useOutletContext();
-
-  const startDateHandler = (e) => {
-    if (e.target.value === "") {
-      setStartDate({
-        value: e.target.value,
-        isError: true,
-        messageError: "Please select date",
-      });
-    } else {
-      setStartDate({
-        value: e.target.value,
-        isError: false,
-        messageError: "",
-      });
-    }
+  const handleChange = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value });
   };
 
-  const endDateHandler = (e) => {
-    if (e.target.value === "") {
-      setEndDate({
-        value: e.target.value,
-        isError: true,
-        messageError: "Please select date",
-      });
-    } else {
-      setEndDate({
-        value: e.target.value,
-        isError: false,
-        messageError: "",
-      });
-    }
+  const handleSelect = (name, value, _, docId) => {
+    setValues({ ...values, [name]: value, [`${name}Id`]: docId });
   };
 
-  const getTransactionDataHandler = () => {
-    let tempReportData = {};
-    let tempExpenseAmount = 0;
-    let tempIncomeAmount = 0;
-
-    transactions.forEach((element) => {
-      if (!tempReportData[element?.docData?.category]) {
-        tempReportData[element?.docData?.category] = [];
-      }
-      tempReportData[element?.docData?.category].push(element?.docData);
-
-      if (element?.docData?.type === "expense") {
-        tempExpenseAmount += parseInt(element?.docData?.amount);
-      } else {
-        tempIncomeAmount += parseInt(element?.docData?.amount);
-      }
+  const handleOnSort = (columnKey) => {
+    let newDirection = "asc";
+    if (sortConfig?.direction === "desc" && sortConfig?.key === columnKey) {
+      newDirection = "asc";
+    } else {
+      newDirection = "desc";
+    }
+    setSortConfig({
+      key: columnKey,
+      direction: newDirection,
     });
-    setTransactionData(tempReportData);
-    setTransactionDataBackUp(tempReportData);
-    setExpenseAmount(tempExpenseAmount);
-    setIncomeAmount(tempIncomeAmount);
   };
 
-  const filterData = () => {
-    if (new Date(startDate.value) <= new Date(endDate.value)) {
-      let filteredData = {};
-      for (let category in transactionDataBackUp) {
-        let categoryData = transactionDataBackUp[category].filter((item) => {
-          let itemDate = new Date(item.date);
-          return (
-            itemDate >= new Date(startDate.value) &&
-            itemDate <= new Date(endDate.value)
-          );
+  const handleOpenImage = (url) => {
+    setImageUrl(url);
+    setIsOpenImage(true);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let data = {};
+    let error = {};
+    let formData = new FormData(e.target);
+
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+
+    const { start_date, end_date, category, sourceId, categoryId, source } =
+      data;
+
+    if (start_date && !end_date) {
+      error["end_date"] = true;
+    }
+    if (!start_date && end_date) {
+      error["start_date"] = true;
+    }
+    setErrors(error);
+
+    if (!Object.values(error).includes(true)) {
+      let filtered = [...transactionData];
+
+      //FILTER WITH START DATE & END DATE
+      if (start_date && end_date) {
+        let start = new Date(start_date);
+        let end = new Date(end_date);
+
+        filtered = filtered.filter((item) => {
+          const itemDate = new Date(item.date);
+          return itemDate >= start && itemDate <= end;
         });
-
-        if (categoryData.length > 0) {
-          filteredData[category] = categoryData;
-        }
       }
-      setTransactionData(filteredData);
-      totalAmountHanlder(filteredData);
-    } else {
-      setStartDate({
-        value: startDate.value,
-        isError: true,
-        messageError: "Invalid Data",
-      });
-      setEndDate({
-        value: endDate.value,
-        isError: true,
-        messageError: "",
-      });
+
+      //FILTER WITH SELECT CATEGORY
+      if (category !== "All" && categoryId) {
+        filtered = filtered.filter((item) => {
+          return item.category === category || item.categoryId === categoryId;
+        });
+      }
+
+      //FILTER WITH SELECT SOURCE
+      if (source !== "All" && sourceId) {
+        filtered = filtered.filter((item) => {
+          return item.sourceId === sourceId;
+        });
+      }
+
+      setBackUp(filtered);
     }
-  };
-
-  const clearFilterHanlder = () => {
-    setTransactionData(transactionDataBackUp);
-    totalAmountHanlder(transactionDataBackUp);
-    resetHanlder();
-  };
-
-  const todayDateAttributeHanlder = () => {
-    let d = new Date();
-    return (
-      d.getFullYear() + "-" + parseInt(d.getMonth() + 1) + "-" + d.getDate()
-    );
-  };
-
-  const totalAmountHanlder = (filteredData) => {
-    let expenseFilter = {};
-    let incomeFilter = {};
-    let tempTotalExpenseAmount = 0;
-    let tempTotalIncomeAmount = 0;
-    for (let category in filteredData) {
-      expenseFilter[category] = filteredData[category].filter(
-        (item) => item.type === "expense"
-      );
-
-      incomeFilter[category] = filteredData[category].filter(
-        (item) => item.type === "income"
-      );
-    }
-
-    for (let category in filteredData) {
-      expenseFilter[category].forEach((expense) => {
-        tempTotalExpenseAmount += parseInt(expense.amount);
-      });
-
-      incomeFilter[category].forEach((income) => {
-        tempTotalIncomeAmount += parseInt(income.amount);
-      });
-    }
-    setExpenseAmount(tempTotalExpenseAmount);
-    setIncomeAmount(tempTotalIncomeAmount);
-    setStartDate({
-      value: startDate.value,
-      isError: false,
-      messageError: "",
-    });
-    setEndDate({
-      value: endDate.value,
-      isError: false,
-      messageError: "",
-    });
-  };
-
-  const resetHanlder = () => {
-    setStartDate({
-      value: "",
-      isError: false,
-      messageError: "",
-    });
-    setEndDate({
-      value: "",
-      isError: false,
-      messageError: "",
-    });
   };
 
   useEffect(() => {
-    getTransactionDataHandler();
-  }, [currentUserID]);
+    let updatedData = [...transactionData];
+
+    if (sortConfig?.key && sortConfig?.direction) {
+      updatedData.sort((a, b) => {
+        let valueA = a[sortConfig?.key];
+        let valueB = b[sortConfig?.key];
+
+        if (typeof valueA === "string" && typeof valueB === "string") {
+          valueA = valueA.toLowerCase();
+          valueB = valueB.toLowerCase();
+        }
+        if (sortConfig?.direction === "asc") {
+          if (valueA < valueB) return -1;
+          if (valueA > valueB) return 1;
+        } else if (sortConfig?.direction === "desc") {
+          if (valueA > valueB) return -1;
+          if (valueA < valueB) return 1;
+        }
+        return 0;
+      });
+    }
+
+    setBackUp(updatedData);
+  }, [sortConfig]);
+
+  useEffect(() => {
+    setBackUp(transactionData);
+    setCurrentPage(1);
+  }, [transactionData]);
+
+  useEffect(() => {
+    if (!transactionData?.length) {
+      useGetTransaction();
+    }
+
+    if (!Object.values(categoryData)?.length) {
+      useGetCategory();
+    }
+  }, []);
+
+  const today = new Date().toISOString().split("T")[0];
 
   return (
     <>
-      <div className="">
-        <h5 className="fw-bold py-3 my-3">Report Generate</h5>
-        <Card className="">
-          <CardBody className="pb-2">
-            <CardTitle>Filter By Date</CardTitle>
-          </CardBody>
-          <CardBody className="pt-3 row align-items-end filter-date">
-            <div className="col-md-4">
-              <Label>Start date</Label>
-              <CustomInput
-                type="date"
-                max={todayDateAttributeHanlder()}
-                onChange={startDateHandler}
-                value={startDate.value}
-                isError={startDate.isError}
-                messageError={startDate.messageError}
+      <Card className="my-3 report">
+        <CardBody className="pb-2">
+          <CardTitle className="text-uppercase">Report Generate</CardTitle>
+        </CardBody>
+        <CardBody className="pt-3">
+          {/* ========================== FILTER FORM ========================== */}
+          <form
+            onSubmit={handleSubmit}
+            className="d-flex flex-wrap justify-content-between align-items-end mb-5 gap-20px gap-md-0 gap-4"
+          >
+            {reportInputs?.map((input) => (
+              <Input
+                {...input}
+                max={
+                  input.name === "start_date"
+                    ? values["end_date"] || today
+                    : today
+                }
+                min={input.name === "start_date" ? null : values["start_date"]}
+                key={input?.id}
+                value={values[input.name] || ""}
+                errors={errors[input.name] || ""}
+                onChange={handleChange}
               />
-            </div>
-            <div className="col-md-4">
-              <Label>End date</Label>
-              <CustomInput
-                type="date"
-                onChange={endDateHandler}
-                value={endDate.value}
-                isError={endDate.isError}
-                messageError={endDate.messageError}
-                max={todayDateAttributeHanlder()}
+            ))}
+            {reportDropdown?.map((select) => (
+              <Dropdown
+                {...select}
+                key={select?.id}
+                value={values[select?.name] || ""}
+                options={[
+                  { value: "", name: "All" },
+                  ...Object.values(
+                    select.name === "category" ? categoryData : sourceData
+                  ),
+                ]}
+                onChange={handleChange}
+                onSelect={(name, value, _, docId) =>
+                  handleSelect(name, value, _, docId)
+                }
               />
-            </div>
-            <div className="col-md-2 mt-2">
-              <Button color="primary" className="w-100" onClick={filterData}>
-                Filter
-              </Button>
-            </div>
-            <div className="col-md-2 mt-2">
-              <Button
-                color="secondary"
-                outline
-                className="w-100"
-                onClick={clearFilterHanlder}
-              >
-                Clear
-              </Button>
-            </div>
-            <CardText className="mt-5">
-              Transaction Reports Based On Categories
-            </CardText>
-            <div>
-              {tableLoader ? (
-                <div className="no-data">
-                  <Spinner />
-                </div>
-              ) : Object.keys(transactionData).length ? (
-                <div className="table-responsive">
-                  <Table bordered>
-                    <thead>
-                      <tr>
-                        <th>Category</th>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Amount</th>
-                        <th>Date</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Object.keys(transactionData).map((category, ind) => {
-                        let categoryItems = transactionData[category];
-                        return (
-                          <tr key={ind}>
-                            <td>{category}</td>
-                            <td>
-                              {categoryItems.map((item, ind) => (
-                                <span className="d-block" key={ind}>
-                                  {item.name}
-                                </span>
-                              ))}
-                            </td>
-                            <td>
-                              {categoryItems.map((item, ind) => (
-                                <span
-                                  key={ind}
-                                  className={
-                                    item.type === "expense"
-                                      ? "badge bg-danger mb-2 d-block"
-                                      : "badge bg-success mb-2 d-block"
-                                  }
-                                >
-                                  {item.type}
-                                </span>
-                              ))}
-                            </td>
-                            <td>
-                              {categoryItems.map((item, ind) => (
-                                <span key={ind} className="d-block">
-                                  {item.amount}
-                                </span>
-                              ))}
-                            </td>
-                            <td>
-                              {categoryItems.map((item, ind) => (
-                                <span key={ind} className="d-block">
-                                  {item.date}
-                                </span>
-                              ))}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                      <tr>
-                        <td className="fw-bold" colSpan="5">
-                          <div className="d-flex justify-content-between">
-                            <span>Total Expenses</span>
-                            <span>{expenseaAmount}</span>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="fw-bold" colSpan="5">
-                          <div className="d-flex justify-content-between">
-                            <span>Total Income</span>
-                            <span>{incomeAmount}</span>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </div>
-              ) : (
-                <CardText className="no-data">No Data Found</CardText>
-              )}
-            </div>
-          </CardBody>
-        </Card>
-      </div>
+            ))}
+
+            <Button color="primary" className="w-auto" type="submit">
+              Filter
+            </Button>
+          </form>
+
+          {/* =========================== TABLE =========================== */}
+          <div className="d-flex flex-column gap-4 h-100 justify-content-between min-h-screen">
+            <Table
+              onSort={handleOnSort}
+              sortConfig={sortConfig}
+              columns={reportColumns}
+              rows={backUp}
+              loading={initLoading}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              colWidth="w-100"
+              handleOpenImage={handleOpenImage}
+            />
+          </div>
+        </CardBody>
+      </Card>
+
+      <ImageModal
+        imageUrl={imageUrl}
+        isOpen={isOpenImage}
+        onClose={() => setIsOpenImage(false)}
+      />
     </>
   );
 };

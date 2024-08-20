@@ -1,54 +1,43 @@
+import { useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "../../screens/login";
-import Register from "../../screens/register";
 import Dashboard from "../../screens/dashboard";
-import Transaction from "../../screens/transaction";
 import Budget from "../../screens/budget";
 import Report from "../../screens/report";
 import Account from "../../screens/account-setting";
-import { useEffect, useState } from "react";
-import ProtectRoute from "../protectedRoute";
-import { auth } from "../firebaseConfig";
-import { ToastContainer } from "react-toastify";
-import TransactionCategories from "../../screens/transactionCategories";
+import Category from "../../screens/category";
+import NoMatch from "../../screens/no-match";
+import SignUp from "../../screens/sign-up";
+import PrivateRoute from "./privateRoute";
+import PublicRoute from "./publicRoute";
+import Transaction from "../../screens/transaction";
+import SourcesTransaction from "../../screens/sources-transaction";
 
 const Main = () => {
-  let getLocalUser = localStorage.getItem("currentUser");
-  const [user, setUser] = useState(getLocalUser);
-  useEffect(() => {
-    auth.onAuthStateChanged((currentUser) => {
-      if (currentUser) {
-        localStorage.setItem("currentUser", currentUser.uid);
-        setUser(currentUser.uid);
-      } else {
-        setUser(null);
-      }
-    });
-  }, []);
-
   return (
     <Router>
       <ToastContainer />
       <Routes>
-        <Route element={<ProtectRoute user={user} setUser={setUser} />}>
+        {/* ======================= PRIVATE ROUTES ======================= */}
+        <Route element={<PrivateRoute />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/transaction" element={<Transaction />} />
-          <Route
-            path="/transactionCategories"
-            element={<TransactionCategories />}
-          />
+          <Route path="/source" element={<SourcesTransaction />} />
+          <Route path="/category" element={<Category />} />
           <Route path="/budget" element={<Budget />} />
           <Route path="/report" element={<Report />} />
           <Route path="/account" element={<Account />} />
         </Route>
-        <Route
-          path="/login"
-          element={<Login user={user} setUser={setUser} />}
-        />
-        <Route
-          path="/register"
-          element={<Register user={user} setUser={setUser} />}
-        />
+
+        {/* ======================= PUBLIC ROUTES ======================= */}
+        <Route element={<PublicRoute />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<SignUp />} />
+        </Route>
+
+        {/* ======================= PAGE NOT FOUND - 404 ======================= */}
+        <Route path="*" element={<NoMatch />}></Route>
       </Routes>
     </Router>
   );

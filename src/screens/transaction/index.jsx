@@ -1,704 +1,380 @@
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
-  Badge,
   Button,
   Card,
   CardBody,
-  CardText,
   CardTitle,
-  Container,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  Label,
-  Navbar,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   Spinner,
-  Table,
 } from "reactstrap";
-import { useEffect, useState } from "react";
-import CustomInput from "../../components/input";
-import Select from "../../components/selectInput/index";
-import "boxicons";
-import {
-  deleteTransaction as firebaseDeleteTransaction,
-  getTransaction as firebaseGetTransaction,
-  getTransactionCategory,
-  setTransaction,
-  updateTransaction,
-} from "../../config/service/firebase/transaction";
-import { useOutletContext } from "react-router-dom";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  addTransaction,
-  getTransaction,
-  deleteTransaction,
-  editTransaction,
-} from "../../feature/transaction/transactionSlice";
-import { getCategory } from "../../feature/category/categorySlice";
-import TransactionCategoryModal from "../modal";
+import Input from "../../components/Input";
+import Table from "../../components/Table";
+import Search from "../../components/Search";
+import CategoryForm from "../../components/CategoryForm";
+import Dropdown from "../../components/Dropdown";
+import useCategory from "../../hooks/useCategory";
+import useTransaction from "../../hooks/useTransaction";
+import transactionColumns from "../../constant/columns/transactionColumns";
+import transactionDropdown from "../../constant/dropdowns/transactionDropdown";
+import transactionInputs from "../../constant/inputs/transactionInputs";
+import { formatCategory, formatSource } from "../../lib/helper";
+import ImageModal from "../../components/ImageModal";
 
-const Transaction = ({ direction, ...args }) => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  // const [transactionData, setTransactionData] = useState([]);
-  const [loader, setLoader] = useState(false);
-  const [tableLoader, setTableLoader] = useState(true);
-  const [currentSelect, setCurrentSelect] = useState(false);
-  const [actionLoader, setActionLoader] = useState(false);
+const Transaction = () => {
   const [isUpdate, setIsUpdate] = useState(false);
-  const [saveLoader, setSaveLoader] = useState(false);
-  const [currentDocID, setCurrentDocID] = useState("");
-  const [expenseCategoryData, setExpenseCategoryData] = useState([]);
-  const [incomeCategoryData, setIncomeCategoryData] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCategoryModal, setIsCategoryModal] = useState(false);
+  const [isTransitionModal, setIsTransitionModal] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
+  const [search, setSearch] = useState("");
+  const [backUp, setBackUp] = useState([]);
+  const [income, setIncome] = useState([]);
+  const [expense, setExpense] = useState([]);
+  const [values, setValues] = useState({});
+  const [errors, setErrors] = useState({});
+  const [currentDocId, setCurrentDocId] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isOpenImage, setIsOpenImage] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
 
-  const [currentUserID] = useOutletContext();
+  const {
+    initLoading,
+    loading,
+    useGetTransaction,
+    useAddTransaction,
+    useDeleteTransaction,
+    useUpdateTransaction,
+  } = useTransaction();
 
-  const [name, setName] = useState({
-    value: "",
-    isError: false,
-    messageError: "",
-  });
+  const { useGetCategory, initLoading: categoryLoading } = useCategory();
 
-  const [date, setDate] = useState({
-    value: "",
-    isError: false,
-    messageError: "",
-  });
-
-  const [amount, setAmount] = useState({
-    value: "",
-    isError: false,
-    messageError: "",
-  });
-
-  const [transactionSelect, setTransactionSelect] = useState("expense");
-
-  const [category, setCategory] = useState({
-    value: "",
-    isError: false,
-    messageError: "",
-  });
-
-  const dispatch = useDispatch();
   const { transactionData } = useSelector((state) => state.transaction);
   const { categoryData } = useSelector((state) => state.category);
+  const { sourceData } = useSelector((state) => state.source);
+  const { userData } = useSelector((state) => state?.auth);
 
-  const toggleDropdown = (ind) => {
-    setDropdownOpen((prevState) => !prevState);
-    setCurrentSelect(ind);
-  };
-
-  const nameHandler = (e) => {
-    let expVal = e.target.value.trim().toLowerCase();
-    if (expVal === "") {
-      setName({
-        value: e.target.value,
-        isError: true,
-        messageError: "Please provide name",
-      });
-    } else {
-      setName({
-        value: e.target.value,
-        isError: false,
-        messageError: "",
-      });
-    }
-  };
-
-  const dateHandler = (e) => {
-    if (e.target.value === "") {
-      setDate({
-        value: e.target.value,
-        isError: true,
-        messageError: "Please select date",
-      });
-    } else {
-      setDate({
-        value: e.target.value,
-        isError: false,
-        messageError: "",
-      });
-    }
-  };
-
-  const amountHandler = (e) => {
-    if (e.target.value === "") {
-      setAmount({
-        value: e.target.value,
-        isError: true,
-        messageError: "Please provide amount",
-      });
-    } else if (e.target.value <= 0) {
-      setAmount({
-        value: e.target.value,
-        isError: true,
-        messageError: "Amount must be greater than 0",
-      });
-    } else {
-      setAmount({
-        value: e.target.value,
-        isError: false,
-        messageError: "",
-      });
-    }
-  };
-
-  const categoryHandler = (e) => {
-    setCategory(e.target.value);
-    if (e.target.selectedIndex === 0) {
-      setCategory({
-        value: e.target.value,
-        isError: true,
-        messageError: "Please select type",
-      });
-    } else {
-      setCategory({
-        value: e.target.value,
-        isError: false,
-        messageError: "",
-      });
-    }
-  };
-
-  const selectTransactionHandler = (e) => {
-    setTransactionSelect(e.target.value);
-    setCategory({
-      value: "",
-      isError: false,
-      messageError: "",
-    });
-  };
-
-  const addTransactionHandler = () => {
-    if (name.value === "") {
-      setName({
-        value: name.value,
-        isError: true,
-        messageError: "Please provide name",
-      });
-    }
-    if (date.value === "") {
-      setDate({
-        value: date.value,
-        isError: true,
-        messageError: "Please select date",
-      });
-    }
-    if (amount.value === "") {
-      setAmount({
-        value: amount.value,
-        isError: true,
-        messageError: "Please provide amount",
-      });
-    }
-    if (category?.value === "" || category?.selectedIndex === 0) {
-      setCategory({
-        value: category?.value,
-        isError: true,
-        messageError: "Please select type",
-      });
-    }
-
-    if (
-      name.value === "" ||
-      date.value === "" ||
-      amount.value === "" ||
-      category?.value === "" ||
-      category.selectedIndex === 0
-    ) {
-      return;
-    }
-
-    //check validation
-    if (
-      !name.isError &&
-      !date.isError &&
-      !amount.isError &&
-      !category.isError
-    ) {
-      setLoader(true);
-      setTransaction(
-        name.value,
-        category.value,
-        date.value,
-        amount.value,
-        transactionSelect,
-        currentUserID
-      )
-        .then((res) => {
-          let data = {
-            docID: res.id,
-            docData: {
-              name: name.value,
-              category: category.value,
-              date: date.value,
-              amount: amount.value,
-              type: transactionSelect,
-              userId: currentUserID,
-            },
-          };
-          dispatch(addTransaction(data));
-          setLoader(false);
-          resetFeilds();
-          toast.success("Transaction add successfully!", {
-            autoClose: 1500,
-          });
-        })
-        .catch((err) => {
-          setLoader(false);
-          toast.error(err.message, {
-            autoClose: 1500,
-          });
-        });
-    }
-  };
-
-  const getTransactionHandler = () => {
-    if (!transactionData?.length) {
-      firebaseGetTransaction(currentUserID)
-        .then((res) => {
-          let tempTransactionData = [];
-          res.forEach((element) => {
-            tempTransactionData.push({
-              docID: element.id,
-              docData: element.data(),
-            });
-          });
-          dispatch(getTransaction(tempTransactionData));
-          setTableLoader(false);
-        })
-        .catch((err) => {
-          setTableLoader(false);
-        });
-    }
-    setTableLoader(false);
-  };
-
-  const getTransactionCategoryHandler = () => {
-    let tempExpenseCategoryData = [];
-    let tempIncomeCategoryData = [];
-    if (!categoryData?.length) {
-      getTransactionCategory(currentUserID).then((res) => {
-        let data = [];
-        res.forEach((element) => {
-          data.push({
-            docID: element.id,
-            docData: element.data(),
-          });
-          if (element.data().category === "expense") {
-            tempExpenseCategoryData.push(element.data());
-          } else {
-            tempIncomeCategoryData.push(element.data());
-          }
-        });
-        dispatch(getCategory(data));
-      });
-    } else {
-      categoryData.forEach((element) => {
-        if (element?.docData?.category === "expense") {
-          tempExpenseCategoryData.push(element?.docData);
-        } else {
-          tempIncomeCategoryData.push(element?.docData);
-        }
-      });
-    }
-    setExpenseCategoryData(tempExpenseCategoryData);
-    setIncomeCategoryData(tempIncomeCategoryData);
-  };
-
-  const deleteItem = (ind, item) => {
-    setActionLoader(true);
-    firebaseDeleteTransaction(item.docID)
-      .then(() => {
-        setActionLoader(false);
-        dispatch(deleteTransaction(item?.docID));
-        resetFeilds();
-        toast.success("Transaction delete successfully!", {
-          autoClose: 1500,
-        });
-        setIsUpdate(false);
-        setDropdownOpen((prevState) => !prevState);
-      })
-      .catch((err) => {
-        toast.error(err?.message, {
-          autoClose: 1500,
-        });
-        setDropdownOpen((prevState) => !prevState);
-      });
-    setDropdownOpen(false);
-  };
-
-  const updateItem = (ind, item) => {
-    setName({
-      value: item.docData.name,
-      isError: false,
-      messageError: "",
-    });
-    setCategory({
-      value: item.docData.category,
-      isError: false,
-      messageError: "",
-    });
-    setTransactionSelect(item.docData.type);
-    setAmount({
-      value: item.docData.amount,
-      isError: false,
-      messageError: "",
-    });
-    setDate({
-      value: item.docData.date,
-      isError: false,
-      messageError: "",
-    });
-    setIsUpdate(true);
-    setCurrentDocID(item.docID);
-  };
-
-  const saveHandler = () => {
-    if (category.value === "") {
-      setCategory({
-        value: category.value,
-        isError: true,
-        messageError: "Please select type",
-      });
-      return;
-    }
-    if (
-      !name.isError &&
-      !date.isError &&
-      !amount.isError &&
-      !category.isError
-    ) {
-      setSaveLoader(true);
-      updateTransaction(
-        name.value,
-        transactionSelect,
-        category.value,
-        date.value,
-        amount.value,
-        currentDocID
-      )
-        .then((res) => {
-          setSaveLoader(false);
-          setIsUpdate(false);
-          let data = {
-            docID: currentDocID,
-            docData: {
-              name: name.value,
-              type: transactionSelect,
-              category: category.value,
-              data: date.value,
-              amount: amount.value,
-              userId: currentUserID,
-            },
-          };
-          dispatch(editTransaction(data));
-          resetFeilds();
-          toast.success("Transaction update successfully!", {
-            autoClose: 1500,
-          });
-        })
-        .catch((err) => {
-          toast.error(err, {
-            autoClose: 1500,
-          });
-          setSaveLoader(false);
-          setIsUpdate(false);
-        });
-    }
-  };
-
-  const cancelHanlder = () => {
+  const handleClosedModal = () => {
     setIsUpdate(false);
-    resetFeilds();
+    setIsTransitionModal(false);
+    setValues({});
+    setErrors({});
   };
 
-  const resetFeilds = () => {
-    setName({
-      value: "",
-      isError: false,
-      messageError: "",
-    });
-    setCategory({
-      value: "",
-      isError: false,
-      messageError: "",
-    });
-    setTransactionSelect("expense");
-    setAmount({
-      value: "",
-      isError: false,
-      messageError: "",
-    });
-    setDate({
-      value: "",
-      isError: false,
-      messageError: "",
+  const onChange = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value });
+
+    if (!e.target.value?.trim()) {
+      setErrors({ ...errors, [e.target.name]: true });
+    } else {
+      setErrors({ ...errors, [e.target.name]: false });
+    }
+  };
+
+  const handleUpdate = (data) => {
+    setIsUpdate(true);
+    setIsTransitionModal(true);
+    setCurrentDocId(data?.docId);
+    const modified = {
+      ...data,
+      source: formatSource(data),
+      category: formatCategory(data) || data?.category,
+    };
+    setValues(modified);
+  };
+
+  const handleDelete = async (data) => {
+    setCurrentDocId(data?.docId);
+    await useDeleteTransaction(data?.docId);
+  };
+
+  const handleOnSort = (columnKey) => {
+    let newDirection = "asc";
+    if (sortConfig?.direction === "desc" && sortConfig?.key === columnKey) {
+      newDirection = "asc";
+    } else {
+      newDirection = "desc";
+    }
+    setSortConfig({
+      key: columnKey,
+      direction: newDirection,
     });
   };
 
-  const todayDateAttributeHanlder = () => {
-    let d = new Date();
-    return (
-      d.getFullYear() + "-" + parseInt(d.getMonth() + 1) + "-" + d.getDate()
+  const handleAddCategory = () => {
+    setIsCategoryModal(true);
+  };
+
+  const handleOpenImage = (url) => {
+    setImageUrl(url);
+    setIsOpenImage(true);
+  };
+
+  const getCategoryOptions = (values) => {
+    switch (values.type) {
+      case "Expense":
+        return expense;
+      case "Income":
+        return income;
+      default:
+        return [];
+    }
+  };
+
+  const getSourceOptions = () => {
+    let options = [];
+    Object.values(sourceData)?.map((i) =>
+      options.push({ value: i?.name, name: i?.name, id: i?.docId })
     );
+    return options;
   };
 
-  const addCategoryHandler = () => {
-    setIsModalOpen(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let data = {};
+    let error = {};
+    let formData = new FormData(e.target);
+
+    formData.forEach((value, key) => {
+      data[key] = value;
+      if (!value?.trim()) {
+        error[key] = true;
+      }
+    });
+
+    setErrors(error);
+
+    //SUBMIT THE FORM BY USING 'DATA'
+    if (!Object.values(error).includes(true)) {
+      const { category, ...rest } = data;
+      let body = {
+        userId: userData?.userId,
+        timeStamp: Date.now(),
+        amount: +data?.amount,
+        ...rest,
+      };
+
+      if (isUpdate) {
+        await useUpdateTransaction(body, currentDocId);
+      } else {
+        await useAddTransaction(body, setValues);
+      }
+    }
+  };
+
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+  };
+
+  const handleSelect = (name, value, id) => {
+    // RESET `CATEGORY` FIELD WHEN CHANGE IN `TYPE` FIELD
+    if (value === "Expense" || value === "Income") {
+      setValues({ ...values, [name]: value, categoryId: id, category: "" });
+    } else {
+      setValues({ ...values, [name]: value, categoryId: id });
+    }
+
+    //SET THE VALUE OF SOURCE-ID
+    if (name === "source") {
+      setValues({ ...values, [name]: value, sourceId: id });
+    }
+
+    if (!value?.trim()) {
+      setErrors({ ...errors, [name]: true });
+    } else {
+      setErrors({ ...errors, [name]: false });
+    }
   };
 
   useEffect(() => {
-    getTransactionCategoryHandler();
+    let updatedData = [...transactionData];
+
+    if (search?.trim()) {
+      setCurrentPage(1);
+      updatedData = updatedData.filter((item) =>
+        Object.keys(item).some((k) =>
+          item[k]
+            ?.toLocaleString()
+            .toLowerCase()
+            .includes(search.toLowerCase().trim())
+        )
+      );
+    }
+
+    if (sortConfig?.key && sortConfig?.direction) {
+      updatedData.sort((a, b) => {
+        let valueA = a[sortConfig?.key];
+        let valueB = b[sortConfig?.key];
+
+        if (typeof valueA === "string" && typeof valueB === "string") {
+          valueA = valueA.toLowerCase();
+          valueB = valueB.toLowerCase();
+        }
+        if (sortConfig?.direction === "asc") {
+          if (valueA < valueB) return -1;
+          if (valueA > valueB) return 1;
+        } else if (sortConfig?.direction === "desc") {
+          if (valueA > valueB) return -1;
+          if (valueA < valueB) return 1;
+        }
+        return 0;
+      });
+    }
+
+    setBackUp(updatedData);
+  }, [sortConfig, search]);
+
+  useEffect(() => {
+    setSortConfig({ key: "", direction: "" });
+    setSearch("");
+    setBackUp(transactionData);
+    setCurrentPage(1);
+  }, [transactionData]);
+
+  useEffect(() => {
+    let expense = [];
+    let income = [];
+
+    Object.values(categoryData)?.map((i) =>
+      i?.category.toLowerCase() === "expense"
+        ? expense.push({ value: i?.name, name: i?.name, id: i?.docId })
+        : income.push({ value: i?.name, name: i?.name, id: i?.docId })
+    );
+
+    setExpense(expense);
+    setIncome(income);
   }, [categoryData]);
 
+  //CODE WILL EXECUTE WHEN CATEGORY MODEL IS OPEN
   useEffect(() => {
-    getTransactionHandler();
-    getTransactionCategoryHandler();
-  }, [currentUserID]);
+    if (!Object.values(categoryData)?.length) {
+      useGetCategory();
+    }
+  }, [isCategoryModal]);
+
+  useEffect(() => {
+    if (!transactionData?.length) {
+      useGetTransaction();
+    }
+  }, []);
 
   return (
     <>
-      <h5 className="fw-bold py-3 my-3">Transaction Entry</h5>
-      <Card>
-        <CardBody className="pb-3">
-          <CardTitle>Add Transaction</CardTitle>
+      <Card className="my-3 h-100">
+        {/* ================================ SCREEN TITLE ================================ */}
+        <CardBody className="pb-0 d-flex justify-content-between gap-3 flex-column">
+          <CardTitle className="text-uppercase">Add Transaction</CardTitle>
+          <Search
+            onClick={() => setIsTransitionModal(true)}
+            onChange={(e) => handleSearch(e)}
+            isOpenModal={isTransitionModal}
+            value={search}
+          />
         </CardBody>
-        <CardBody className="pt-3 row">
-          <div className="col-md-4 mb-3">
-            <Label>name</Label>
-            <CustomInput
-              placeholder="Bills"
-              type="text"
-              value={name.value}
-              isError={name.isError}
-              messageError={name.messageError}
-              onChange={nameHandler}
-            />
-          </div>
-          <div className="col-md-4 mb-3">
-            <Label>Transaction Type</Label>
-            <Select
-              onChange={selectTransactionHandler}
-              value={transactionSelect}
-            >
-              <option value="expense">Expense</option>
-              <option value="income">Income</option>
-            </Select>
-          </div>
-          <div className="col-md-4 mb-3 d-flex flex-wrap justify-content-between align-items-center">
-            <Label>Select Category</Label>
-            <div
-              role="button"
-              className="form-label fw-bolder text-primary"
-              onClick={addCategoryHandler}
-            >
-              Add Category
-            </div>
-            <Select
-              onChange={categoryHandler}
-              value={category.value}
-              isError={category.isError}
-              messageError={category.messageError}
-            >
-              <option value="" hidden>
-                Select Category
-              </option>
-              {transactionSelect === "income" ? (
-                incomeCategoryData.length > 0 ? (
-                  incomeCategoryData.map((item, ind) => (
-                    <option key={ind} value={item.name}>
-                      {item.name}
-                    </option>
-                  ))
-                ) : (
-                  <option value="" disabled>
-                    No Income category found
-                  </option>
-                )
-              ) : expenseCategoryData.length > 0 ? (
-                expenseCategoryData.map((item, ind) => (
-                  <option key={ind} value={item.name}>
-                    {item.name}
-                  </option>
-                ))
-              ) : (
-                <option value="" disabled>
-                  No Expense category found
-                </option>
-              )}
-            </Select>
-          </div>
-          <div className="col-md-6 mb-3">
-            <Label>Select Date</Label>
-            <CustomInput
-              max={todayDateAttributeHanlder()}
-              type="date"
-              value={date.value}
-              isError={date.isError}
-              messageError={date.messageError}
-              onChange={dateHandler}
-            />
-          </div>
-          <div className="col-md-6 mb-3">
-            <Label>Amount</Label>
-            <CustomInput
-              placeholder="1234"
-              type="number"
-              value={amount.value}
-              isError={amount.isError}
-              messageError={amount.messageError}
-              onChange={amountHandler}
-            />
-          </div>
-          {isUpdate ? (
-            <>
-              <div className="col-md-6 mb-2">
-                <Button
-                  color="primary"
-                  className={saveLoader ? "btn-disabled w-100" : "w-100"}
-                  onClick={() => saveHandler()}
-                >
-                  {saveLoader ? <Spinner size="sm" /> : "Save"}
-                </Button>
-              </div>
-              <div className="col-md-6">
-                <Button
-                  color="secondary"
-                  outline
-                  onClick={cancelHanlder}
-                  className="w-100"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </>
-          ) : (
-            <div className="col-md-12 w-100">
-              <Button
-                color="primary"
-                className={loader ? "btn-disabled w-100" : "w-100"}
-                onClick={() => addTransactionHandler()}
-              >
-                {loader ? <Spinner size="sm" /> : "Add Transaction"}
-              </Button>
-            </div>
-          )}
+
+        {/* ================================ TABLE ================================ */}
+        <CardBody className="gap-4 row fill-available flex-column min-h-screen justify-content-between card-body">
+          <Table
+            onDelete={handleDelete}
+            onUpdate={handleUpdate}
+            onSort={handleOnSort}
+            sortConfig={sortConfig}
+            columns={transactionColumns}
+            rows={backUp}
+            loading={initLoading}
+            iconLoading={loading}
+            docId={currentDocId}
+            isUpdate={isUpdate}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            handleOpenImage={handleOpenImage}
+          />
         </CardBody>
       </Card>
-      <Card className="mt-4">
-        <CardBody className="pb-0">
-          <CardTitle>Transaction Data</CardTitle>
-        </CardBody>
-        <CardBody className="pt-0">
-          {tableLoader ? (
-            <div className="no-data">
-              <Spinner />
-            </div>
-          ) : transactionData.length ? (
-            <div className="table-responsive">
-              <Table bordered>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Type</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactionData?.map((item, ind) => {
-                    return (
-                      <tr key={ind}>
-                        <td>{item.docData.name}</td>
-                        <td>{item.docData.category}</td>
-                        <td>{item.docData.date}</td>
-                        <td>{item.docData.amount}</td>
-                        <td>
-                          {item.docData.type === "expense" ? (
-                            <Badge color="danger">{item.docData.type}</Badge>
-                          ) : (
-                            <Badge color="primary">{item.docData.type}</Badge>
-                          )}
-                        </td>
-                        <td className="text-end">
-                          <Dropdown
-                            isOpen={currentSelect === ind && dropdownOpen}
-                            toggle={() => toggleDropdown(ind)}
-                            direction={direction}
-                          >
-                            <DropdownToggle className="p-0 bg-white border-0">
-                              <box-icon
-                                name="dots-vertical-rounded"
-                                color="#697a8d"
-                                style={{ width: "18px" }}
-                              ></box-icon>
-                            </DropdownToggle>
-                            <DropdownMenu {...args}>
-                              <DropdownItem
-                                onClick={() => deleteItem(ind, item)}
-                                style={{
-                                  padding: "9px 20px",
-                                  display: "inline-flex",
-                                  color: "#697a8d",
-                                }}
-                              >
-                                {actionLoader ? (
-                                  <Spinner size="sm"></Spinner>
-                                ) : (
-                                  <>
-                                    <box-icon
-                                      name="trash"
-                                      color="#697a8d"
-                                      style={{
-                                        width: "18px",
-                                        marginRight: "6px",
-                                      }}
-                                    ></box-icon>
-                                    Delete
-                                  </>
-                                )}
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() => updateItem(ind, item)}
-                                style={{
-                                  padding: "9px 20px",
-                                  display: "inline-flex",
-                                  color: "#697a8d",
-                                }}
-                              >
-                                <box-icon
-                                  name="edit-alt"
-                                  color="#697a8d"
-                                  style={{ width: "18px", marginRight: "6px" }}
-                                ></box-icon>
-                                Edit
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </Dropdown>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-            </div>
-          ) : (
-            <CardText className="no-data">No Data found</CardText>
-          )}
-        </CardBody>
-      </Card>
-      <TransactionCategoryModal
-        modal={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-        incomeCategoryData={incomeCategoryData}
-        expenseCategoryData={expenseCategoryData}
-        currentUserID={currentUserID}
-        getTransactionCategoryHandler={getTransactionCategoryHandler}
+
+      {/* ========================= CREATE TRANSITION - MODAL ========================= */}
+      <Modal
+        className="modal-dialog-centered"
+        isOpen={isTransitionModal}
+        onClosed={handleClosedModal}
+      >
+        <ModalHeader>Add Transaction</ModalHeader>
+        <form onSubmit={handleSubmit}>
+          <ModalBody className="gap-4 d-flex flex-column">
+            {transactionInputs?.map((input) => {
+              return (
+                <Input
+                  key={input?.id}
+                  {...input}
+                  value={values[input.name] || ""}
+                  onChange={onChange}
+                  errors={errors[input.name]}
+                />
+              );
+            })}
+            {transactionDropdown?.map((select) => {
+              return (
+                <Dropdown
+                  key={select?.id}
+                  {...select}
+                  value={values[select?.name] || ""}
+                  errors={errors[select?.name] || ""}
+                  onChange={onChange}
+                  allValues={values}
+                  loading={select?.name === "category" && categoryLoading}
+                  options={
+                    select?.name === "category"
+                      ? getCategoryOptions(values)
+                      : select?.name === "source"
+                      ? getSourceOptions()
+                      : select?.options
+                  }
+                  onAddCategory={
+                    select?.name === "category" && handleAddCategory
+                  }
+                  onSelect={(name, value, id) => handleSelect(name, value, id)}
+                />
+              );
+            })}
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="secondary"
+              outline
+              type="button"
+              onClick={handleClosedModal}
+            >
+              Cancel
+            </Button>
+            <Button
+              color="primary"
+              className="custom-button"
+              disabled={loading}
+              type="submit"
+            >
+              {loading ? <Spinner size="sm" /> : isUpdate ? "Save" : "Create"}
+            </Button>
+          </ModalFooter>
+        </form>
+      </Modal>
+
+      {/* ========================= TRANSITION CATEGORY - MODAL ========================= */}
+      {isCategoryModal && (
+        <CategoryForm
+          isOpenModal={isCategoryModal}
+          isUpdate={isUpdate}
+          setIsUpdate={setIsUpdate}
+          setIsOpenModal={setIsCategoryModal}
+        />
+      )}
+
+      <ImageModal
+        imageUrl={imageUrl}
+        isOpen={isOpenImage}
+        onClose={() => setIsOpenImage(false)}
       />
     </>
   );

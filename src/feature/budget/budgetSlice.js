@@ -4,21 +4,21 @@ export const budgetSlice = createSlice({
   name: "budget",
   initialState: { budgetData: [] },
   reducers: {
-    getBudget: (state, action) => {
+    getBudgetReducer: (state, action) => {
       return {
         ...state,
         budgetData: [...action.payload],
       };
     },
-    addBudget: (state, action) => {
+    addBudgetReducer: (state, action) => {
       return {
         ...state,
         budgetData: [action.payload, ...state.budgetData],
       };
     },
-    editBudget: (state, action) => {
+    editBudgetReducer: (state, action) => {
       let currentIndex = state.budgetData.findIndex(
-        (item) => item.docID == action.payload.docID
+        (item) => item.docId == action.payload.docId
       );
 
       if (currentIndex !== -1) {
@@ -26,24 +26,23 @@ export const budgetSlice = createSlice({
       }
       return state;
     },
-    deleteBudget: (state, action) => {
+    deleteBudgetReducer: (state, action) => {
       return {
         ...state,
         budgetData: state.budgetData.filter(
-          (item) => item.docID != action.payload
+          (item) => item.docId != action.payload
         ),
-      };
-    },
-    clearBudget: (state) => {
-      return {
-        ...state,
-        budgetData: [],
       };
     },
   },
 });
 
-export const { getBudget, addBudget, editBudget, deleteBudget, clearBudget } =
-  budgetSlice.actions;
+export const {
+  getBudgetReducer,
+  addBudgetReducer,
+  editBudgetReducer,
+  deleteBudgetReducer,
+  clearBudget,
+} = budgetSlice.actions;
 
 export default budgetSlice.reducer;

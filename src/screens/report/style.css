@@ -1,4 +1,17 @@
-.filter-date .text-error {
-    position: absolute;
-    margin-top: 0.50rem;
+.report .text-danger {
+  position: absolute;
+  bottom: -25px;
+}
+
+.report table th:last-child {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .report table th {
+    width: 180px !important;
+  }
+  .report button[type="submit"] {
+    width: 100% !important;
+  }
 }

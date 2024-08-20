@@ -1,124 +1,35 @@
-import {
-  Button,
-  Card,
-  CardBody,
-  CardText,
-  CardTitle,
-  Container,
-  Label,
-  Navbar,
-  Spinner,
-} from "reactstrap";
 import { useEffect, useState } from "react";
-import CustomInput from "../../components/input";
-import getUserByID from "../../config/service/firebase/getUserByID";
+import { Button, Card, CardBody, CardTitle, Form, Spinner } from "reactstrap";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import Input from "../../components/Input";
+import useUser from "../../hooks/useUser";
+import { editUserReducer } from "../../feature/auth/userSlice";
+import accountSettingInputs from "../../constant/inputs/accountSettingInputs";
+import { storage } from "../../config/firebaseConfig";
 import {
   updateUser,
   updateUserWithImage,
 } from "../../config/service/firebase/updateUser";
-import { storage } from "../../config/firebaseConfig";
 import avatarImg from "../../assets/1.png";
-import { useOutletContext } from "react-router-dom";
-import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
-import { editUserProfile } from "../../feature/auth/userSlice";
 
 const Account = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [upload, setUpload] = useState("");
-  const [imageURL, setImageURL] = useState("");
-  const [address, setAddress] = useState("");
-  const [docID, setDocID] = useState("");
-  const [loader, setLoader] = useState(false);
-  const [username, setUsername] = useState({
-    value: "",
-    isError: false,
-    messageError: "",
-  });
-  const [currentUserID, getUserByIDHanlder] = useOutletContext();
+  const [values, setValues] = useState({});
+  const [errors, setErrors] = useState({});
+  const [previewImage, setPreviewImage] = useState({});
 
-  const { userData } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const { userData } = useSelector((state) => state.auth);
 
-  const getUserByIDHandler = async () => {
-    setFirstName(userData?.fname);
-    setLastName(userData?.lname);
-    setPhone(userData?.phone);
-    setAddress(userData?.address);
-    setImageURL(userData?.profileURL);
-    setDocID(userData?.docID);
-    setEmail(userData?.email);
-    setUsername({
-      value: userData?.username,
-      isError: false,
-      messageError: "",
-    });
-  };
+  const { useUpdateUser, loading } = useUser();
 
-  const firstNameHandler = (e) => {
-    setFirstName(e.target.value);
-  };
-
-  const lastNameHandler = (e) => {
-    setLastName(e.target.value);
-  };
-
-  const emailHandler = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const usernameHandler = (e) => {
-    if (e.target.value.trim() === "") {
-      setUsername({
-        value: e.target.value,
-        isError: true,
-        messageError: "Please enter your username",
-      });
-    } else if (e.target.value.match(/[A-Z]/)) {
-      setUsername({
-        value: e.target.value,
-        isError: true,
-        messageError: "Username must be lowercase letters",
-      });
-    } else if (e.target.value.trim().length <= 3) {
-      setUsername({
-        value: e.target.value,
-        isError: true,
-        messageError: "Username should be greater than 3",
-      });
-    } else if (!e.target.value.trim().match(/^\S*$/)) {
-      setUsername({
-        value: e.target.value,
-        isError: true,
-        messageError: "Username should not contain spaces",
-      });
-    } else {
-      setUsername({
-        value: e.target.value,
-        isError: false,
-        messageError: "",
-      });
-    }
-  };
-
-  const phoneHandler = (e) => {
-    setPhone(e.target.value);
-  };
-
-  const addressHandler = (e) => {
-    setAddress(e.target.value);
-  };
-
-  const uploadHanlder = (e) => {
-    setUpload(e.target.files[0]);
+  const handleUpload = (e) => {
+    // setUpload(e.target.files[0]);
     if (e.target.files[0]) {
-      let tempImgURL = URL.createObjectURL(e.target.files[0]);
-      setImageURL(tempImgURL);
+      setPreviewImage(URL.createObjectURL(e.target.files[0]));
     }
   };
+
   const saveChangesHanlder = async () => {
     if (username.value === "") {
       setUsername({
@@ -157,7 +68,7 @@ const Account = () => {
             address: address,
             docID: docID,
           };
-          dispatch(editUserProfile(data));
+          dispatch(editUserReducer(data));
           setLoader(false);
           toast.success("Profile update successfully!", {
             autoClose: 1500,
@@ -189,7 +100,7 @@ const Account = () => {
             docID: docID,
           };
           setLoader(false);
-          dispatch(editUserProfile(data));
+          dispatch(editUserReducer(data));
           toast.success("Profile update successfully!", {
             autoClose: 1500,
           });
@@ -202,103 +113,86 @@ const Account = () => {
     }
   };
 
+  const handleOnChange = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value });
+
+    // USERNAME VALIDATION
+    if (e.target.name !== "username") return;
+
+    if (!e.target.value?.trim()) {
+      setErrors({ ...errors, [e.target.name]: true });
+    } else {
+      setErrors({ ...errors, [e.target.name]: false });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let data = {};
+    let error = {};
+    let formData = new FormData(e.target);
+
+    formData.forEach((value, key) => {
+      data[key] = value;
+      if (key === "username" && !data?.username?.trim()) {
+        error[key] = true;
+      }
+    });
+    setErrors(error);
+
+    if (!Object.values(error).includes(true)) {
+      // await useUpdateUser(data);
+    }
+  };
+
   useEffect(() => {
-    getUserByIDHandler();
-  }, [currentUserID, userData]);
+    setValues(userData);
+  }, [userData]);
+
+  useEffect(() => {
+    setPreviewImage(avatarImg)
+  }, [])
+  
 
   return (
-    <>
-      <div>
-        <Card className="mt-4">
-          <CardBody className="pb-0">
-            <CardTitle>Profile Details {name}</CardTitle>
-            <div className="d-flex align-items-start align-items-sm-center gap-4">
-              <img
-                src={imageURL || avatarImg}
-                className="d-block rounded object-fit-cover"
-                height="100"
-                width="100"
+    <Card className="my-4" style={{ height: "87vh" }}>
+      <CardBody>
+        <CardTitle className="text-uppercase">Account Setting</CardTitle>
+        <Form className="d-flex gap-4 flex-column" onSubmit={handleSubmit}>
+          <div className="d-flex align-items-start align-items-sm-center gap-4">
+            <img
+              src={avatarImg}
+              className="d-block rounded object-fit-cover"
+              height="100"
+              width="100"
+            />
+            <div className="button-wrapper">
+              <label className="btn btn-primary me-2 mb-2">
+                <input type="file" onChange={handleUpload} />
+                <span className="d-block text-white">Upload new photo</span>
+              </label>
+              <p className="mb-0">Allowed JPG, GIF or PNG.</p>
+            </div>
+          </div>
+
+          {accountSettingInputs?.map((input) => {
+            return (
+              <Input
+                {...input}
+                key={input?.id}
+                value={values[input.name] || ""}
+                errors={errors[input.name]}
+                onChange={handleOnChange}
               />
-              <div className="button-wrapper">
-                <label className="btn btn-primary me-2 mb-4">
-                  <CustomInput type="file" onChange={uploadHanlder} />
-                  <span className="d-block text-white">Upload new photo</span>
-                </label>
-                <p className="text-muted mb-0">Allowed JPG, GIF or PNG.</p>
-              </div>
-            </div>
-          </CardBody>
-          <CardBody className="pt-3 row">
-            <div className="col-md-6 mb-3">
-              <Label>First name</Label>
-              <CustomInput
-                placeholder="John"
-                type="text"
-                value={firstName}
-                onChange={firstNameHandler}
-              />
-            </div>
-            <div className="col-md-6 mb-3">
-              <Label>last name</Label>
-              <CustomInput
-                placeholder="Doe"
-                type="text"
-                value={lastName}
-                onChange={lastNameHandler}
-              />
-            </div>
-            <div className="col-md-6 mb-3">
-              <Label>e-mail</Label>
-              <CustomInput
-                disabled="disabled"
-                placeholder=""
-                type="email"
-                value={email}
-                onChange={emailHandler}
-              />
-            </div>
-            <div className="col-md-6 mb-3">
-              <Label>username</Label>
-              <CustomInput
-                placeholder="example"
-                type="text"
-                value={username.value}
-                isError={username.isError}
-                messageError={username.messageError}
-                onChange={usernameHandler}
-              />
-            </div>
-            <div className="col-md-6 mb-3">
-              <Label>Phone number</Label>
-              <CustomInput
-                placeholder="+1 234 456"
-                type="number"
-                value={phone}
-                onChange={phoneHandler}
-              />
-            </div>
-            <div className="col-md-6 mb-3">
-              <Label>address</Label>
-              <CustomInput
-                placeholder="123 Main St, Apt 4B, City"
-                type="text"
-                value={address}
-                onChange={addressHandler}
-              />
-            </div>
-            <div className="col-md-12 w-100">
-              <Button
-                color="primary"
-                className={loader ? "btn-disabled w-100" : "w-100"}
-                onClick={saveChangesHanlder}
-              >
-                {loader ? <Spinner size="sm"></Spinner> : "Save changes"}
-              </Button>
-            </div>
-          </CardBody>
-        </Card>
-      </div>
-    </>
+            );
+          })}
+          <Button color="primary" className="w-100" type="submit">
+            {loading ? <Spinner size="sm"></Spinner> : "Update Profile"}
+          </Button>
+        </Form>
+      </CardBody>
+    </Card>
   );
 };
 

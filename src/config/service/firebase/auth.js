@@ -1,17 +1,15 @@
-import { Navigate, useNavigate } from "react-router-dom";
-import { auth, db } from "../../firebaseConfig";
-
+import { auth } from "../../firebaseConfig";
 
 const authSignUp = (email, password) => {
-    return auth.createUserWithEmailAndPassword(email, password)
-}
+  return auth.createUserWithEmailAndPassword(email, password);
+};
 
 const authSignIn = (email, password) => {
-    return auth.signInWithEmailAndPassword(email, password)
-}
+  return auth.signInWithEmailAndPassword(email, password);
+};
 
 const authLogout = () => {
-    return auth.signOut()
-}
+  return auth.signOut();
+};
 
-export { authSignIn, authSignUp, authLogout }
+export { authSignIn, authSignUp, authLogout };

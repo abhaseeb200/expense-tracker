@@ -1,5 +1,4 @@
 import { auth, db } from "../../firebaseConfig"
-import getUserByID from "./getUserByID"
 
 const updateUser = (firstName,lastName,username,phone,address, docID) => {
     return db.collection("users").doc(docID).update({
