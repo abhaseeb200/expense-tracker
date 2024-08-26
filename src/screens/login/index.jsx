@@ -28,6 +28,8 @@ const Login = () => {
     setVisible((prev) => !prev);
   };
 
+  console.log("ENV :" ,process.env.REACT_APP_GREETING)
+
   const getInputType = (inputName, isVisible) => {
     switch (inputName) {
       case "password":
