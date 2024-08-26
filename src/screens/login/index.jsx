@@ -28,8 +28,6 @@ const Login = () => {
     setVisible((prev) => !prev);
   };
 
-  console.log("ENV ," + import.meta.env.VITE_GREETING)
-
   const getInputType = (inputName, isVisible) => {
     switch (inputName) {
       case "password":
