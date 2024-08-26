@@ -4,12 +4,12 @@ import "firebase/compat/auth"
 import "firebase/compat/storage"
 
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API,
+  apiKey: "AIzaSyB2gkaxcrUPs27J1dzr7cApF9vDA9Vk1EU",
   authDomain: "react-xpensr-system.firebaseapp.com",
   projectId: "react-xpensr-system",
   storageBucket: "react-xpensr-system.appspot.com",
-  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_APP_ID
+  messagingSenderId: "760878505426",
+  appId: "1:760878505426:web:07da5fab4b1ef4dcabfc0b" 
 };
 
 firebase.initializeApp(firebaseConfig)
