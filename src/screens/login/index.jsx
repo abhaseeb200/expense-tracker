@@ -28,7 +28,7 @@ const Login = () => {
     setVisible((prev) => !prev);
   };
 
-  console.log("ENV :" + String(import.meta.env.VITE_REACT_APP_GREETING))
+  console.log("ENV :" + import.meta.env.VITE_REACT_APP_GREETING)
 
   const getInputType = (inputName, isVisible) => {
     switch (inputName) {
