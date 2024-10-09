@@ -33,7 +33,7 @@ const ImageModal = ({ imageUrl, isOpen, onClose }) => {
             ></button>
           </div>
           <div className="modal-body d-flex justify-content-center align-items-center">
-            <img src={imageUrl} alt="full-screen" className="img-fluid h-100" />
+            <img src={imageUrl} alt="full-screen" className="img-fluid h-100 object-fit-contain" />
           </div>
         </div>
       </div>

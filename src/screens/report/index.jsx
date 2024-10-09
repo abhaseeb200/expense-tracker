@@ -7,10 +7,10 @@ import Table from "../../components/Table";
 import reportColumns from "../../constant/columns/reportColumns";
 import useCategory from "../../hooks/useCategory";
 import useTransaction from "../../hooks/useTransaction";
-import "./style.css";
 import reportInputs from "../../constant/inputs/reportInputs";
 import reportDropdown from "../../constant/dropdowns/reportDropdown";
 import ImageModal from "../../components/ImageModal";
+import "./style.css";
 
 const Report = () => {
   const [values, setValues] = useState("");
@@ -155,13 +155,13 @@ const Report = () => {
     <>
       <Card className="my-3 report">
         <CardBody className="pb-2">
-          <CardTitle className="text-uppercase">Report Generate</CardTitle>
+          <CardTitle>Report Generate</CardTitle>
         </CardBody>
         <CardBody className="pt-3">
           {/* ========================== FILTER FORM ========================== */}
           <form
             onSubmit={handleSubmit}
-            className="d-flex flex-wrap justify-content-between align-items-end mb-5 gap-20px gap-md-0 gap-4"
+            className="d-flex -m-lg-10px flex-wrap justify-content-between align-items-end mb-5 gap-20px gap-md-0 gap-4"
           >
             {reportInputs?.map((input) => (
               <Input

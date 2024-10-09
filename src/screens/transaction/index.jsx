@@ -266,7 +266,7 @@ const Transaction = () => {
       <Card className="my-3 h-100">
         {/* ================================ SCREEN TITLE ================================ */}
         <CardBody className="pb-0 d-flex justify-content-between gap-3 flex-column">
-          <CardTitle className="text-uppercase">Add Transaction</CardTitle>
+          <CardTitle>Add Transaction</CardTitle>
           <Search
             onClick={() => setIsTransitionModal(true)}
             onChange={(e) => handleSearch(e)}
@@ -291,6 +291,7 @@ const Transaction = () => {
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             handleOpenImage={handleOpenImage}
+            colWidth="w-180px"
           />
         </CardBody>
       </Card>

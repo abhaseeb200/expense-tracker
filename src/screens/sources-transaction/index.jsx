@@ -216,7 +216,7 @@ const SourcesTransaction = () => {
       <Card className="my-3 h-100">
         {/* ================================ SCREEN TITLE ================================ */}
         <CardBody className="pb-0 d-flex justify-content-between gap-3 flex-column">
-          <CardTitle className="text-uppercase">
+          <CardTitle>
             Add Transactions Source
           </CardTitle>
           <Search
@@ -242,7 +242,7 @@ const SourcesTransaction = () => {
             currentPage={currentPage}
             isView={true}
             setCurrentPage={setCurrentPage}
-            colWidth="w-30"
+            colWidth="w-210px"
             handleOpenImage={handleOpenImage}
           />
         </CardBody>

@@ -178,7 +178,7 @@ const Budget = () => {
       <Card className="my-3 h-100">
         {/* ================================ SCREEN TITLE ================================ */}
         <CardBody className="pb-0 d-flex justify-content-between gap-3 flex-column">
-          <CardTitle className="text-uppercase">Add Budget Goals</CardTitle>
+          <CardTitle>Add Budget Goals</CardTitle>
           <Search
             onClick={() => setIsOpenModal(true)}
             onChange={(e) => setSearch(e.target.value)}

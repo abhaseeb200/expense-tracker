@@ -3,6 +3,7 @@ import { Button, Card, CardBody, CardTitle, Form, Spinner } from "reactstrap";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import Input from "../../components/Input";
+import ImageModal from "../../components/ImageModal";
 import useUser from "../../hooks/useUser";
 import { editUserReducer } from "../../feature/auth/userSlice";
 import accountSettingInputs from "../../constant/inputs/accountSettingInputs";
@@ -17,6 +18,9 @@ const Account = () => {
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
   const [previewImage, setPreviewImage] = useState({});
+  const [imageUrl, setImageUrl] = useState("");
+  const [isOpenImage, setIsOpenImage] = useState(false);
+
 
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.auth);
@@ -150,49 +154,62 @@ const Account = () => {
     setValues(userData);
   }, [userData]);
 
+  const handleOpenImage = (url) => {
+    setImageUrl(url);
+    setIsOpenImage(true);
+  };
+
   useEffect(() => {
-    setPreviewImage(avatarImg)
-  }, [])
-  
+    setPreviewImage(avatarImg);
+  }, []);
 
   return (
-    <Card className="my-4" style={{ height: "87vh" }}>
-      <CardBody>
-        <CardTitle className="text-uppercase">Account Setting</CardTitle>
-        <Form className="d-flex gap-4 flex-column" onSubmit={handleSubmit}>
-          <div className="d-flex align-items-start align-items-sm-center gap-4">
-            <img
-              src={avatarImg}
-              className="d-block rounded object-fit-cover"
-              height="100"
-              width="100"
-            />
-            <div className="button-wrapper">
-              <label className="btn btn-primary me-2 mb-2">
-                <input type="file" onChange={handleUpload} />
-                <span className="d-block text-white">Upload new photo</span>
-              </label>
-              <p className="mb-0">Allowed JPG, GIF or PNG.</p>
-            </div>
-          </div>
-
-          {accountSettingInputs?.map((input) => {
-            return (
-              <Input
-                {...input}
-                key={input?.id}
-                value={values[input.name] || ""}
-                errors={errors[input.name]}
-                onChange={handleOnChange}
+    <>
+      <Card className="my-4">
+        <CardBody>
+          <CardTitle>Account Setting</CardTitle>
+          <Form className="d-flex gap-4 flex-column" onSubmit={handleSubmit}>
+            <div className="profile-upload d-flex align-items-start align-items-sm-center gap-4">
+              <img
+                src={avatarImg}
+                className="d-block rounded object-fit-cover"
+                height="100"
+                width="100"
+                onClick={()=>handleOpenImage(avatarImg)}
               />
-            );
-          })}
-          <Button color="primary" className="w-100" type="submit">
-            {loading ? <Spinner size="sm"></Spinner> : "Update Profile"}
-          </Button>
-        </Form>
-      </CardBody>
-    </Card>
+              <div className="button-wrapper">
+                <label className="btn btn-primary me-2 mb-2">
+                  <input type="file" onChange={handleUpload} />
+                  <span className="d-block text-white">Upload new photo</span>
+                </label>
+                <p className="mb-0">Allowed JPG, GIF or PNG.</p>
+              </div>
+            </div>
+
+            {accountSettingInputs?.map((input) => {
+              return (
+                <Input
+                  {...input}
+                  key={input?.id}
+                  value={values[input.name] || ""}
+                  errors={errors[input.name]}
+                  onChange={handleOnChange}
+                />
+              );
+            })}
+            <Button color="primary" className="w-100" type="submit">
+              {loading ? <Spinner size="sm"></Spinner> : "Update Profile"}
+            </Button>
+          </Form>
+        </CardBody>
+      </Card>
+
+      <ImageModal
+        imageUrl={imageUrl}
+        isOpen={isOpenImage}
+        onClose={() => setIsOpenImage(false)}
+      />
+    </>
   );
 };
 

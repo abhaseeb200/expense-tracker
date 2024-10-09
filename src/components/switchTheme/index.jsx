@@ -10,8 +10,10 @@ function SwitchTheme() {
   useEffect(() => {
     if (isDarkMode) {
       document.body.classList.add("dark-theme");
+      document.body.setAttribute("data-bs-theme", "dark");
     } else {
       document.body.classList.remove("dark-theme");
+      document.body.setAttribute("data-bs-theme", "ligth");
     }
   }, [isDarkMode]);
 
@@ -24,7 +26,7 @@ function SwitchTheme() {
       className="lh-0"
     >
       {isDarkMode ? (
-        <box-icon name="moon" color="#fff" role="button"></box-icon>
+        <box-icon name="moon" color="#d5d5e2" role="button"></box-icon>
       ) : (
         <box-icon name="sun" color="#000" role="button"></box-icon>
       )}

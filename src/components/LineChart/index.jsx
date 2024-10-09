@@ -27,12 +27,13 @@ const LineChart = () => {
     datasets: [
       {
         label: "Sales",
-        data: [300, 400, 200, 500, 700, 600],
+        data: [3100, 1400, 2100, 1500, 2700, 3600],
         fill: false,
         backgroundColor: "rgba(105, 108, 255, 0.2)",
         borderColor: "rgba(105, 108, 255, 1)",
         tension: 0.1,
         pointRadius: 5,
+        fill: true,
       },
     ],
   };
@@ -52,18 +53,31 @@ const LineChart = () => {
       x: {
         align: "start",
         display: true,
+        grid: {
+          display: false,
+        },
       },
       y: {
         display: true,
         beginAtZero: true,
         ticks: {
-          stepSize: 200,
+          stepSize: 1000,
+          callback: function (value) {
+            return value >= 1000 ? value / 1000 + "k" : value;
+          },
+        },
+        border: { dash: [10, 4], color:"#000" },
+        grid: {
+          drawTicks: true,
+          drawOnChartArea: true,
+          color: "#ddd",
+          tickColor: '#000',
         },
       },
     },
   };
 
-  return <Line data={data} options={options} />;
+  return <Line data={data} options={options} height={"173"} />;
 };
 
 export default LineChart;

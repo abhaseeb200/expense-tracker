@@ -1,7 +1,9 @@
-tr:nth-child(odd) {
-  background-color: #2d2d2d;
+.table th {
+  font-size: 14px !important;
 }
-
+.table:not(.table-dark) td {
+  font-size: 15px !important;
+}
 thead tr {
   background-color: transparent !important;
 }
@@ -13,12 +15,6 @@ thead tr {
 .w-44 {
   width: 44%;
 }
-/* table th {
-  width: 18%;
-} */
-/* table th:not(:last-child) {
-  width: 18%;
-} */
 
 table th:last-child {
   width: 12% !important;
@@ -32,8 +28,6 @@ table {
   white-space: nowrap;
   table-layout: fixed;
   margin-bottom: 0 !important;
-  /* padding: 0 12px !important; */
-  /* word-wrap: break-word; */
 }
 .table-responsive {
   position: relative;

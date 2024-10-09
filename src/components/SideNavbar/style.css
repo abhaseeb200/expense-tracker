@@ -82,7 +82,7 @@
   margin: 0rem 1rem;
 }
 a.menu-link.nav-link.active {
-  background: rgba(105, 108, 255, 0.16) !important;
+  background: var(--primary-15) !important;
   color: #696cff;
   font-weight: 600;
 }
@@ -161,7 +161,6 @@ a.menu-link.nav-link.active {
   justify-content: flex-start;
   margin: 0;
   padding: 0;
-  height: 100%;
 }
 
 .menu-vertical .menu-inner {

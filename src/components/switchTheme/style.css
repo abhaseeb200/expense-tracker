@@ -1,41 +1,7 @@
 body.dark-theme {
-  background-color: #121212;
-  min-height: 100vh;
+  background-color: var(--bg-body-dark);
 }
-.dark-theme .card {
-  background-color: #282828;
-}
-.dark-theme span,
-.dark-theme p,
-small {
-  color: #afb4b9;
-}
-h4 {
-  color: #afb4b9 !important;
-}
-.dark-theme .card-title {
-  color: #afb4b9;
-}
-.dark-theme aside {
-  background-color: #282828;
-  min-height: 100vh;
-}
-.dark-theme .dropdown-menu {
-  background-color: #282828;
-}
-
-.dark-theme span.badge {
-  /* color: #fbfbfb; */
-}
-
-.dark-theme .dropdown-menu {
-  box-shadow: 0 0.25rem 1rem rgb(18 18 18 / 49%);
-}
-.dark-theme .dropdown-item:focus,
-.dark-theme .dropdown-item:hover {
-  background: rgb(105, 108, 255, 0.16) !important;
-}
-
+/* -------------------- HEADING -------------------- */
 .dark-theme h6,
 .dark-theme .h6,
 .dark-theme h5,
@@ -48,8 +14,58 @@ h4 {
 .dark-theme .h2,
 .dark-theme h1,
 .dark-theme .h1 {
-  color: #dddddd !important;
+  color: var(--heading-color-light) !important;
 }
+
+/* -------------------- CARD -------------------- */
+.dark-theme .card {
+  background-color: var(--bg-secondary-dark);
+}
+.dark-theme .card-title {
+  color: var(--heading-color-light);
+}
+
+/* -------------------- DROPDOWN -------------------- */
+.dark-theme .dropdown-menu {
+  background-color: var(--bg-secondary-dark);
+}
+.dark-theme .dropdown-menu {
+  box-shadow: 0 0.25rem 0.75rem 0 rgba(20, 20, 29, 0.24);
+}
+.dark-theme .dropdown-item:focus,
+.dark-theme .dropdown-item:hover {
+  background: var(--bg-dropdown-item-hover) !important;
+}
+
+/* -------------------- SIDEBAR -------------------- */
+.dark-theme aside {
+  background-color: var(--bg-secondary-dark);
+  min-height: 100vh;
+  overflow-x: auto;
+}
+.dark-theme .app-brand-text,
+.dark-theme .nav-link,
+.dark-theme #icon {
+  color: var(--heading-color-light);
+}
+
+/* -------------------- TABLE -------------------- */
+.dark-theme tr:nth-child(odd) {
+  background-color: var(--primary-15);
+}
+.dark-theme span,
+.dark-theme p,
+small {
+  color: var(--text-color-light);
+}
+.dark-theme .table > :not(caption) > * > *,
+.dark-theme .table {
+  background-color: transparent;
+  color: var(--text-color-light) !important;
+  border-color: #4e4f6c;
+}
+
+
 
 .dark-theme .form-label,
 .dark-theme .col-form-label {
@@ -66,19 +82,6 @@ h4 {
 .dark-theme .form-select::placeholder,
 .dark-theme .form-control::placeholder {
   color: #878787;
-}
-
-.dark-theme .table > :not(caption) > * > *,
-.dark-theme .table {
-  background-color: transparent;
-  color: #afb4b9 !important;
-  border-color: #71717169;
-}
-
-.dark-theme .app-brand-text,
-.dark-theme .nav-link,
-.dark-theme #icon {
-  color: #fff;
 }
 
 .dark-theme .modal-content {
