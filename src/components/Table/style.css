@@ -38,18 +38,27 @@ table {
   transform: rotate(180deg);
 }
 
+.dark-theme .page-item {
+  background-color: #e6e6f10f;
+}
+.dark-theme .page-item svg {
+  fill: #fff;
+}
 .page-item {
   cursor: pointer;
-  width: 35px;
-  height: 35px;
+  width: 38px;
+  height: 38px;
   display: flex;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 16px;
   justify-content: center;
   align-items: center;
-  background: #121212;
+  background: #22303e0f;
   border: 1px solid transparent;
   line-height: 0;
+}
+.page-item.active {
+  background-color: var(--primary);
 }
 
 .border-primary {

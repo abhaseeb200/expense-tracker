@@ -51,7 +51,7 @@ const Dropdown = (props) => {
       <DropdownReactStrap isOpen={dropdownOpen} toggle={toggle}>
         <DropdownToggle
           caret
-          color="dark"
+          color={isDarkMode ? "dark" : "light"}
           className="w-100 text-start bg-transparent form-control"
         >
           {inputProps?.value || placeholder}

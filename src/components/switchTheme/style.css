@@ -40,8 +40,6 @@ body.dark-theme {
 /* -------------------- SIDEBAR -------------------- */
 .dark-theme aside {
   background-color: var(--bg-secondary-dark);
-  min-height: 100vh;
-  overflow-x: auto;
 }
 .dark-theme .app-brand-text,
 .dark-theme .nav-link,
@@ -64,7 +62,13 @@ small {
   color: var(--text-color-light) !important;
   border-color: #4e4f6c;
 }
-
+/* -------------------- DASHBOARD -------------------- */
+.icon-with-bg {
+  background-color: var(--primary-15) !important;
+}
+.recent-expenses {
+  background-color: var(--primary-15) !important;
+}
 
 
 .dark-theme .form-label,

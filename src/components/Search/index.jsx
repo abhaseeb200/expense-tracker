@@ -13,10 +13,10 @@ const Search = (props) => {
     <div className="d-flex gap-2 flex-sm-row flex-column">
       {/* ===================== SEARCH - INPUT ===================== */}
       <div className="position-relative w-100">
-        <span className="position-absolute lh-0 top-9px left-14px">
+        <span className="z-3 position-absolute lh-0 top-9px left-14px">
           <box-icon
             name="search"
-            color={isDarkMode ? "#fff" : "#697a8d"}
+            color={isDarkMode ? "#d5d5e2" : "#697a8d"}
             size="20px"
           ></box-icon>
         </span>

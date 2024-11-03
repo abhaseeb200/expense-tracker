@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 const ImageModal = ({ imageUrl, isOpen, onClose }) => {
+  const { isDarkMode } = useSelector((state) => state?.themeMode);
 
   useEffect(() => {
     if (isOpen) {
@@ -27,7 +29,7 @@ const ImageModal = ({ imageUrl, isOpen, onClose }) => {
           <div className="modal-header">
             <button
               type="button"
-              className="btn-close btn-close-white"
+              className={`btn-close ${isDarkMode ? 'btn-close-white' : 'btn-close-black'}`}
               aria-label="Close"
               onClick={onClose}
             ></button>

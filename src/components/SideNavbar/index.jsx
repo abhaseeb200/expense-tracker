@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import navbarData from "../../constant/navbar";
 import { authLogout } from "../../config/service/firebase/auth";
 import { logoutReducer } from "../../feature/auth/userSlice";
@@ -9,8 +9,9 @@ import "./style.css";
 
 const SideNavbar = ({ sideBarToggle, setSideBarToggle }) => {
   const containerRef = useRef(null);
-
+  
   const dispatch = useDispatch();
+  const { isDarkMode } = useSelector((state) => state?.themeMode);
 
   const handleCancelOffCanvas = () => {
     setSideBarToggle(false);
@@ -94,7 +95,7 @@ const SideNavbar = ({ sideBarToggle, setSideBarToggle }) => {
                       >
                         <box-icon
                           name={navbar?.icon}
-                          color="#697a8d"
+                          color={isDarkMode ? "#d5d5e2" : "#697a8d"}
                           role="button"
                         ></box-icon>
                         <div className="ms-2">{navbar?.title}</div>
