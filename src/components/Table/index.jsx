@@ -10,6 +10,7 @@ import {
 } from "../Icons";
 import "./style.css";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Pagination = ({ totalPages, onPageChange, currentPage }) => {
   const pages = [];
@@ -24,7 +25,7 @@ const Pagination = ({ totalPages, onPageChange, currentPage }) => {
           <ChevronIcon
             width="20"
             height="20"
-            fill="#fff"
+            fill="#384551"
             role="button"
             className={`transform-rotate page-item ${
               currentPage === 1 && "pointer-event-none opacity-6"
@@ -36,8 +37,8 @@ const Pagination = ({ totalPages, onPageChange, currentPage }) => {
           return (
             <li key={index}>
               <div
-                className={`text-white page-item ${
-                  currentPage === page && "border-primary text-primary"
+                className={`page-item ${
+                  currentPage === page && "text-white active"
                 }`}
                 onClick={() => onPageChange(page)}
               >
@@ -50,7 +51,7 @@ const Pagination = ({ totalPages, onPageChange, currentPage }) => {
           <ChevronIcon
             width="20"
             height="20"
-            fill="#fff"
+            fill="#384551"
             role="button"
             className={`page-item ${
               currentPage === totalPages && "pointer-event-none opacity-6"
@@ -119,6 +120,8 @@ const Table = ({
   isView,
   handleOpenImage,
 }) => {
+  const { isDarkMode } = useSelector((state) => state?.themeMode);
+  
   const rowsPerPage = 10;
 
   const totalPages = Math.ceil(rows.length / rowsPerPage);
@@ -160,8 +163,8 @@ const Table = ({
                           fill={
                             sortConfig?.direction === "desc" &&
                             sortConfig?.key === column?.key
-                              ? "#fff"
-                              : "#717171"
+                              ? isDarkMode ? "#fff" : "#000"
+                              : isDarkMode ? "#717171" : "#a9a9a9"
                           }
                         />
                         <CaretIcon
@@ -169,8 +172,8 @@ const Table = ({
                           fill={
                             sortConfig?.direction === "asc" &&
                             sortConfig?.key === column?.key
-                              ? "#fff"
-                              : "#717171"
+                              ? isDarkMode ? "#fff" : "#000"
+                              : isDarkMode ? "#717171" : "#a9a9a9"
                           }
                         />
                       </span>

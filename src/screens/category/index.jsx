@@ -109,7 +109,7 @@ const Category = () => {
       <Card className="my-3 h-100">
         {/* ================================ SCREEN TITLE ================================ */}
         <CardBody className="pb-0 d-flex justify-content-between gap-3 flex-column">
-          <CardTitle className="text-uppercase">Add Category</CardTitle>
+          <CardTitle>Add Category</CardTitle>
           <Search
             onClick={handleAddCategory}
             onChange={(e) => setSearch(e.target.value)}

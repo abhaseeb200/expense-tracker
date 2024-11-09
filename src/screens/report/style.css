@@ -13,5 +13,6 @@
   }
   .report button[type="submit"] {
     width: 100% !important;
+    margin: 10px;
   }
 }

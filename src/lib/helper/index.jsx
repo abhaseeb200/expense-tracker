@@ -57,7 +57,6 @@ const formatCategory = (data, key) => {
 
 const formatSource = (data, _, handleOpenImage) => {
   const { sourceData } = store.getState().source;
-  console.log();
 
   return (
     <div

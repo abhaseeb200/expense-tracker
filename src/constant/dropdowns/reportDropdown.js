@@ -4,7 +4,7 @@ const reportDropdown = [
     name: "category",
     placeholder: "All",
     label: "Select Category",
-    className: "w-21",
+    className: "report-filter",
     options: [],
   },
   {
@@ -12,7 +12,7 @@ const reportDropdown = [
     name: "source",
     placeholder: "All",
     label: "Select Source",
-    className: "w-21",
+    className: "report-filter",
     options: [],
   },
 ];

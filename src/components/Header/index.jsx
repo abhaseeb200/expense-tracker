@@ -44,7 +44,24 @@ const Header = ({ setSideBarToggle }) => {
     <Card className="w-100 mt-3">
       <CardBody className="p-3">
         <div className="d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center gap-2">
+            {screenWidth <= "1200" && (
+              <box-icon
+                name="menu"
+                color="#d5d5e2"
+                role="button"
+                size="24px"
+                onClick={() => setSideBarToggle(true)}
+              ></box-icon>
+            )}
+            <span className="welcome">
+              Hey <b>{userData?.username}</b>
+            </span>
+          </div>
+
           <div className="d-inline-flex align-items-center gap-3">
+            <SwitchTheme />
+
             <Dropdown isOpen={dropdownOpen} toggle={toggle}>
               <DropdownToggle className="rounded-circle p-0 border-0">
                 <img
@@ -53,7 +70,7 @@ const Header = ({ setSideBarToggle }) => {
                 />
               </DropdownToggle>
               <DropdownMenu>
-                <Link to="/account">
+                <Link to="/">
                   <DropdownItem className="user-navbar">
                     <img
                       src={userData?.profileURL || avatarImg}
@@ -62,25 +79,18 @@ const Header = ({ setSideBarToggle }) => {
                     <span className="ms-2">{userData?.username}</span>
                   </DropdownItem>
                 </Link>
+                <Link to="/account" className="d-flex align-items-center w-100">
+                  <DropdownItem className="user-navbar logout-btn">
+                    <box-icon name="lock-open-alt" color="#697a8d"></box-icon>
+                    <span className="ms-2">My Profile</span>
+                  </DropdownItem>
+                </Link>
                 <DropdownItem className="logout-btn" onClick={handleLogout}>
                   <box-icon name="power-off" color="#697a8d"></box-icon>
                   <span className="ms-2">Log Out</span>
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
-            <span>Welcome {userData?.username}</span>
-          </div>
-
-          <div className="d-flex align-items-center gap-2">
-            <SwitchTheme />
-            {screenWidth <= "1200" && (
-              <box-icon
-                name="menu"
-                color="#697a8d"
-                role="button"
-                onClick={() => setSideBarToggle(true)}
-              ></box-icon>
-            )}
           </div>
         </div>
       </CardBody>

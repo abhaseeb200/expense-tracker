@@ -26,13 +26,40 @@ import BarChart from "../../components/BarChart";
 
 Chart.register(CategoryScale);
 
+const recentExpense = [
+  {
+    name: "Fridge",
+    price: 500,
+    date: "2 July, 2024",
+  },
+  {
+    name: "Fridge",
+    price: 500,
+    date: "2 July, 2024",
+  },
+  {
+    name: "Fridge",
+    price: 500,
+    date: "2 July, 2024",
+  },
+  {
+    name: "Fridge",
+    price: 500,
+    date: "2 July, 2024",
+  },
+  {
+    name: "Fridge",
+    price: 500,
+    date: "2 July, 2024",
+  },
+];
+
 const Dashboard = () => {
   const dispatch = useDispatch();
   const { transactionData } = useSelector((state) => state.transaction);
   const { budgetData } = useSelector((state) => state.budget);
   const { isDarkMode } = useSelector((state) => state?.themeMode);
   const { userData, isLogin } = useSelector((state) => state?.auth);
-
 
   //vertical line Chart
   // const dataVertical = {
@@ -153,50 +180,32 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      <div className="d-flex gap-3 flex-md-nowrap flex-wrap my-3">
-        <Card className="w-75">
+      <div className="d-flex gap-3 flex-lg-nowrap flex-wrap my-3">
+        <Card className="w-76">
           <CardBody className="">
+            <CardTitle className="text-uppercase mb-3">
+              Monthly Overview
+            </CardTitle>
             <BarChart />
           </CardBody>
         </Card>
 
-        <Card className="w-25">
+        <Card className="w-24">
           <CardBody>
             <CardTitle className="text-uppercase mb-3">
               Recent Expenses
             </CardTitle>
-            <div className="d-flex flex-column gap-3">
-              <div className="recent-expenses">
-                <div className="d-flex justify-content-between">
-                  <p className="m-0">Fridge</p>
-                  <p className="m-0">Rs 500</p>
-                </div>
-                <span>2 July, 2024</span>
-              </div>
 
-              <div className="recent-expenses">
-                <div className="d-flex justify-content-between">
-                  <p className="m-0">Fridge</p>
-                  <p className="m-0">Rs 500</p>
+            <div className="d-flex flex-column gap-2">
+              {recentExpense.map((expense) => (
+                <div className="recent-expenses">
+                  <div className="d-flex justify-content-between">
+                    <h6 className="m-0">{expense?.name}</h6>
+                    <h6 className="m-0">{expense?.price}</h6>
+                  </div>
+                  <span>{expense?.date}</span>
                 </div>
-                <span>2 July, 2024</span>
-              </div>
-
-              <div className="recent-expenses">
-                <div className="d-flex justify-content-between">
-                  <p className="m-0">Fridge</p>
-                  <p className="m-0">Rs 500</p>
-                </div>
-                <span>2 July, 2024</span>
-              </div>
-
-              <div className="recent-expenses">
-                <div className="d-flex justify-content-between">
-                  <p className="m-0">Fridge</p>
-                  <p className="m-0">Rs 500</p>
-                </div>
-                <span>2 July, 2024</span>
-              </div>
+              ))}
             </div>
           </CardBody>
         </Card>
