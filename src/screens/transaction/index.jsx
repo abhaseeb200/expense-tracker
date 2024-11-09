@@ -79,7 +79,7 @@ const Transaction = () => {
     setCurrentDocId(data?.docId);
     const modified = {
       ...data,
-      source: formatSource(data),
+      // source: formatSource(data),
       category: formatCategory(data) || data?.category,
     };
     setValues(modified);
