@@ -14,12 +14,13 @@ A feature-rich web application designed to help users track, manage, and analyze
 - **User Profile Management**: Update personal details and preferences.
 - **Dashboard with Charts**: Visualize expenses and budgets through interactive charts.
 - **Report Generation**: Generate detailed reports for better expense analysis.
-- **Responsive Design**: Built with Bootstrap and Reactstrap for a smooth experience on all devices.
+- **Responsive Design**: Built with Bootstrap and Reactstrap for a smooth device experience.
 
 ## 🖥️ Tech Stack
 - **Frontend**: React.js, Redux.js, Reactstrap, Bootstrap
 - **Backend**: Firebase
 - **Charts**: Chart.js
+
 
 ## 📸 Screenshots
 
@@ -34,6 +35,22 @@ A feature-rich web application designed to help users track, manage, and analyze
 
 ### Report Generation
 ![Report Generation](https://via.placeholder.com/1200x600?text=Report+Generation+Screenshot)
+
+## 📂 Project Structure
+```plaintext
+expense-tracker/
+├── src/
+│   ├── components/        # Reusable components
+│   ├── screens/           # Application pages (Dashboard, Profile, etc.)
+│   ├── feature/           # Redux store and slices
+│   ├── assets/            # Static files (images, styles)
+│   ├── lib/               # Utility functions
+│   ├── constant/          # Constant Objects
+│   └── App.js             # Main app entry point
+├── public/                # Public assets
+├── package.json           # Dependencies and scripts
+└── README.md              # Project documentation
+```
 
 ## 🏗️ Installation
 
@@ -66,31 +83,6 @@ Follow these steps to run the project locally:
    ```bash
    npm start
    ```
-
-5. **Access the Application**:
-   Open your browser and navigate to [http://localhost:3000](http://localhost:3000).
-
-## 📂 Project Structure
-```plaintext
-expense-tracker/
-├── src/
-│   ├── components/        # Reusable components
-│   ├── screens/           # Application pages (Dashboard, Profile, etc.)
-│   ├── feature/           # Redux store and slices
-│   ├── assets/            # Static files (images, styles)
-│   ├── lib/               # Utility functions
-│   ├── constant/          # Constant Objects
-│   └── App.js             # Main app entry point
-├── public/                # Public assets
-├── package.json           # Dependencies and scripts
-└── README.md              # Project documentation
-```
-
-## 🛠️ Technologies Used
-
-1. **Frontend**: React.js manages the UI and state using Redux.js.
-2. **Backend**: Firebase handles authentication, database, and storage.
-3. **Visualization**: Chart.js generates interactive charts for data insights.
 
 ## 🤝 Contributions
 
