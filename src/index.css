@@ -336,6 +336,12 @@ input[type="number"] {
 .w-76 {
   width: 76%;
 }
+.w-62 {
+  width: 62%;
+}
+.w-38 {
+  width: 38%;
+}
 .w-24 {
   width: 24%;
 }
@@ -358,7 +364,7 @@ aside {
   .w-lg-50 {
     width: 48.9% !important;
   }
-  .w-76, .w-24 {
+  .w-76, .w-24, .w-62, .w-38 {
     width: 100%;
   }
   .table > :not(caption) > * > * {

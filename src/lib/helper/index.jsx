@@ -23,8 +23,14 @@ const formatAmount = (amount, key) => {
   return formatter.format(amount[key]);
 };
 
-const formatDate = (dateString, key) => {
-  const date = new Date(dateString[key]);
+const formatDate = (dateString, key, isTable = true) => {
+  let date;
+  if (isTable) {
+    date = new Date(dateString[key]?.seconds * 1000 || dateString[key]);
+  } else {
+    date = new Date(dateString?.seconds * 1000);
+  }
+
   const formatter = new Intl.DateTimeFormat("en-PK", {
     day: "2-digit",
     month: "short",

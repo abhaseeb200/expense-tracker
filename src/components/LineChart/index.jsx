@@ -10,6 +10,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { Spinner } from "reactstrap";
 
 ChartJS.register(
   LineElement,
@@ -21,13 +22,22 @@ ChartJS.register(
   Legend
 );
 
-const LineChart = () => {
+const LineChart = ({ chartData, loading }) => {
+  const labels = chartData?.map((item) =>
+    new Date(item.date * 1000).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+    })
+  );
+
+  const amounts = chartData?.map((item) => item.amount);
+
   const data = {
-    labels: ["12 Jul", "14 Jul", "15 Jul", "18 Jul", "20 Jul", "22 Aug"],
+    labels: labels,
     datasets: [
       {
-        label: "Sales",
-        data: [3100, 1400, 2100, 1500, 2700, 3600],
+        label: "Expense",
+        data: amounts,
         fill: false,
         backgroundColor: "rgba(105, 108, 255, 0.2)",
         borderColor: "rgba(105, 108, 255, 1)",
@@ -66,18 +76,30 @@ const LineChart = () => {
             return value >= 1000 ? value / 1000 + "k" : value;
           },
         },
-        border: { dash: [10, 4], color:"#000" },
+        border: { dash: [10, 4], color: "#000" },
         grid: {
           drawTicks: true,
           drawOnChartArea: true,
           color: "#ddd",
-          tickColor: '#000',
+          tickColor: "#000",
         },
       },
     },
   };
 
-  return <Line data={data} options={options} height={"173"} />;
+  return (
+    <div>
+      {loading ? (
+        <div className="d-flex justify-content-center align-items-center h-100">
+          <Spinner />
+        </div>
+      ) : chartData.length ? (
+        <Line data={data} options={options} height={"173"} />
+      ) : (
+        <p>No data available</p>
+      )}
+    </div>
+  );
 };
 
 export default LineChart;

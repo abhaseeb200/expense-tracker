@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Timestamp } from "firebase/firestore";
 import {
   Button,
   Card,
@@ -21,7 +22,7 @@ import useTransaction from "../../hooks/useTransaction";
 import transactionColumns from "../../constant/columns/transactionColumns";
 import transactionDropdown from "../../constant/dropdowns/transactionDropdown";
 import transactionInputs from "../../constant/inputs/transactionInputs";
-import { formatCategory, formatSource } from "../../lib/helper";
+import { formatCategory, formatDate, formatSource } from "../../lib/helper";
 import ImageModal from "../../components/ImageModal";
 
 const Transaction = () => {
@@ -74,11 +75,14 @@ const Transaction = () => {
   };
 
   const handleUpdate = (data) => {
+    let convertDate = new Date(data.date.seconds * 1000).toISOString().split("T")[0];
+
     setIsUpdate(true);
     setIsTransitionModal(true);
     setCurrentDocId(data?.docId);
     const modified = {
       ...data,
+      date: convertDate,
       // source: formatSource(data),
       category: formatCategory(data) || data?.category,
     };
@@ -149,11 +153,13 @@ const Transaction = () => {
 
     //SUBMIT THE FORM BY USING 'DATA'
     if (!Object.values(error).includes(true)) {
-      const { category, ...rest } = data;
+      const { category, type, date, amount, ...rest } = data;
       let body = {
         userId: userData?.userId,
         timeStamp: Date.now(),
         amount: +data?.amount,
+        date: Timestamp.fromDate(new Date(date)),
+        type: data?.type.toLowerCase(),
         ...rest,
       };
 

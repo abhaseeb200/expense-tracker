@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Card,
   CardBody,
@@ -23,190 +23,107 @@ import {
 import LineChart from "../../components/LineChart";
 import DonutChart from "../../components/DonutChart";
 import BarChart from "../../components/BarChart";
+import useDashboard from "../../hooks/useDashboard";
+import { formatDate } from "../../lib/helper";
 
 Chart.register(CategoryScale);
 
-const recentExpense = [
-  {
-    name: "Fridge",
-    price: 500,
-    date: "2 July, 2024",
-  },
-  {
-    name: "Fridge",
-    price: 500,
-    date: "2 July, 2024",
-  },
-  {
-    name: "Fridge",
-    price: 500,
-    date: "2 July, 2024",
-  },
-  {
-    name: "Fridge",
-    price: 500,
-    date: "2 July, 2024",
-  },
-  {
-    name: "Fridge",
-    price: 500,
-    date: "2 July, 2024",
-  },
-];
-
 const Dashboard = () => {
-  const dispatch = useDispatch();
-  const { transactionData } = useSelector((state) => state.transaction);
-  const { budgetData } = useSelector((state) => state.budget);
-  const { isDarkMode } = useSelector((state) => state?.themeMode);
-  const { userData, isLogin } = useSelector((state) => state?.auth);
+  const { userId } = useSelector((state) => state?.auth?.userData);
 
-  //vertical line Chart
-  // const dataVertical = {
-  //   labels: labelData,
-  //   datasets: [
-  //     {
-  //       label: "Income",
-  //       borderWidth: 1,
-  //       data: incomeAmountData,
-  //     },
-  //     {
-  //       label: "Expense",
-  //       borderWidth: 1,
-  //       data: expenseAmountData,
-  //     },
-  //   ],
-  // };
-  // const optionsVertical = {
-  //   scales: {
-  //     x: {
-  //       ticks: {
-  //         color: isDarkMode ? "#afb4b9" : "#697a8d",
-  //       },
-  //     },
-  //     y: {
-  //       ticks: {
-  //         color: isDarkMode ? "#afb4b9" : "#697a8d",
-  //       },
-  //     },
-  //   },
-  //   plugins: {
-  //     title: {
-  //       display: false,
-  //     },
-  //     legend: {
-  //       display: true,
-  //       labels: {
-  //         color: isDarkMode ? "#afb4b9" : "#697a8d",
-  //       },
-  //     },
-  //     responsive: true,
-  //   },
-  // };
+  const {
+    expenseAmount,
+    incomeAmount,
+    topExpenseData,
+    recentExpenses,
+    monthlyOverview,
+    loading,
+    getTopExpenses,
+    getExpenseAmount,
+    getIncomeAmount,
+    getMonthlyOverview,
+    getRecentExpenses,
+  } = useDashboard(userId);
+
+  useEffect(() => {
+    if (!userId) return;
+    getMonthlyOverview();
+    getExpenseAmount();
+    getIncomeAmount();
+    getTopExpenses();
+    getRecentExpenses();
+  }, [userId]);
 
   return (
     <>
-      <div className="d-flex justify-content-evenly gap-3 flex-lg-nowrap flex-wrap mt-3">
-        <Card className="w-25 w-lg-50">
+      <div
+        style={{
+          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+          gap: "16px",
+        }}
+        className="d-grid mt-3"
+      >
+        <Card>
           <CardBody>
             <DollarIcon className="icon-with-bg" fill="#696cff" />
             <small className="text-uppercase ">Total Income</small>
-            <h4 className="fw-semibold mt-1">Rs 45,000</h4>
-            <small className="d-flex align-items-center">
-              <TrendingUpIcon
-                width="22"
-                height="22"
-                fill="#696cff"
-                className="me-2"
-              />
-              <span className="text-primary fw-medium me-1">6%</span> vs last 07
-              days
-            </small>
+            <h4 className="fw-semibold mt-1">Rs {incomeAmount}</h4>
           </CardBody>
         </Card>
 
-        <Card className="w-25 w-lg-50">
+        <Card>
           <CardBody>
             <TransferIcon className="icon-with-bg" fill="#696cff" />
             <small className="text-uppercase">Total Expense</small>
-            <h4 className="fw-semibold">Rs 45,000</h4>
-            <small className="d-flex align-items-center">
-              <TrendingDownIcon
-                width="22"
-                height="22"
-                fill="#dc3545"
-                className="me-2"
-              />
-              <span className="text-danger fw-medium me-1">6%</span> vs last 07
-              days
-            </small>
+            <h4 className="fw-semibold">Rs {expenseAmount}</h4>
           </CardBody>
         </Card>
 
-        <Card className="w-25 w-lg-50">
+        <Card>
           <CardBody>
             <SaveMoneyIcon className="icon-with-bg" fill="#696cff" />
             <small className="text-uppercase ">Total Saving</small>
-            <h4 className="fw-semibold">Rs 45,000</h4>
-            <small className="d-flex align-items-center">
-              <TrendingDownIcon
-                width="22"
-                height="22"
-                fill="#dc3545"
-                className="me-2"
-              />
-              <span className="text-danger fw-medium me-1">6%</span> vs last 07
-              days
-            </small>
-          </CardBody>
-        </Card>
-
-        <Card className="w-25 w-lg-50">
-          <CardBody>
-            <WalletIcon className="icon-with-bg" fill="#696cff" />
-            <small className="text-uppercase ">Mostly Spending</small>
-            <h4 className="fw-semibold">House Hold</h4>
-            <small className="d-flex align-items-center">
-              <TrendingUpIcon
-                width="22"
-                height="22"
-                fill="#696cff"
-                className="me-2"
-              />
-              <span className="text-primary fw-medium me-1">6%</span> vs last 07
-              days
-            </small>
+            <h4 className="fw-semibold">
+              Rs {Math.max(incomeAmount - expenseAmount, 0)}
+            </h4>
           </CardBody>
         </Card>
       </div>
 
       <div className="d-flex gap-3 flex-lg-nowrap flex-wrap my-3">
-        <Card className="w-76">
+        <Card className="w-62">
           <CardBody className="">
             <CardTitle className="text-uppercase mb-3">
               Monthly Overview
             </CardTitle>
-            <BarChart />
+            <BarChart chartData={monthlyOverview} loading={loading} />
           </CardBody>
         </Card>
 
-        <Card className="w-24">
+        <Card className="w-38">
           <CardBody>
-            <CardTitle className="text-uppercase mb-3">
-              Recent Expenses
-            </CardTitle>
+            <CardTitle className="text-uppercase mb-3">Top Expenses</CardTitle>
 
-            <div className="d-flex flex-column gap-2">
-              {recentExpense.map((expense) => (
-                <div className="recent-expenses">
-                  <div className="d-flex justify-content-between">
-                    <h6 className="m-0">{expense?.name}</h6>
-                    <h6 className="m-0">{expense?.price}</h6>
+            {loading ? (
+              <div style={{height:'367px'}} className="d-flex justify-content-center align-items-center">
+                <Spinner />
+              </div>
+            ) : topExpenseData?.length ? (
+              <div className="d-flex flex-column gap-2">
+                {topExpenseData.map((expense, index) => (
+                  <div key={index} className="recent-expenses">
+                    <div className="d-flex justify-content-between">
+                      <h6 className="m-0">{expense?.name}</h6>
+                      <h6 className="m-0">Rs {expense?.amount}</h6>
+                    </div>
+                    <span>{formatDate(expense?.date, "_", false)}</span>
                   </div>
-                  <span>{expense?.date}</span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p>No expenses found.</p>
+            )}
+
           </CardBody>
         </Card>
       </div>
@@ -218,7 +135,12 @@ const Dashboard = () => {
               Report Overview
             </CardTitle>
             <div className="d-flex">
-              <DonutChart />
+              <DonutChart
+                income={incomeAmount}
+                expense={expenseAmount}
+                saving={Math.max(incomeAmount - expenseAmount, 0)}
+                loading={loading}
+              />
             </div>
           </CardBody>
         </Card>
@@ -226,9 +148,9 @@ const Dashboard = () => {
         <Card className="w-63">
           <CardBody className="">
             <CardTitle className="mb-4 text-uppercase">
-              Expenses Activity
+              Recent Expenses Activity
             </CardTitle>
-            <LineChart />
+            <LineChart chartData={recentExpenses} loading={loading} />
           </CardBody>
         </Card>
       </div>

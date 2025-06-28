@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { Spinner } from "reactstrap";
 
 ChartJS.register(
   CategoryScale,
@@ -19,52 +20,85 @@ ChartJS.register(
   Legend
 );
 
-const BarChart = () => {
-  const data = {
-    labels: ["January", "February", "March", "April", "May"],
-    datasets: [
-      {
-        label: "Income",
-        data: [3000, 4000, 3500, 5000, 4500],
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-        borderRadius: 2,
-      },
-      {
-        label: "Expense",
-        data: [2000, 2500, 2200, 3000, 2800],
-        backgroundColor: "rgba(255, 99, 132, 0.6)",
-        borderRadius: 2,
-      },
-      {
-        label: "Saving",
-        data: [1000, 1500, 1300, 2000, 1700],
-        backgroundColor: "rgba(54, 162, 235, 0.6)",
-        borderRadius: 2,
-      },
-    ],
-  };
+const BarChart = ({ chartData, loading }) => {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    if (!chartData || typeof chartData !== "object") {
+      console.error("Invalid chartData provided");
+      return;
+    }
+
+    const labels = Object.keys(chartData);
+
+    const incomeData = Object.values(chartData).map((item) => item?.i || 0);
+    const expenseData = Object.values(chartData).map((item) => item?.e || 0);
+    const savingData = Object.values(chartData).map((item) => item?.s || 0);
+
+    setData({
+      labels,
+      datasets: [
+        {
+          label: "Income",
+          data: incomeData,
+          backgroundColor: "rgba(75, 192, 192, 0.6)",
+          borderRadius: 2,
+        },
+        {
+          label: "Expense",
+          data: expenseData,
+          backgroundColor: "rgba(255, 99, 132, 0.6)",
+          borderRadius: 2,
+        },
+        {
+          label: "Savings",
+          data: savingData,
+          backgroundColor: "rgba(54, 162, 235, 0.6)",
+          borderRadius: 2,
+        },
+      ],
+    });
+  }, [chartData]);
 
   const options = {
     responsive: true,
     plugins: {
       legend: {
-        display: false,
+        position: "top",
+      },
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            return `${context.dataset.label}: ₹${context.raw.toLocaleString()}`;
+          },
+        },
       },
     },
     scales: {
-      x: {
-      },
-
       y: {
-        ticks: {
-          stepSize: 1000,
-        },
         beginAtZero: true,
+        ticks: {
+          callback: function (value) {
+            return "₹" + value.toLocaleString();
+          },
+        },
       },
     },
   };
 
-  return <Bar data={data} options={options} />;
+  return (
+    <div>
+      {loading ? (
+        <div style={{height:'367px'}} className="d-flex justify-content-center align-items-center">
+          <Spinner />
+        </div>
+      ) : data?.labels?.length ? (
+        <Bar data={data} options={options} height={192} />
+      ) : (
+        <p>No data available</p>
+      )}
+    </div>
+  );
 };
 
 export default BarChart;
