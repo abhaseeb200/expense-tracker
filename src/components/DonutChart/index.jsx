@@ -1,10 +1,11 @@
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Spinner } from "reactstrap";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const DonutChart = ({ income, expense, saving }) => {
+const DonutChart = ({ income, expense, saving, loading }) => {
   const data = {
     labels: ["Income", "Expense", "Saving"],
     datasets: [
@@ -28,9 +29,6 @@ const DonutChart = ({ income, expense, saving }) => {
   const options = {
     responsive: true,
     plugins: {
-      legend: {
-        display: false,
-      },
       tooltip: {
         enabled: true,
       },
@@ -40,10 +38,14 @@ const DonutChart = ({ income, expense, saving }) => {
 
   return (
     <div className="w-100 mx-auto my-0">
-      {expense && income ? (
+      {loading ? (
+        <div className="d-flex justify-content-center align-items-center h-100">
+          <Spinner />
+        </div>
+      ) : expense && income ? (
         <Doughnut data={data} options={options} />
       ) : (
-        "Loading..."
+        <p>No data available</p>
       )}
     </div>
   );

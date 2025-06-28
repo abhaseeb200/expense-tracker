@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { Spinner } from "reactstrap";
 
 ChartJS.register(
   CategoryScale,
@@ -19,7 +20,7 @@ ChartJS.register(
   Legend
 );
 
-const BarChart = ({ chartData }) => {
+const BarChart = ({ chartData, loading }) => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -28,16 +29,11 @@ const BarChart = ({ chartData }) => {
       return;
     }
 
-    const labels = Object.keys(chartData).map((monthYear) => {
-      const [month, year] = monthYear.split("-");
-      return `${month} ${year}`;
-    });
+    const labels = Object.keys(chartData);
 
     const incomeData = Object.values(chartData).map((item) => item?.i || 0);
     const expenseData = Object.values(chartData).map((item) => item?.e || 0);
-    const savingData = incomeData.map((income, index) => {
-      Math.max(expenseData[index] || 0 - income, 0);
-    });
+    const savingData = Object.values(chartData).map((item) => item?.s || 0);
 
     setData({
       labels,
@@ -90,15 +86,16 @@ const BarChart = ({ chartData }) => {
     },
   };
 
-  console.log(data);
-console.log({chartData});
-
   return (
-    <div style={{ width: "100%", height: "400px" }}>
-      {data ? (
-        <Bar data={data} options={options} height={400} />
+    <div>
+      {loading ? (
+        <div style={{height:'367px'}} className="d-flex justify-content-center align-items-center">
+          <Spinner />
+        </div>
+      ) : data?.labels?.length ? (
+        <Bar data={data} options={options} height={192} />
       ) : (
-        <p>Loading chart data...</p>
+        <p>No data available</p>
       )}
     </div>
   );

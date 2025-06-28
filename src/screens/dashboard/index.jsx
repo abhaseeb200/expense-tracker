@@ -37,6 +37,7 @@ const Dashboard = () => {
     topExpenseData,
     recentExpenses,
     monthlyOverview,
+    loading,
     getTopExpenses,
     getExpenseAmount,
     getIncomeAmount,
@@ -95,7 +96,7 @@ const Dashboard = () => {
             <CardTitle className="text-uppercase mb-3">
               Monthly Overview
             </CardTitle>
-            <BarChart chartData={monthlyOverview} />
+            <BarChart chartData={monthlyOverview} loading={loading} />
           </CardBody>
         </Card>
 
@@ -103,17 +104,26 @@ const Dashboard = () => {
           <CardBody>
             <CardTitle className="text-uppercase mb-3">Top Expenses</CardTitle>
 
-            <div className="d-flex flex-column gap-2">
-              {topExpenseData.map((expense, index) => (
-                <div key={index} className="recent-expenses">
-                  <div className="d-flex justify-content-between">
-                    <h6 className="m-0">{expense?.name}</h6>
-                    <h6 className="m-0">{expense?.amount}</h6>
+            {loading ? (
+              <div style={{height:'367px'}} className="d-flex justify-content-center align-items-center">
+                <Spinner />
+              </div>
+            ) : topExpenseData?.length ? (
+              <div className="d-flex flex-column gap-2">
+                {topExpenseData.map((expense, index) => (
+                  <div key={index} className="recent-expenses">
+                    <div className="d-flex justify-content-between">
+                      <h6 className="m-0">{expense?.name}</h6>
+                      <h6 className="m-0">Rs {expense?.amount}</h6>
+                    </div>
+                    <span>{formatDate(expense?.date, "_", false)}</span>
                   </div>
-                  <span>{formatDate(expense?.date, '_', false)}</span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p>No expenses found.</p>
+            )}
+
           </CardBody>
         </Card>
       </div>
@@ -129,6 +139,7 @@ const Dashboard = () => {
                 income={incomeAmount}
                 expense={expenseAmount}
                 saving={Math.max(incomeAmount - expenseAmount, 0)}
+                loading={loading}
               />
             </div>
           </CardBody>
@@ -139,7 +150,7 @@ const Dashboard = () => {
             <CardTitle className="mb-4 text-uppercase">
               Recent Expenses Activity
             </CardTitle>
-            <LineChart chartData={recentExpenses} />
+            <LineChart chartData={recentExpenses} loading={loading} />
           </CardBody>
         </Card>
       </div>

@@ -18,6 +18,16 @@ export default function useDashboard(userId) {
   const [topExpenseData, setTopExpenseData] = useState([]);
   const [recentExpenses, setRecentExpenses] = useState([]);
   const [monthlyOverview, setMonthlyOverview] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const formatDate = (value) => {
+    const date = new Date(value?.seconds * 1000);
+    const formatter = new Intl.DateTimeFormat("en-PK", {
+      month: "short",
+      year: "numeric",
+    });
+    return formatter.format(date);
+  };
 
   const getTopExpenses = useCallback(async () => {
     if (!userId) return;
@@ -36,6 +46,7 @@ export default function useDashboard(userId) {
         ...doc.data(),
       });
     });
+    setLoading(false);
     setTopExpenseData(topExpenses);
   }, [userId]);
 
@@ -68,6 +79,18 @@ export default function useDashboard(userId) {
   const getMonthlyOverview = useCallback(async () => {
     if (!userId) return;
     const now = new Date();
+
+    // Get the first day of the current month
+    const months = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const formatter = new Intl.DateTimeFormat("en-PK", {
+        month: "short",
+        year: "numeric",
+      });
+      months.push(formatter.format(d));
+    }
+
     const fiveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
     const q = query(
       collection(db, "transaction"),
@@ -75,24 +98,35 @@ export default function useDashboard(userId) {
       where("date", ">=", fiveMonthsAgo)
     );
     const snapshot = await getDocs(q);
-    const monthNames = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-    ];
+
     const summary = {};
     snapshot.forEach((doc) => {
       const { amount, type, date } = doc.data();
-      const currentDate = date.toDate();
-      const monthYear = `${monthNames[currentDate.getMonth()]}-${currentDate.getFullYear()}`;
-      summary[monthYear] = summary[monthYear] || { income: 0, expense: 0 };
-      summary[monthYear][type] += Number(amount);
+      const convertDate = formatDate(date);
+      summary[convertDate] = summary[convertDate] || { income: 0, expense: 0 };
+      summary[convertDate][type] += Number(amount);
     });
+
+    // Ensure all months are present in summary
+    months.forEach((month) => {
+      if (!summary[month]) {
+        summary[month] = { income: 0, expense: 0 };
+      }
+    });
+
+    // Optionally, sort summary by month order
     const minimalOutput = {};
-    Object.keys(summary).forEach((month) => {
+    months.forEach((month) => {
       minimalOutput[month] = {
         i: summary[month].income,
         e: summary[month].expense,
+        s: Math.max(summary[month].income - summary[month].expense, 0),
       };
     });
+
+    console.log({minimalOutput});
+    
+    setLoading(false);
     setMonthlyOverview(minimalOutput);
   }, [userId]);
 
@@ -113,6 +147,7 @@ export default function useDashboard(userId) {
         ...doc.data(),
       });
     });
+    setLoading(false);
     setRecentExpenses(expenses);
   }, [userId]);
 
@@ -122,6 +157,7 @@ export default function useDashboard(userId) {
     topExpenseData,
     recentExpenses,
     monthlyOverview,
+    loading,
     getTopExpenses,
     getExpenseAmount,
     getIncomeAmount,

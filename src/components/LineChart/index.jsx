@@ -10,6 +10,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { Spinner } from "reactstrap";
 
 ChartJS.register(
   LineElement,
@@ -21,7 +22,7 @@ ChartJS.register(
   Legend
 );
 
-const LineChart = ({ chartData }) => {
+const LineChart = ({ chartData, loading }) => {
   const labels = chartData?.map((item) =>
     new Date(item.date * 1000).toLocaleDateString("en-GB", {
       day: "2-digit",
@@ -88,10 +89,14 @@ const LineChart = ({ chartData }) => {
 
   return (
     <div>
-      {Object.keys(chartData).length ? (
+      {loading ? (
+        <div className="d-flex justify-content-center align-items-center h-100">
+          <Spinner />
+        </div>
+      ) : chartData.length ? (
         <Line data={data} options={options} height={"173"} />
       ) : (
-        "Loading..."
+        <p>No data available</p>
       )}
     </div>
   );
