@@ -8,17 +8,19 @@ A feature-rich web application designed to help users track, manage, and analyze
 ## 📸 Screenshots
 
 ### Dashboard
+![dashboard](https://github.com/user-attachments/assets/efe38fc3-6e40-4db4-851f-7f4cefd4033c)
+
+### Transaction
 ![transaction-view](https://github.com/user-attachments/assets/6abaf6b0-2625-41ed-8a41-8be147b5ec56)
 
+### Sign Up
+![sign-up view](https://github.com/user-attachments/assets/47dac344-e19a-4e2a-92f7-2293843f0472)
 
-### Expense Management
-![Expense Management](https://via.placeholder.com/1200x600?text=Expense+Management+Screenshot)
-
-### Profile Management
-![Profile Management](https://via.placeholder.com/1200x600?text=Profile+Management+Screenshot)
+### Sign In
+![sign-in view](https://github.com/user-attachments/assets/af2f128e-bcf3-4368-a17d-7adc3a556a3a)
 
 ### Report Generation
-![Report Generation](https://via.placeholder.com/1200x600?text=Report+Generation+Screenshot)
+![report generate](https://github.com/user-attachments/assets/47c805ea-2cbe-4fef-99cc-646a705adfe3)
 
 ## 🛠️ Features
 - **User Authentication**: Secure sign-up and log-in with Firebase Authentication.
@@ -26,10 +28,10 @@ A feature-rich web application designed to help users track, manage, and analyze
 - **Budget Management**: Keep track of budgets and adjust them dynamically.
 - **Expense Categories**: Organize expenses with custom categories.
 - **Source of Transaction Management**: Add and manage sources of transactions while logging expenses.
-- **User Profile Management**: Update personal details and preferences.
 - **Dashboard with Charts**: Visualize expenses and budgets through interactive charts.
 - **Report Generation**: Generate detailed reports for better expense analysis.
 - **Responsive Design**: Built with Bootstrap and Reactstrap for a smooth device experience.
+- **User Profile Management**: Update personal details and preferences.
 
 ## 🖥️ Tech Stack
 - **Frontend**: React.js, Redux.js, Reactstrap, Bootstrap
