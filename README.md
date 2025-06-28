@@ -5,6 +5,21 @@ A feature-rich web application designed to help users track, manage, and analyze
 ## 🚀 Live Demo
 [View Live Project](https://xpensr-system-react.netlify.app/)
 
+## 📸 Screenshots
+
+### Dashboard
+![transaction-view](https://github.com/user-attachments/assets/6abaf6b0-2625-41ed-8a41-8be147b5ec56)
+
+
+### Expense Management
+![Expense Management](https://via.placeholder.com/1200x600?text=Expense+Management+Screenshot)
+
+### Profile Management
+![Profile Management](https://via.placeholder.com/1200x600?text=Profile+Management+Screenshot)
+
+### Report Generation
+![Report Generation](https://via.placeholder.com/1200x600?text=Report+Generation+Screenshot)
+
 ## 🛠️ Features
 - **User Authentication**: Secure sign-up and log-in with Firebase Authentication.
 - **Expense Management**: Add, update, delete, and view expenses effortlessly.
@@ -20,37 +35,6 @@ A feature-rich web application designed to help users track, manage, and analyze
 - **Frontend**: React.js, Redux.js, Reactstrap, Bootstrap
 - **Backend**: Firebase
 - **Charts**: Chart.js
-
-
-## 📸 Screenshots
-
-### Dashboard
-![Dashboard](https://via.placeholder.com/1200x600?text=Dashboard+Screenshot)
-
-### Expense Management
-![Expense Management](https://via.placeholder.com/1200x600?text=Expense+Management+Screenshot)
-
-### Profile Management
-![Profile Management](https://via.placeholder.com/1200x600?text=Profile+Management+Screenshot)
-
-### Report Generation
-![Report Generation](https://via.placeholder.com/1200x600?text=Report+Generation+Screenshot)
-
-## 📂 Project Structure
-```plaintext
-expense-tracker/
-├── src/
-│   ├── components/        # Reusable components
-│   ├── screens/           # Application pages (Dashboard, Profile, etc.)
-│   ├── feature/           # Redux store and slices
-│   ├── assets/            # Static files (images, styles)
-│   ├── lib/               # Utility functions
-│   ├── constant/          # Constant Objects
-│   └── App.js             # Main app entry point
-├── public/                # Public assets
-├── package.json           # Dependencies and scripts
-└── README.md              # Project documentation
-```
 
 ## 🏗️ Installation
 
@@ -83,11 +67,3 @@ Follow these steps to run the project locally:
    ```bash
    npm start
    ```
-
-## 🤝 Contributions
-
-Contributions are welcome! Please fork the repository, make your changes, and submit a pull request.
-
-## 📃 License
-
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
