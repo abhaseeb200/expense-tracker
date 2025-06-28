@@ -10,6 +10,7 @@ import useTransaction from "../../hooks/useTransaction";
 import reportInputs from "../../constant/inputs/reportInputs";
 import reportDropdown from "../../constant/dropdowns/reportDropdown";
 import ImageModal from "../../components/ImageModal";
+import { formatDate } from "../../lib/helper";
 import "./style.css";
 
 const Report = () => {
@@ -20,6 +21,7 @@ const Report = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isOpenImage, setIsOpenImage] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
+  const [reportData, setReportData] = useState({});
 
   const { initLoading, useGetTransaction } = useTransaction();
   const { initLoading: categoryLoading, useGetCategory } = useCategory();
@@ -68,6 +70,9 @@ const Report = () => {
     const { start_date, end_date, category, sourceId, categoryId, source } =
       data;
 
+      console.log(start_date);
+      
+
     if (start_date && !end_date) {
       error["end_date"] = true;
     }
@@ -85,7 +90,7 @@ const Report = () => {
         let end = new Date(end_date);
 
         filtered = filtered.filter((item) => {
-          const itemDate = new Date(item.date);
+          const itemDate = new Date(item.date.seconds * 1000);
           return itemDate >= start && itemDate <= end;
         });
       }
@@ -148,6 +153,26 @@ const Report = () => {
       useGetCategory();
     }
   }, []);
+
+  const handleReport = () => {
+    let expense = 0;
+    let income = 0;
+    backUp.forEach((item) => {
+      if (item?.type == "income") {
+        income += item?.amount;
+      } else {
+        expense += item?.amount;
+      }
+    });
+    setReportData({
+      expense: expense,
+      income: income,
+    });
+  };
+
+  useEffect(() => {
+    handleReport();
+  }, [backUp]);
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -213,6 +238,8 @@ const Report = () => {
               setCurrentPage={setCurrentPage}
               colWidth="w-100"
               handleOpenImage={handleOpenImage}
+              isReport={true}
+              reportData={reportData}
             />
           </div>
         </CardBody>

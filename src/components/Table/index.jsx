@@ -11,6 +11,7 @@ import {
 import "./style.css";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { formatDate } from "../../lib/helper";
 
 const Pagination = ({ totalPages, onPageChange, currentPage }) => {
   const pages = [];
@@ -20,7 +21,7 @@ const Pagination = ({ totalPages, onPageChange, currentPage }) => {
   }
   return (
     <nav aria-label="Page navigation">
-      <ul className="pagination d-flex gap-2 m-0">
+      <ul className="pagination d-flex gap-2 ">
         <li>
           <ChevronIcon
             width="20"
@@ -119,9 +120,13 @@ const Table = ({
   setCurrentPage,
   isView,
   handleOpenImage,
+  isReport,
+  reportData = {},
 }) => {
   const { isDarkMode } = useSelector((state) => state?.themeMode);
-  
+
+  console.log(reportData);
+
   const rowsPerPage = 10;
 
   const totalPages = Math.ceil(rows.length / rowsPerPage);
@@ -163,8 +168,12 @@ const Table = ({
                           fill={
                             sortConfig?.direction === "desc" &&
                             sortConfig?.key === column?.key
-                              ? isDarkMode ? "#fff" : "#000"
-                              : isDarkMode ? "#717171" : "#a9a9a9"
+                              ? isDarkMode
+                                ? "#fff"
+                                : "#000"
+                              : isDarkMode
+                              ? "#717171"
+                              : "#a9a9a9"
                           }
                         />
                         <CaretIcon
@@ -172,8 +181,12 @@ const Table = ({
                           fill={
                             sortConfig?.direction === "asc" &&
                             sortConfig?.key === column?.key
-                              ? isDarkMode ? "#fff" : "#000"
-                              : isDarkMode ? "#717171" : "#a9a9a9"
+                              ? isDarkMode
+                                ? "#fff"
+                                : "#000"
+                              : isDarkMode
+                              ? "#717171"
+                              : "#a9a9a9"
                           }
                         />
                       </span>
@@ -229,6 +242,33 @@ const Table = ({
           )}
         </tbody>
       </BootstrapTable>
+
+      {isReport && (
+        <div className="my-4 d-flex flex-row flex-wrap gap-5 justify-content-between align-items-center">
+          <div className="d-flex flex-column align-items-center gap-2">
+            <h6 className="fw-bold m-0 text-uppercase">Expense: </h6>
+            <span className="fw-bold">Rs. {reportData?.expense}</span>
+          </div>
+
+          <div className="d-flex flex-column align-items-center gap-2">
+            <h6 className="fw-bold m-0 text-uppercase">Income: </h6>
+            <span className="fw-bold">Rs. {reportData?.income}</span>
+          </div>
+
+          <div className="d-flex flex-column align-items-center gap-2">
+            <h6 className="fw-bold m-0 text-uppercase">Saving: </h6>
+            <span className="fw-bold">
+              Rs. {Math.max(reportData?.income - reportData?.expense, 0)}
+            </span>
+          </div>
+
+          {/* <div className="d-flex flex-column align-items-center gap-2">
+            <h6 className="fw-bold m-0 text-uppercase">Date Range: </h6>
+            <span className="">{new Date(reportData?.fromDate?.seconds * 1000).toDateString()} <b>-</b> {new Date(reportData?.toDate?.seconds * 1000).toDateString()}</span>
+          </div> */}
+        </div>
+      )}
+
       {rows && rows?.length > rowsPerPage && (
         <Pagination
           totalPages={totalPages}
