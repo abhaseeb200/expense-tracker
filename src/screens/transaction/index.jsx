@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Timestamp } from "firebase/firestore";
 import {
   Button,
   Card,
@@ -149,11 +150,13 @@ const Transaction = () => {
 
     //SUBMIT THE FORM BY USING 'DATA'
     if (!Object.values(error).includes(true)) {
-      const { category, ...rest } = data;
+      const { category, type, date, amount  ,...rest } = data;
       let body = {
         userId: userData?.userId,
         timeStamp: Date.now(),
         amount: +data?.amount,
+        date: Timestamp.fromDate(new Date(date)),
+        type: data?.type.toLowerCase(),
         ...rest,
       };
 

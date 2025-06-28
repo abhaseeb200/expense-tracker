@@ -4,12 +4,12 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const DonutChart = ({ className }) => {
+const DonutChart = ({ income, expense, saving }) => {
   const data = {
-    labels: ["Green", "Black", "Light Green"],
+    labels: ["Income", "Expense", "Saving"],
     datasets: [
       {
-        data: [25, 10, 65],
+        data: [income, expense, saving],
         backgroundColor: [
           "#009688", // Dark Green
           "#333333", // Black
@@ -40,7 +40,11 @@ const DonutChart = ({ className }) => {
 
   return (
     <div className="w-100 mx-auto my-0">
-      <Doughnut data={data} options={options} />
+      {expense && income ? (
+        <Doughnut data={data} options={options} />
+      ) : (
+        "Loading..."
+      )}
     </div>
   );
 };
