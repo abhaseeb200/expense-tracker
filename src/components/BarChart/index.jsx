@@ -34,6 +34,7 @@ const BarChart = ({ chartData, loading }) => {
     const incomeData = Object.values(chartData).map((item) => item?.i || 0);
     const expenseData = Object.values(chartData).map((item) => item?.e || 0);
     const savingData = Object.values(chartData).map((item) => item?.s || 0);
+    const budgetData = Object.values(chartData).map((item) => item?.b);
 
     setData({
       labels,
@@ -56,6 +57,12 @@ const BarChart = ({ chartData, loading }) => {
           backgroundColor: "rgba(54, 162, 235, 0.6)",
           borderRadius: 2,
         },
+        {
+          label: "Budget Goal",
+          data: budgetData,
+          backgroundColor: "rgba(229, 255, 0, 0.6)",
+          borderRadius: 2,
+        },
       ],
     });
   }, [chartData]);
@@ -69,7 +76,7 @@ const BarChart = ({ chartData, loading }) => {
       tooltip: {
         callbacks: {
           label: function (context) {
-            return `${context.dataset.label}: ₹${context.raw.toLocaleString()}`;
+            return `${context.dataset.label}: ${context.raw.toLocaleString()}`;
           },
         },
       },
@@ -79,7 +86,7 @@ const BarChart = ({ chartData, loading }) => {
         beginAtZero: true,
         ticks: {
           callback: function (value) {
-            return "₹" + value.toLocaleString();
+            return value.toLocaleString();
           },
         },
       },
@@ -89,7 +96,10 @@ const BarChart = ({ chartData, loading }) => {
   return (
     <div>
       {loading ? (
-        <div style={{height:'367px'}} className="d-flex justify-content-center align-items-center">
+        <div
+          style={{ height: "367px" }}
+          className="d-flex justify-content-center align-items-center"
+        >
           <Spinner />
         </div>
       ) : data?.labels?.length ? (
