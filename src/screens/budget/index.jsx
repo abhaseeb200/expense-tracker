@@ -11,6 +11,7 @@ import {
   ModalHeader,
   Spinner,
 } from "reactstrap";
+import { Timestamp } from "firebase/firestore";
 import Input from "../../components/Input";
 import Table from "../../components/Table";
 import Search from "../../components/Search";
@@ -47,10 +48,15 @@ const Budget = () => {
   };
 
   const handleUpdate = (data) => {
+    let convertDate = new Date(data.date.seconds * 1000)
+      .toISOString()
+      .split("T")[0];
+      
     setIsUpdate(true);
     setIsOpenModal(true);
-    setValues(data);
-    setCurrentDocID(data?.docID);
+    let modifiedData = { ...data, date: convertDate };
+    setValues(modifiedData);
+    setCurrentDocID(data?.docId);
   };
 
   const handleClosedModal = () => {
@@ -59,7 +65,7 @@ const Budget = () => {
   };
 
   const handleOnSort = (columnKey, objectKey) => {
-    let newDirection = "asc";
+    let newDirection = "asc"; 
     if (sortConfig?.direction === "desc" && sortConfig?.key === columnKey) {
       newDirection = "asc";
     } else {
@@ -107,10 +113,11 @@ const Budget = () => {
     //SUBMIT THE FORM BY USING 'DATA'
     if (!Object.values(error).includes(true)) {
       let body = {
+        ...data,
         userId: userData?.userId,
         timeStamp: Date.now(),
+        date: Timestamp.fromDate(new Date(data.date)),
         amount: +data?.amount,
-        ...data,
       };
 
       if (isUpdate) {
