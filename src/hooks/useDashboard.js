@@ -82,7 +82,7 @@ export default function useDashboard(userId) {
 
     // Get the first day of the current month
     const months = [];
-    for (let i = 5; i >= 0; i--) {
+    for (let i = 4; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const formatter = new Intl.DateTimeFormat("en-PK", {
         month: "short",
@@ -91,7 +91,7 @@ export default function useDashboard(userId) {
       months.push(formatter.format(d));
     }
 
-    const fiveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+    const fiveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 4, 1);
     const q = query(
       collection(db, "transaction"),
       where("userId", "==", userId),
@@ -114,6 +114,23 @@ export default function useDashboard(userId) {
       }
     });
 
+    // Get budget for the last 6 months
+    const budgetRef = query(
+      collection(db, "budget"),
+      where("userId", "==", userId),
+      where("date", ">=", fiveMonthsAgo)
+    );
+    const budgetSnapshot = await getDocs(budgetRef);
+
+    const budgetSummary = {};
+    budgetSnapshot.forEach((doc) => {
+      const { amount, date } = doc.data();
+
+      const convertDate = formatDate(date);
+      budgetSummary[convertDate] =
+        (budgetSummary[convertDate] || 0) + Number(amount);
+    });
+
     // Optionally, sort summary by month order
     const minimalOutput = {};
     months.forEach((month) => {
@@ -121,11 +138,11 @@ export default function useDashboard(userId) {
         i: summary[month].income,
         e: summary[month].expense,
         s: Math.max(summary[month].income - summary[month].expense, 0),
+        b: budgetSummary[month] || 0,
       };
     });
 
-    console.log({minimalOutput});
-    
+
     setLoading(false);
     setMonthlyOverview(minimalOutput);
   }, [userId]);
