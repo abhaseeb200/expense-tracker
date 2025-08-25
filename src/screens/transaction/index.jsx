@@ -67,6 +67,9 @@ const Transaction = () => {
   const onChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
 
+    // REMOVE SOURCE VALIDATION
+    if (e.target.name === "source" || e.target.value === "sourceId") return;
+
     if (!e.target.value?.trim()) {
       setErrors({ ...errors, [e.target.name]: true });
     } else {
@@ -75,7 +78,9 @@ const Transaction = () => {
   };
 
   const handleUpdate = (data) => {
-    let convertDate = new Date(data.date.seconds * 1000).toISOString().split("T")[0];
+    let convertDate = new Date(data.date.seconds * 1000)
+      .toISOString()
+      .split("T")[0];
 
     setIsUpdate(true);
     setIsTransitionModal(true);
@@ -145,7 +150,12 @@ const Transaction = () => {
     formData.forEach((value, key) => {
       data[key] = value;
       if (!value?.trim()) {
-        error[key] = true;
+        // REMOVE SOURCE VALIDATION
+        if (key === "source" || key === "sourceId") {
+          error[key] = false;
+        } else {
+          error[key] = true;
+        }
       }
     });
 
@@ -189,6 +199,8 @@ const Transaction = () => {
     }
 
     if (!value?.trim()) {
+      // REMOVE DESCRIPTION VALIDATION
+      if (name === "source") return;
       setErrors({ ...errors, [name]: true });
     } else {
       setErrors({ ...errors, [name]: false });
