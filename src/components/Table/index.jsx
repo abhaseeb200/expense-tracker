@@ -125,8 +125,6 @@ const Table = ({
 }) => {
   const { isDarkMode } = useSelector((state) => state?.themeMode);
 
-  console.log(reportData);
-
   const rowsPerPage = 10;
 
   const totalPages = Math.ceil(rows.length / rowsPerPage);
