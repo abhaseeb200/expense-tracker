@@ -101,3 +101,7 @@ small {
 .dark-theme .modal-backdrop.show {
   opacity: 0.8;
 }
+
+.dark-theme .continue-with-google {
+  color: #fff !important;
+}

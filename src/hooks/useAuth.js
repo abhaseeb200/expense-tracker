@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { getUserReducer } from "../feature/auth/userSlice";
 import { authSignIn, authSignUp } from "../config/service/firebase/auth";
 import { addUserAPI, getUserById } from "../config/service/firebase/user";
+import { auth, db, googleProvider } from "../config/firebaseConfig";
 
 const useAuth = () => {
   const [loading, setLoading] = useState(false);
@@ -57,9 +58,43 @@ const useAuth = () => {
     }
   };
 
+  const signInWithGoogle = async () => {
+    try {
+      const result = await auth.signInWithPopup(googleProvider);
+      const user = result?.user;
+      const userRef = db.collection("users").doc(user?.uid);
+
+      await userRef.set(
+        {
+          userId: user?.uid,
+          fname: user?.displayName.split(" ")[0],
+          lname: user?.displayName.split(" ")[1],
+          profileURL: user?.photoURL,
+          email: user?.email,
+        },
+        { merge: true }
+      );
+
+      //FETCH USER DETAILS
+      let userResponse = await getUserById(user?.uid);
+      let data = {};
+      await userResponse.forEach((element) => {
+        data = {
+          ...element.data(),
+          docId: element.id,
+        };
+      });
+      dispatch(getUserReducer(data));
+      toast.success("Login successfully!");
+    } catch (error) {
+      console.error("Google sign-in error", error);
+    }
+  };
+
   return {
     useSignIn,
     useSignUp,
+    signInWithGoogle,
     loading,
   };
 };

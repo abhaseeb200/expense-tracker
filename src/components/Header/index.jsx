@@ -55,7 +55,7 @@ const Header = ({ setSideBarToggle }) => {
               ></box-icon>
             )}
             <span className="welcome">
-              Hey <b>{userData?.username}</b>
+              Hey <b>{userData?.username || userData?.fname}</b>
             </span>
           </div>
 
@@ -76,7 +76,7 @@ const Header = ({ setSideBarToggle }) => {
                       src={userData?.profileURL || avatarImg}
                       className="w-px-40 rounded-circle object-fit-cover"
                     />
-                    <span className="ms-2">{userData?.username}</span>
+                    <span className="ms-2">{userData?.username || userData?.fname}</span>
                   </DropdownItem>
                 </Link>
                 <Link to="/account" className="d-flex align-items-center w-100">

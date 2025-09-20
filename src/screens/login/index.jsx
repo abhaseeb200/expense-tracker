@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardBody, Row, Button, Form, Spinner } from "reactstrap";
+import { useSelector } from "react-redux";
 import Input from "../../components/Input";
 import { EyeIcon, EyeOffIcon } from "../../components/Icons";
 import loginInputs from "../../constant/inputs/loginInputs";
@@ -12,7 +13,8 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [isVisible, setVisible] = useState(false);
 
-  const { useSignIn, loading } = useAuth();
+  const { useSignIn,signInWithGoogle, loading } = useAuth();
+  const { isDarkMode } = useSelector((state) => state?.themeMode);
 
   const handleOnChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
@@ -97,6 +99,19 @@ const Login = () => {
             disabled={loading}
           >
             {loading ? <Spinner size="sm" /> : "Sign in"}
+          </Button>
+
+          <Button
+            type="button"
+            className="continue-with-google text-black border-grey bg-transparent py-2 w-100 d-flex align-items-center justify-content-center gap-2"
+            onClick={signInWithGoogle}
+          >
+            <img
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              alt="Google logo"
+              style={{ width: "20px", height: "20px" }}
+            />
+            Continue with Google
           </Button>
         </Form>
 
