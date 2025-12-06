@@ -13,12 +13,12 @@ const DonutChart = ({ income, expense, saving, loading }) => {
         data: [income, expense, saving],
         backgroundColor: [
           "#009688", // Dark Green
-          "#333333", // Black
+          "#e05353ff", // Black
           "#4CAF50", // Light Green
         ],
         hoverBackgroundColor: [
           "#00796B", // Darker Green
-          "#2C2C2C", // Darker Black
+          "#e05353ff", // Darker Black
           "#388E3C", // Darker Light Green
         ],
         borderWidth: 0,
